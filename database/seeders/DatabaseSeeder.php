@@ -20,6 +20,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        // Seed roles and users first
+        $this->call([
+            RoleSeeder::class,
+        ]);
+
         // Seed lookup tables
         $this->call([
             LoanTypeSeeder::class,
