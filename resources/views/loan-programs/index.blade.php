@@ -68,6 +68,17 @@
             <div class="relative overflow-x-auto rounded-lg">
                 <table class="min-w-max w-full table-auto text-xs border-collapse">
                     <thead>
+                        <!-- Loan Type Header Row - Added at the top -->
+                        @if (count($matrixData) > 0)
+                        @foreach ($matrixData as $loanType => $rows)
+                        <tr class="bg-green-800 text-white uppercase">
+                            <th colspan="19" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                                {{ $loanType }}
+                            </th>
+                        </tr>
+                        @endforeach
+                        @endif
+
                         <tr class="bg-green-800 text-white uppercase text-xs">
                             <!-- Basic Info (removed Loan Type column) -->
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">Experience</th>
@@ -124,15 +135,6 @@
                     </thead>
                     <tbody class="text-black text-xs leading-normal">
                         @foreach ($matrixData as $loanType => $rows)
-                        <!-- Loan Type Section Header -->
-                        <tr class="bg-blue-100 border-t-2 border-blue-300">
-                            <td colspan="19"
-                                class="py-3 px-4 text-center font-bold text-lg text-blue-800 border border-gray-300">
-                                {{ $loanType }}
-                            </td>
-                        </tr>
-
-                        <!-- Matrix Data Rows for this Loan Type -->
                         @foreach ($rows as $row)
                         <tr
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
