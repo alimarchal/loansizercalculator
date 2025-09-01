@@ -10,6 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Create loan_type_states pivot table
         Schema::create('loan_type_states', function (Blueprint $table) {
             $table->id();
             $table->foreignId('loan_type_id')->constrained()->onDelete('cascade');
@@ -18,6 +19,16 @@ return new class extends Migration {
 
             $table->unique(['loan_type_id', 'state_id']);
         });
+
+        // Create loan_type_property_types pivot table
+        Schema::create('loan_type_property_types', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('loan_type_id')->constrained()->onDelete('cascade');
+            $table->foreignId('property_type_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+
+            $table->unique(['loan_type_id', 'property_type_id']);
+        });
     }
 
     /**
@@ -25,6 +36,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('loan_type_property_types');
         Schema::dropIfExists('loan_type_states');
     }
 };
