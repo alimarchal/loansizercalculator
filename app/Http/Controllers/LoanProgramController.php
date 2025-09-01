@@ -38,6 +38,11 @@ class LoanProgramController extends Controller
                             $q->where('id', $value);
                         });
                     }),
+                    AllowedFilter::callback('loan_program', function ($query, $value) {
+                        $query->whereHas('experience.loanType', function ($q) use ($value) {
+                            $q->where('loan_program', $value);
+                        });
+                    }),
                     AllowedFilter::exact('experience_id'),
                     AllowedFilter::exact('fico_band_id'),
                     AllowedFilter::exact('transaction_type_id'),
@@ -51,6 +56,11 @@ class LoanProgramController extends Controller
                 ])
                 ->join('experiences', 'loan_rules.experience_id', '=', 'experiences.id')
                 ->join('fico_bands', 'loan_rules.fico_band_id', '=', 'fico_bands.id')
+                ->join('loan_types', 'experiences.loan_type_id', '=', 'loan_types.id')
+                // Filter by FULL APPRAISAL by default unless loan_program filter is specified
+                ->when(!$request->has('filter.loan_program'), function ($query) {
+                    $query->where('loan_types.loan_program', 'FULL APPRAISAL');
+                })
                 ->orderByRaw("
                     CASE experiences.experiences_range
                         WHEN '0' THEN 0 
@@ -134,7 +144,10 @@ class LoanProgramController extends Controller
             $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
             $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
 
-            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'ficoBands', 'transactionTypes'));
+            // Determine current loan program for header
+            $currentLoanProgram = $request->get('filter.loan_program', 'FULL APPRAISAL');
+
+            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'ficoBands', 'transactionTypes', 'currentLoanProgram'));
 
         } catch (\Exception $e) {
             // If there's an error, return to dashboard with error message

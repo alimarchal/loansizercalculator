@@ -14,14 +14,13 @@
                 </svg>
                 Search
             </button>
-            <a href="javascript:window.location.reload();"
-                class="inline-flex items-center ml-2 px-4 py-2 bg-blue-950 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-950 focus:bg-green-800 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-4">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            <a href="{{ route('loan-programs.create') }}"
+                class="inline-flex items-center ml-2 px-4 py-2 bg-blue-950 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800 focus:bg-green-800 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
-                Refresh
+                Create New Loan Rule
             </a>
             <a href="{{ route('dashboard') }}"
                 class="inline-flex items-center ml-2 px-4 py-2 bg-blue-950 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800 focus:bg-green-800 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -29,36 +28,11 @@
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Dashboard
+                </svg> &nbsp;
+                Back
             </a>
         </div>
     </x-slot>
-
-    <!-- ACTION BUTTONS -->
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-4">
-        <div class="flex justify-between items-center mb-4">
-            <div class="flex space-x-3">
-                <!-- Create New Button -->
-                <a href="{{ route('loan-programs.create') }}"
-                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center transition duration-150 ease-in-out shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Create New Loan Rule
-                </a>
-
-                <!-- Filter Toggle Button -->
-                <x-filter-buttons />
-            </div>
-
-            <div class="text-sm text-gray-600 dark:text-gray-400">
-                Total Rules: <span class="font-semibold">{{ count($matrixData) > 0 ? array_sum(array_map('count',
-                    $matrixData)) : 0 }}</span>
-            </div>
-        </div>
-    </div>
 
     <!-- FILTER SECTION -->
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
@@ -66,7 +40,27 @@
             style="display: none">
             <div class="p-6">
                 <form method="GET" action="{{ route('loan-programs.index') }}">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <!-- Filter by Loan Program -->
+                        <div class="form-group">
+                            <label for="loan_program"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Loan Program
+                            </label>
+                            <select name="filter[loan_program]" id="loan_program"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All Programs</option>
+                                <option value="FULL APPRAISAL" {{ request('filter.loan_program')=='FULL APPRAISAL'
+                                    ? 'selected' : '' }}>
+                                    FULL APPRAISAL
+                                </option>
+                                <option value="DESKTOP APPRAISAL" {{ request('filter.loan_program')=='DESKTOP APPRAISAL'
+                                    ? 'selected' : '' }}>
+                                    DESKTOP APPRAISAL
+                                </option>
+                            </select>
+                        </div>
+
                         <!-- Filter by Loan Type -->
                         <x-loan-type-select :loanTypes="$loanTypes" />
 
@@ -118,20 +112,15 @@
             <div class="relative overflow-x-auto rounded-lg">
                 <table class="min-w-max w-full table-auto text-xs border-collapse">
                     <thead>
-                        <!-- Loan Type Header Row - Added at the top -->
-                        @if (count($matrixData) > 0)
-                        @foreach ($matrixData as $loanType => $rows)
+                        <!-- Dynamic Header for Loan Program -->
                         <tr class="bg-green-800 text-white uppercase">
                             <th colspan="21" class="py-3 px-4 text-center font-bold text-lg border border-white">
-                                {{ $loanType }}
+                                Fix and Flip - {{ $currentLoanProgram }}
                             </th>
                         </tr>
-                        @endforeach
-                        @endif
 
                         <tr class="bg-green-800 text-white uppercase text-xs">
-                            <!-- Basic Info (added Loan Type column back) -->
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Loan Type</th>
+                            <!-- Basic Info (removed Loan Type column) -->
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">Experience</th>
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">FICO</th>
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">Transaction Type</th>
@@ -192,13 +181,7 @@
                         @foreach ($rows as $row)
                         <tr
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
-                            <!-- Basic Info (added Loan Type column back) -->
-                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">
-                                {{ $row->loan_type ?? 0 }}
-                                @if($row->loan_program)
-                                <br><span class="text-xs text-gray-600">{{ $row->loan_program }}</span>
-                                @endif
-                            </td>
+                            <!-- Basic Info (removed Loan Type column) -->
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->experience
                                 ?? 0 }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->fico ??
