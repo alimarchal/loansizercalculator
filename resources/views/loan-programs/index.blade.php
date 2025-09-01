@@ -194,65 +194,65 @@
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
                             <!-- Basic Info (added Loan Type column back) -->
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">
-                                {{ $row->loan_type ?? 'N/A' }}
+                                {{ $row->loan_type ?? 0 }}
                                 @if($row->loan_program)
                                 <br><span class="text-xs text-gray-600">{{ $row->loan_program }}</span>
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->experience
-                                ?? 'N/A' }}</td>
+                                ?? 0 }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->fico ??
-                                'N/A' }}</td>
-                            <td class="py-1 px-1 text-center border border-gray-300">{{ $row->transaction_type ?? 'N/A'
+                                0 }}</td>
+                            <td class="py-1 px-1 text-center border border-gray-300">{{ $row->transaction_type ?? 0
                                 }}</td>
-                            <td class="py-1 px-1 text-center border border-gray-300">${{ $row->max_total_loan ?
-                                number_format($row->max_total_loan) : 'N/A' }}</td>
-                            <td class="py-1 px-1 text-center border border-gray-300">${{ $row->max_budget ?
-                                number_format($row->max_budget) : 'N/A' }}</td>
+                            <td class="py-1 px-1 text-center border border-gray-300">{{ $row->max_total_loan ?
+                                '$' . number_format($row->max_total_loan) : '$0.00' }}</td>
+                            <td class="py-1 px-1 text-center border border-gray-300">{{ $row->max_budget ?
+                                '$' . number_format($row->max_budget) : '$0.00' }}</td>
 
                             <!-- Light Rehab -->
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->light_ltc ?
-                                $row->light_ltc . '%' : 'N/A' }}</td>
+                                number_format($row->light_ltc, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->light_ltv ?
-                                $row->light_ltv . '%' : 'N/A' }}</td>
+                                number_format($row->light_ltv, 2) . '%' : '0.00%' }}</td>
 
                             <!-- Moderate Rehab -->
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->moderate_ltc ?
-                                $row->moderate_ltc . '%' : 'N/A' }}</td>
+                                number_format($row->moderate_ltc, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->moderate_ltv ?
-                                $row->moderate_ltv . '%' : 'N/A' }}</td>
+                                number_format($row->moderate_ltv, 2) . '%' : '0.00%' }}</td>
 
                             <!-- Heavy Rehab -->
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->heavy_ltc ?
-                                $row->heavy_ltc . '%' : 'N/A' }}</td>
+                                number_format($row->heavy_ltc, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->heavy_ltv ?
-                                $row->heavy_ltv . '%' : 'N/A' }}</td>
+                                number_format($row->heavy_ltv, 2) . '%' : '0.00%' }}</td>
 
                             <!-- Extensive Rehab -->
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->extensive_ltc ?
-                                $row->extensive_ltc . '%' : 'N/A' }}</td>
+                                number_format($row->extensive_ltc, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->extensive_ltv ?
-                                $row->extensive_ltv . '%' : 'N/A' }}</td>
+                                number_format($row->extensive_ltv, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->extensive_ltfc ?
-                                $row->extensive_ltfc . '%' : 'N/A' }}</td>
+                                number_format($row->extensive_ltfc, 2) . '%' : '0.00%' }}</td>
 
                             <!-- Pricing < $250k -->
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->ir_lt_250k ?
-                                $row->ir_lt_250k . '%' : 'N/A' }}</td>
+                                number_format($row->ir_lt_250k, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->lp_lt_250k ?
-                                $row->lp_lt_250k : 'N/A' }}</td>
+                                number_format($row->lp_lt_250k, 2) : '0.00' }}</td>
 
                             <!-- Pricing $250k-$500k -->
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->ir_250_500k ?
-                                $row->ir_250_500k . '%' : 'N/A' }}</td>
+                                number_format($row->ir_250_500k, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->lp_250_500k ?
-                                $row->lp_250_500k : 'N/A' }}</td>
+                                number_format($row->lp_250_500k, 2) : '0.00' }}</td>
 
                             <!-- Pricing ≥ $500k -->
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->ir_gte_500k ?
-                                $row->ir_gte_500k . '%' : 'N/A' }}</td>
+                                number_format($row->ir_gte_500k, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->lp_gte_500k ?
-                                $row->lp_gte_500k : 'N/A' }}</td>
+                                number_format($row->lp_gte_500k, 2) : '0.00' }}</td>
 
                             <!-- Actions -->
                             <td class="py-1 px-1 text-center border border-gray-300">

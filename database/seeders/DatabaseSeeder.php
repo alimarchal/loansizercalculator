@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             RehabLimitSeeder::class,
             PricingTierSeeder::class,
             PricingSeeder::class,
+            DesktopAppraisalLoanRuleSeeder::class, // Desktop Appraisal specific rules
 
                 // Relationship seeders (run after the base data)
             LoanTypeStateSeeder::class,
