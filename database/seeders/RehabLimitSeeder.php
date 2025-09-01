@@ -25,36 +25,151 @@ class RehabLimitSeeder extends Seeder
             }
         }
 
-        // Helper: pick limits by experience label
-        $limitsForExperience = function (string $expLabel): array {
-            // Normalise label (e.g., "1-2", "10+")
-            $expLabel = trim($expLabel);
-
-            // Group A: starter (0, 1–2)
-            $starter = in_array($expLabel, ['0', '1-2'], true);
-
-            if ($starter) {
-                return [
+        // Define limits by experience AND FICO combination
+        $limitsMatrix = [
+            // Experience 0
+            '0' => [
+                '660-679' => [
+                    'LIGHT REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '680-699' => [
                     'LIGHT REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
                     'MODERATE REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '700-719' => [
+                    'LIGHT REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '720-739' => [
+                    'LIGHT REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '740+' => [
+                    'LIGHT REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+            ],
+
+            // Experience 1-2
+            '1-2' => [
+                '660-679' => [
+                    'LIGHT REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '680-699' => [
+                    'LIGHT REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
                     'HEAVY REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
-                    'EXTENSIVE REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 75.00],
-                ];
-            }
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '700-719' => [
+                    'LIGHT REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '720-739' => [
+                    'LIGHT REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '740+' => [
+                    'LIGHT REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 75.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+            ],
 
-            // Group B: experienced (3–4, 5–9, 10+)
-            return [
-                'LIGHT REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
-                'MODERATE REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
-                'HEAVY REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
-                'EXTENSIVE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 75.00],
-            ];
-        };
+            // Experience 3-4
+            '3-4' => [
+                '660-679' => [
+                    'LIGHT REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 0.00, 'ltv' => 0.00, 'ltfc' => 0.00],
+                ],
+                '680-699' => [
+                    'LIGHT REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 85.00],
+                ],
+                '700-719' => [
+                    'LIGHT REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 85.00],
+                ],
+                '720-739' => [
+                    'LIGHT REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 85.00],
+                ],
+                '740+' => [
+                    'LIGHT REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 80.00, 'ltv' => 75.00, 'ltfc' => 85.00],
+                ],
+            ],
 
-        // Iterate all rules and (up)insert 4 limits per rule
-        LoanRule::with('experience:id,experiences_range')->chunkById(200, function ($rules) use ($levels, $limitsForExperience) {
+            // Experience 5-9 - All FICO bands same
+            '5-9' => [
+                '*' => [
+                    'LIGHT REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 90.00],
+                ]
+            ],
+
+            // Experience 10+ - All FICO bands same
+            '10+' => [
+                '*' => [
+                    'LIGHT REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'MODERATE REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'HEAVY REHAB' => ['ltc' => 90.00, 'ltv' => 75.00, 'ltfc' => 0.00],
+                    'EXTENSIVE REHAB' => ['ltc' => 85.00, 'ltv' => 75.00, 'ltfc' => 90.00],
+                ]
+            ],
+        ];
+
+        // Iterate all rules and upsert 4 limits per rule
+        LoanRule::with(['experience:id,experiences_range', 'ficoBand:id,fico_range'])->chunkById(200, function ($rules) use ($levels, $limitsMatrix) {
             foreach ($rules as $rule) {
-                $matrix = $limitsForExperience($rule->experience->experiences_range);
+                $expRange = $rule->experience->experiences_range;
+                $ficoRange = $rule->ficoBand->fico_range;
+
+                if (!isset($limitsMatrix[$expRange])) {
+                    throw new \RuntimeException("No rehab limits defined for experience range: {$expRange}");
+                }
+
+                $expMatrix = $limitsMatrix[$expRange];
+
+                // Check if we have specific FICO mapping or use wildcard
+                if (isset($expMatrix[$ficoRange])) {
+                    $matrix = $expMatrix[$ficoRange];
+                } elseif (isset($expMatrix['*'])) {
+                    $matrix = $expMatrix['*'];
+                } else {
+                    throw new \RuntimeException("No rehab limits defined for experience {$expRange} and FICO {$ficoRange}");
+                }
 
                 foreach ($matrix as $levelName => $vals) {
                     RehabLimit::updateOrCreate(

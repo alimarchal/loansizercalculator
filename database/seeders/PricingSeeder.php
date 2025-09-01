@@ -22,44 +22,46 @@ class PricingSeeder extends Seeder
             }
         }
 
-        // Centralised defaults (as percentages, because your columns are DECIMAL(12,2))
-        $starter = [ // experience: "0", "1-2"
-            'interest' => 12.75,
-            'points' => 2.99,
+        // Define pricing by FICO band (same rates across all tiers and experience levels)
+        $ficoPricing = [
+            '660-679' => ['interest' => 12.750, 'points' => 2.990],
+            '680-699' => ['interest' => 12.750, 'points' => 2.990],
+            '700-719' => ['interest' => 12.500, 'points' => 2.500],
+            '720-739' => ['interest' => 12.000, 'points' => 2.500],
+            '740+' => ['interest' => 11.500, 'points' => 2.500],
         ];
 
-        $experienced = [ // experience: "3-4", "5-9", "10+"
-            'interest' => 12.50,
-            'points' => 2.99,
+        // Special case: Experience 0, FICO 660-679 should have N/A pricing
+        $specialCases = [
+            '0_660-679' => ['interest' => 0.00, 'points' => 0.00],
         ];
-
-        // If you need per-tier tweaks, set them here (else all tiers use same numbers):
-        $perTierAdjust = [
-            '<250k' => ['interest_delta' => 0.00, 'points_delta' => 0.00],
-            '250-500k' => ['interest_delta' => 0.00, 'points_delta' => 0.00],
-            '> =500k' => ['interest_delta' => 0.00, 'points_delta' => 0.00], // keep label consistent; fix spacing if needed
-        ];
-        // Normalise key typo to your exact label:
-        $perTierAdjust['>=500k'] = $perTierAdjust['> =500k'];
-        unset($perTierAdjust['> =500k']);
 
         // Seed for all rules
-        LoanRule::with('experience:id,experiences_range')->chunkById(200, function ($rules) use ($tiers, $starter, $experienced, $perTierAdjust) {
+        LoanRule::with(['experience:id,experiences_range', 'ficoBand:id,fico_range'])->chunkById(200, function ($rules) use ($tiers, $ficoPricing, $specialCases) {
             foreach ($rules as $rule) {
-                $isStarter = in_array($rule->experience->label, ['0', '1-2'], true);
-                $base = $isStarter ? $starter : $experienced;
+                $expRange = $rule->experience->experiences_range;
+                $ficoRange = $rule->ficoBand->fico_range;
+                $specialKey = $expRange . '_' . $ficoRange;
 
+                // Check for special case first
+                if (isset($specialCases[$specialKey])) {
+                    $pricing = $specialCases[$specialKey];
+                } elseif (isset($ficoPricing[$ficoRange])) {
+                    $pricing = $ficoPricing[$ficoRange];
+                } else {
+                    throw new \RuntimeException("No pricing defined for FICO range: {$ficoRange}");
+                }
+
+                // Same pricing across all three tiers for each FICO band
                 foreach (['<250k', '250-500k', '>=500k'] as $label) {
-                    $adj = $perTierAdjust[$label] ?? ['interest_delta' => 0, 'points_delta' => 0];
-
                     Pricing::updateOrCreate(
                         [
                             'loan_rule_id' => $rule->id,
                             'pricing_tier_id' => $tiers[$label],
                         ],
                         [
-                            'interest_rate' => $base['interest'] + $adj['interest_delta'], // e.g., 12.50
-                            'lender_points' => $base['points'] + $adj['points_delta'],   // e.g., 2.99
+                            'interest_rate' => $pricing['interest'],
+                            'lender_points' => $pricing['points'],
                         ]
                     );
                 }
