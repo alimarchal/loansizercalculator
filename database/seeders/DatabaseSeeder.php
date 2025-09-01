@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             TransactionTypeSeeder::class,
             PropertyTypeSeeder::class,
             StateSeeder::class,
+            RateMatrixSeeder::class,
         ]);
     }
 }
