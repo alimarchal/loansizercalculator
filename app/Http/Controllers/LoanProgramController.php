@@ -142,12 +142,126 @@ class LoanProgramController extends Controller
      * 
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
+    /**
+     * Show form to create new loan program entry
+     * 
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function create()
     {
-        // This would show a form to create new loan program rules
-        // For now, return to index
-        return redirect()->route('loan-programs.index')
-            ->with('info', 'Create functionality will be implemented later.');
+        try {
+            // Get data for select options
+            $experiences = Experience::with('loanType')->orderBy('experiences_range')->get();
+            $ficoBands = FicoBand::orderBy('fico_min')->get();
+            $transactionTypes = TransactionType::orderBy('name')->get();
+            $rehabLevels = RehabLevel::orderBy('name')->get();
+            $pricingTiers = PricingTier::orderBy('price_range')->get();
+
+            return view('loan-programs.create', compact(
+                'experiences',
+                'ficoBands',
+                'transactionTypes',
+                'rehabLevels',
+                'pricingTiers'
+            ));
+
+        } catch (\Exception $e) {
+            return redirect()->route('loan-programs.index')
+                ->with('error', 'Error loading create form: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Store new loan program entry
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'experience_id' => 'required|exists:experiences,id',
+            'fico_band_id' => 'required|exists:fico_bands,id',
+            'transaction_type_id' => 'required|exists:transaction_types,id',
+            'max_total_loan' => 'required|numeric|min:0',
+            'max_budget' => 'required|numeric|min:0',
+
+            // Rehab limits validation
+            'rehab_limits' => 'array',
+            'rehab_limits.*.rehab_level_id' => 'required|exists:rehab_levels,id',
+            'rehab_limits.*.max_ltc' => 'nullable|numeric|min:0|max:100',
+            'rehab_limits.*.max_ltv' => 'nullable|numeric|min:0|max:100',
+            'rehab_limits.*.max_ltfc' => 'nullable|numeric|min:0|max:100',
+
+            // Pricing validation
+            'pricings' => 'array',
+            'pricings.*.pricing_tier_id' => 'required|exists:pricing_tiers,id',
+            'pricings.*.interest_rate' => 'nullable|numeric|min:0|max:50',
+            'pricings.*.lender_points' => 'nullable|numeric|min:0|max:10',
+        ]);
+
+        try {
+            \DB::transaction(function () use ($request) {
+                // Check for duplicate loan rule combination
+                $existingRule = LoanRule::where([
+                    'experience_id' => $request->experience_id,
+                    'fico_band_id' => $request->fico_band_id,
+                    'transaction_type_id' => $request->transaction_type_id,
+                ])->first();
+
+                if ($existingRule) {
+                    throw new \Exception('A loan rule with this combination of Experience, FICO Band, and Transaction Type already exists.');
+                }
+
+                // Create main loan rule
+                $loanRule = LoanRule::create([
+                    'experience_id' => $request->experience_id,
+                    'fico_band_id' => $request->fico_band_id,
+                    'transaction_type_id' => $request->transaction_type_id,
+                    'max_total_loan' => $request->max_total_loan,
+                    'max_budget' => $request->max_budget,
+                ]);
+
+                // Create rehab limits
+                if ($request->has('rehab_limits')) {
+                    foreach ($request->rehab_limits as $rehabLimit) {
+                        if (!empty($rehabLimit['rehab_level_id'])) {
+                            $loanRule->rehabLimits()->create([
+                                'rehab_level_id' => $rehabLimit['rehab_level_id'],
+                                'max_ltc' => $rehabLimit['max_ltc'] ?? null,
+                                'max_ltv' => $rehabLimit['max_ltv'] ?? null,
+                                'max_ltfc' => $rehabLimit['max_ltfc'] ?? null,
+                            ]);
+                        }
+                    }
+                }
+
+                // Create pricings
+                if ($request->has('pricings')) {
+                    foreach ($request->pricings as $pricing) {
+                        if (!empty($pricing['pricing_tier_id'])) {
+                            $loanRule->pricings()->create([
+                                'pricing_tier_id' => $pricing['pricing_tier_id'],
+                                'interest_rate' => $pricing['interest_rate'] ?? null,
+                                'lender_points' => $pricing['lender_points'] ?? null,
+                            ]);
+                        }
+                    }
+                }
+            });
+
+            return redirect()->route('loan-programs.index')
+                ->with('success', 'Loan program created successfully!');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error creating loan program: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**

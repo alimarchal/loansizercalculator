@@ -35,8 +35,33 @@
         </div>
     </x-slot>
 
-    <!-- FILTER SECTION -->
+    <!-- ACTION BUTTONS -->
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-4">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex space-x-3">
+                <!-- Create New Button -->
+                <a href="{{ route('loan-programs.create') }}"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center transition duration-150 ease-in-out shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Create New Loan Rule
+                </a>
+
+                <!-- Filter Toggle Button -->
+                <x-filter-buttons />
+            </div>
+
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+                Total Rules: <span class="font-semibold">{{ count($matrixData) > 0 ? array_sum(array_map('count',
+                    $matrixData)) : 0 }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER SECTION -->
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg" id="filters"
             style="display: none">
             <div class="p-6">
@@ -72,7 +97,7 @@
                         @if (count($matrixData) > 0)
                         @foreach ($matrixData as $loanType => $rows)
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="21" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="22" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 {{ $loanType }}
                             </th>
                         </tr>
