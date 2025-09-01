@@ -10,9 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('transaction_types', function (Blueprint $table) {
+        Schema::create('pricings', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->default('Purchase');
+            $table->foreignId('loan_rule_id')->constrained()->cascadeOnUpdate();
+            $table->foreignId('pricing_tier_id')->constrained()->cascadeOnUpdate();
+            $table->decimal('interest_rate', 12, 2)->nullable();
+            $table->decimal('lender_points', 12, 2)->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_types');
+        Schema::dropIfExists('pricings');
     }
 };

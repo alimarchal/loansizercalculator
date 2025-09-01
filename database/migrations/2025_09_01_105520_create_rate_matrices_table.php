@@ -21,19 +21,24 @@ return new class extends Migration {
         Schema::create('rate_matrices', function (Blueprint $table) {
             $table->id();
 
-            // Experience Tier Mapping:
-            // Tier 1 = 0 Experience
-            // Tier 2 = 1-2 Experience combined  
-            // Tier 3 = 3-4 Experience combined 
-            // Tier 4 = 5-9 Experience combined 
-            // Tier 5 = 10+ Experience combined
+            /*
+            Experience Tier are based on the user experience inputs. 
+            Tier 1 = Borrower with 0 Experience
+            Tier 2 = Borrower with  1-2  Experience combined  
+            Tier 3 = Borrower with  3-4  Experience combined 
+            Tier 4 = Borrower with  5-9  Experience combined 
+            Tier 5 = Borrower with  10+  Experience combined 
+            */
             $table->integer('experience_tier'); // 1-5
 
             // FICO Score Ranges - Minimum 660 required
-            // Below 660: "Your FICO score is below the minimum of 660 required"
+            // If FICO < 660 “You FICO score is below the minimum of 660 required”
             $table->integer('fico_min');
             $table->integer('fico_max');
             $table->string('fico_range', 20); // '660-679', '680-699', '700-719', '720-739', '740+'
+
+            //Purchase Transaction Allowed Refinance NOT Allowed (For Fix and Flip Loan Type)
+            $table->enum('transaction_type', ['Purchase', 'Refinance'])->default('Purchase');
 
             // Loan Limits
             // If Total Loan < $50,000: "Your Loan Size is below the minimum $50,000 required"
@@ -42,28 +47,44 @@ return new class extends Migration {
 
             // Maximum Budget Validation
             // Any budget above max: "The Maximum Budget allowed is $XXX,XXX"
+            // Maximum budget amount allowed. Any budget size above should give prompt message. “The Maximum Budget allowed is $100,000”
             $table->decimal('max_budget', 12, 2)->nullable();
 
             // Light Rehab (≤25% of purchase price)
             // Max LTV/LTC allowed for Light Rehab transactions
-            $table->decimal('max_ltv_light', 5, 2)->nullable();
-            $table->decimal('max_ltc_light', 5, 2)->nullable();
+
+            // Max LTC allowed for Loan that is classified as “Light Rehab” Transaction. Light Rehab transaction is when Rehab Budget (input) is 25% or Less of the Purchase Price.
+            $table->decimal('max_ltc_light_rehab', 5, 2)->nullable();
+            // Max LTV allowed for Loan that is classified as “Light Rehab” Transaction. Light Rehab transaction is when Rehab Budget (input) is 25% or Less of the Purchase Price.
+            $table->decimal('max_ltv_light_rehab', 5, 2)->nullable();
+
 
             // Moderate Rehab (25%-50% of purchase price)
             // Max LTV/LTC allowed for Moderate Rehab transactions  
-            $table->decimal('max_ltv_moderate', 5, 2)->nullable();
-            $table->decimal('max_ltc_moderate', 5, 2)->nullable();
+            // Max LTC allowed for Loan that is classified as “Moderate Rehab” Transaction. Moderate Rehab transaction is when Rehab Budget (input) is 25%-50% of the Purchase Price.
+            $table->decimal('max_ltc_moderate_rehab', 5, 2)->nullable();
+            // Max LTV allowed for Loan that is classified as “Moderate Rehab” Transaction. Moderate Rehab transaction is when Rehab Budget (input) is 25%-50% of the Purchase Price.
+            $table->decimal('max_ltv_moderate_rehab', 5, 2)->nullable();
+
+
+
+
 
             // Heavy Rehab (50%-100% of purchase price)
             // Max LTV/LTC allowed for Heavy Rehab transactions
-            $table->decimal('max_ltv_heavy', 5, 2)->nullable();
-            $table->decimal('max_ltc_heavy', 5, 2)->nullable();
+            // Max LTC allowed for Loan that is classified as “Heavy Rehab” Transaction. Heavy Rehab transaction is when Rehab Budget (input) is 50%-100% of the Purchase Price. 
+            $table->decimal('max_ltc_heavy_rehab', 5, 2)->nullable();
+            //Max LTV allowed for Loan that is classified as “Heavy Rehab” Transaction. Heavy Rehab transaction is when Rehab Budget (input) is 50%-100% of the Purchase Price. 
+            $table->decimal('max_ltv_heavy_rehab', 5, 2)->nullable();
 
-            // Extensive Rehab (100%+ of purchase price)
-            // Max LTV/LTC allowed for Extensive Rehab transactions
-            // LTC = "Loan to Final Cost" - max percentage loan will fund vs borrower cost (purchase + rehab)
-            $table->decimal('max_ltv_extensive', 5, 2)->nullable();
-            $table->decimal('max_ltc_extensive', 5, 2)->nullable();
+
+            // Max LTC allowed for Loan that is classified as “Extensive Rehab” Transaction. Extensive Rehab transaction is when Rehab Budget is 100% or more of the Purchase Price. 
+            $table->decimal('max_ltc_extensive_rehab', 5, 2)->nullable();
+            // Max LTV allowed for Loan that is classified as “Extensive Rehab” Transaction. Extensive Rehab transaction is when Rehab Budget (input) is 100% or more of the Purchase Price. 
+            $table->decimal('max_ltv_extensive_rehab', 5, 2)->nullable();
+            //Max T-LTC allowed for Loan that is classified as “Heavy Rehab” Transaction. LTFC means “Loan to Final Cost” which is a percentage that represents the MAXIMUM percentage the loan will fund compared to borrowers cost (purchase +rehab). Extensive Rehab transaction is when Rehab Budget (input) is 100% or more of the Purchase Price. 
+            $table->decimal('max_ltfc_extensive_rehab', 5, 2)->nullable();
+
 
             // Interest Rate Pricing - Selected based on FICO and Experience inputs
             $table->decimal('interest_rate_base', 6, 3);

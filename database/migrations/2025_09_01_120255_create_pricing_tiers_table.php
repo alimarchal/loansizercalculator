@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('transaction_types', function (Blueprint $table) {
+        Schema::create('pricing_tiers', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->default('Purchase');
+            $table->string('price_range')->nullable();
+            $table->decimal('min_amount', 12, 2)->nullable();
+            $table->decimal('max_amount', 12, 2)->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_types');
+        Schema::dropIfExists('pricing_tiers');
     }
 };

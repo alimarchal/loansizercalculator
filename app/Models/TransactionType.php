@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TransactionType extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionTypeFactory> */
-    use HasFactory, UserTracking, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'name',

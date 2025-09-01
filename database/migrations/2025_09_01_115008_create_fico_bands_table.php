@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('transaction_types', function (Blueprint $table) {
+        Schema::create('fico_bands', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->default('Purchase');
+            $table->string('fico_range', 20)->nullable(); // '660-679', '680-699', '700-719', '720-739', '740+'
+            $table->integer('fico_min')->nullable();
+            $table->integer('fico_max')->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_types');
+        Schema::dropIfExists('fico_bands');
     }
 };
