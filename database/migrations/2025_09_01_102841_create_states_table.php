@@ -10,9 +10,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('property_types', function (Blueprint $table) {
+        Schema::create('states', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('code');
             $table->boolean('is_allowed')->default(true);
             $table->userTracking();
             $table->softDeletes();
@@ -25,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('property_types');
+        Schema::dropIfExists('states');
     }
 };
