@@ -5,6 +5,15 @@
         </h2>
 
         <div class="flex justify-center items-center float-right">
+            <button id="toggle"
+                class="inline-flex items-center ml-2 px-4 py-2 bg-blue-950 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-950 focus:bg-green-800 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Search
+            </button>
             <a href="javascript:window.location.reload();"
                 class="inline-flex items-center ml-2 px-4 py-2 bg-blue-950 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-950 focus:bg-green-800 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -26,6 +35,30 @@
         </div>
     </x-slot>
 
+    <!-- FILTER SECTION -->
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-4">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg" id="filters"
+            style="display: none">
+            <div class="p-6">
+                <form method="GET" action="{{ route('loan-programs.index') }}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Filter by Loan Type -->
+                        <x-loan-type-select :loanTypes="$loanTypes" />
+
+                        <!-- Filter by FICO Band -->
+                        <x-fico-band-select :ficoBands="$ficoBands" />
+
+                        <!-- Filter by Transaction Type -->
+                        <x-transaction-type-select :transactionTypes="$transactionTypes" />
+                    </div>
+
+                    <!-- Submit Button -->
+                    <x-filter-buttons />
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- TABLE SECTION -->
     <div class="max-w-full mx-auto sm:px-6 lg:px-8 mt-2 pb-16">
         <x-status-message />
@@ -37,6 +70,7 @@
                     <thead>
                         <tr class="bg-green-800 text-white uppercase text-xs">
                             <!-- Basic Info -->
+                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Loan Type</th>
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">Experience</th>
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">FICO</th>
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">Transaction Type</th>
@@ -94,6 +128,8 @@
                         <tr
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
                             <!-- Basic Info -->
+                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->loan_type ??
+                                'N/A' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->experience
                                 ?? 'N/A' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->fico ??
@@ -194,5 +230,56 @@
             }
         }
     </style>
+    @endpush
+
+    @push('modals')
+    <script>
+        const targetDiv = document.getElementById("filters");
+        const btn = document.getElementById("toggle");
+
+        function showFilters() {
+            targetDiv.style.display = 'block';
+            targetDiv.style.opacity = '0';
+            targetDiv.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                targetDiv.style.opacity = '1';
+                targetDiv.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function hideFilters() {
+            targetDiv.style.opacity = '0';
+            targetDiv.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                targetDiv.style.display = 'none';
+            }, 300);
+        }
+
+        btn.onclick = function(event) {
+            event.stopPropagation();
+            if (targetDiv.style.display === "none") {
+                showFilters();
+            } else {
+                hideFilters();
+            }
+        };
+
+        // Hide filters when clicking outside
+        document.addEventListener('click', function(event) {
+            if (targetDiv.style.display === 'block' && !targetDiv.contains(event.target) && event.target !== btn) {
+                hideFilters();
+            }
+        });
+
+        // Prevent clicks inside the filter from closing it
+        targetDiv.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        // Add CSS for smooth transitions
+        const style = document.createElement('style');
+        style.textContent = `#filters {transition: opacity 0.3s ease, transform 0.3s ease;}`;
+        document.head.appendChild(style);
+    </script>
     @endpush
 </x-app-layout>

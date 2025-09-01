@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LoanRule;
+use App\Models\LoanType;
+use App\Models\FicoBand;
+use App\Models\TransactionType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 /**
  * LoanProgramController handles displaying the loan matrix data
@@ -13,7 +19,7 @@ use App\Http\Controllers\Controller;
 class LoanProgramController extends Controller
 {
     /**
-     * Display the complete loan matrix
+     * Display the complete loan matrix with filters
      * 
      * @param Request $request
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
@@ -21,63 +27,101 @@ class LoanProgramController extends Controller
     public function index(Request $request)
     {
         try {
-            // Raw SQL query to get the complete loan matrix with pivot data
-            $matrixData = DB::select("
-                SELECT
-                  e.experiences_range AS experience,
-                  f.fico_range AS fico,
-                  t.name AS transaction_type,
-                  r.max_total_loan,
-                  r.max_budget,
+            // Build query using Laravel Query Builder with Spatie QueryBuilder for filters
+            $matrixQuery = QueryBuilder::for(LoanRule::class)
+                ->allowedFilters([
+                    AllowedFilter::callback('loan_type_id', function ($query, $value) {
+                        $query->whereHas('experience.loanType', function ($q) use ($value) {
+                            $q->where('id', $value);
+                        });
+                    }),
+                    AllowedFilter::exact('experience_id'),
+                    AllowedFilter::exact('fico_band_id'),
+                    AllowedFilter::exact('transaction_type_id'),
+                ])
+                ->with([
+                    'experience.loanType',
+                    'ficoBand',
+                    'transactionType',
+                    'rehabLimits.rehabLevel',
+                    'pricings.pricingTier'
+                ])
+                ->join('experiences', 'loan_rules.experience_id', '=', 'experiences.id')
+                ->join('fico_bands', 'loan_rules.fico_band_id', '=', 'fico_bands.id')
+                ->orderByRaw("
+                    CASE experiences.experiences_range
+                        WHEN '0' THEN 0 
+                        WHEN '1-2' THEN 1 
+                        WHEN '3-4' THEN 2 
+                        WHEN '5-9' THEN 3 
+                        WHEN '10+' THEN 4 
+                        ELSE 99
+                    END
+                ")
+                ->orderBy('fico_bands.fico_min')
+                ->orderBy('fico_bands.fico_max')
+                ->select('loan_rules.*');
 
-                  /* Rehab Limits (pivot) */
-                  MAX(CASE WHEN rl.name = 'LIGHT REHAB' THEN l.max_ltc END) AS light_ltc,
-                  MAX(CASE WHEN rl.name = 'LIGHT REHAB' THEN l.max_ltv END) AS light_ltv,
+            $loanRules = $matrixQuery->get();
 
-                  MAX(CASE WHEN rl.name = 'MODERATE REHAB' THEN l.max_ltc END) AS moderate_ltc,
-                  MAX(CASE WHEN rl.name = 'MODERATE REHAB' THEN l.max_ltv END) AS moderate_ltv,
+            // Transform the data to match the matrix format
+            $matrixData = $loanRules->map(function ($rule) {
+                // Get rehab limits grouped by rehab level
+                $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
 
-                  MAX(CASE WHEN rl.name = 'HEAVY REHAB' THEN l.max_ltc END) AS heavy_ltc,
-                  MAX(CASE WHEN rl.name = 'HEAVY REHAB' THEN l.max_ltv END) AS heavy_ltv,
+                // Get pricing data grouped by pricing tier
+                $pricings = $rule->pricings->keyBy('pricingTier.price_range');
 
-                  MAX(CASE WHEN rl.name = 'EXTENSIVE REHAB' THEN l.max_ltc END) AS extensive_ltc,
-                  MAX(CASE WHEN rl.name = 'EXTENSIVE REHAB' THEN l.max_ltv END) AS extensive_ltv,
-                  MAX(CASE WHEN rl.name = 'EXTENSIVE REHAB' THEN l.max_ltfc END) AS extensive_ltfc,
+                return (object) [
+                    'loan_type' => $rule->experience->loanType->name ?? 'N/A',
+                    'experience' => $rule->experience->experiences_range ?? 'N/A',
+                    'fico' => $rule->ficoBand->fico_range ?? 'N/A',
+                    'transaction_type' => $rule->transactionType->name ?? 'N/A',
+                    'max_total_loan' => $rule->max_total_loan,
+                    'max_budget' => $rule->max_budget,
 
-                  /* Pricing (pivot) */
-                  MAX(CASE WHEN pt.price_range = '<250k' THEN p.interest_rate END) AS ir_lt_250k,
-                  MAX(CASE WHEN pt.price_range = '<250k' THEN p.lender_points END) AS lp_lt_250k,
+                    // Light Rehab
+                    'light_ltc' => $rehabLimits->get('LIGHT REHAB')?->max_ltc,
+                    'light_ltv' => $rehabLimits->get('LIGHT REHAB')?->max_ltv,
 
-                  MAX(CASE WHEN pt.price_range = '250-500k' THEN p.interest_rate END) AS ir_250_500k,
-                  MAX(CASE WHEN pt.price_range = '250-500k' THEN p.lender_points END) AS lp_250_500k,
+                    // Moderate Rehab
+                    'moderate_ltc' => $rehabLimits->get('MODERATE REHAB')?->max_ltc,
+                    'moderate_ltv' => $rehabLimits->get('MODERATE REHAB')?->max_ltv,
 
-                  MAX(CASE WHEN pt.price_range = '>=500k' THEN p.interest_rate END) AS ir_gte_500k,
-                  MAX(CASE WHEN pt.price_range = '>=500k' THEN p.lender_points END) AS lp_gte_500k
+                    // Heavy Rehab
+                    'heavy_ltc' => $rehabLimits->get('HEAVY REHAB')?->max_ltc,
+                    'heavy_ltv' => $rehabLimits->get('HEAVY REHAB')?->max_ltv,
 
-                FROM loan_rules r
-                JOIN experiences e ON e.id = r.experience_id
-                JOIN fico_bands f ON f.id = r.fico_band_id
-                JOIN transaction_types t ON t.id = r.transaction_type_id
-                LEFT JOIN rehab_limits l ON l.loan_rule_id = r.id
-                LEFT JOIN rehab_levels rl ON rl.id = l.rehab_level_id
-                LEFT JOIN pricings p ON p.loan_rule_id = r.id
-                LEFT JOIN pricing_tiers pt ON pt.id = p.pricing_tier_id
+                    // Extensive Rehab
+                    'extensive_ltc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltc,
+                    'extensive_ltv' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltv,
+                    'extensive_ltfc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltfc,
 
-                GROUP BY r.id, e.experiences_range, f.fico_range, t.name, r.max_total_loan, r.max_budget
-                ORDER BY
-                  /* Order by experience in your preferred numeric sense, then fico */
-                  CASE e.experiences_range
-                    WHEN '0' THEN 0 WHEN '1-2' THEN 1 WHEN '3-4' THEN 2 WHEN '5-9' THEN 3 WHEN '10+' THEN 4 ELSE 99
-                  END,
-                  f.fico_min, f.fico_max
-            ");
+                    // Pricing < $250k
+                    'ir_lt_250k' => $pricings->get('<250k')?->interest_rate,
+                    'lp_lt_250k' => $pricings->get('<250k')?->lender_points,
 
-            return view('loan-programs.index', compact('matrixData'));
+                    // Pricing $250k-$500k
+                    'ir_250_500k' => $pricings->get('250-500k')?->interest_rate,
+                    'lp_250_500k' => $pricings->get('250-500k')?->lender_points,
+
+                    // Pricing ≥ $500k
+                    'ir_gte_500k' => $pricings->get('>=500k')?->interest_rate,
+                    'lp_gte_500k' => $pricings->get('>=500k')?->lender_points,
+                ];
+            });
+
+            // Get data for filter dropdowns
+            $loanTypes = LoanType::orderBy('name')->get(['id', 'name']);
+            $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
+            $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
+
+            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'ficoBands', 'transactionTypes'));
 
         } catch (\Exception $e) {
             // If there's an error, return to dashboard with error message
             return redirect()->route('dashboard')
-                ->with('error', 'Failed to load loan matrix data. Please try again.');
+                ->with('error', 'Failed to load loan matrix data. Please try again. Error: ' . $e->getMessage());
         }
     }
 
