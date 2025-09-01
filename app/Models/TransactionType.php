@@ -12,7 +12,10 @@ class TransactionType extends Model
     /** @use HasFactory<\Database\Factories\TransactionTypeFactory> */
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-    ];
+    protected $fillable = ['name'];
+
+    public function loanRules()
+    {
+        return $this->hasMany(LoanRule::class);
+    }
 }

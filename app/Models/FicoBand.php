@@ -9,4 +9,10 @@ class FicoBand extends Model
 {
     /** @use HasFactory<\Database\Factories\FicoBandFactory> */
     use HasFactory;
+    protected $fillable = ['fico_range', 'fico_min', 'fico_max'];
+
+    public function loanRules()
+    {
+        return $this->hasMany(LoanRule::class);
+    }
 }
