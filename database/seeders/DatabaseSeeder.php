@@ -23,9 +23,18 @@ class DatabaseSeeder extends Seeder
         // Seed lookup tables
         $this->call([
             LoanTypeSeeder::class,
-            TransactionTypeSeeder::class,
             PropertyTypeSeeder::class,
             StateSeeder::class,
+            ExperienceSeeder::class,
+            FicoBandSeeder::class,
+            TransactionTypeSeeder::class,
+            LoanRuleSeeder::class,
+            RehabLevelSeeder::class,
+            RehabLimitSeeder::class,
+            PricingTierSeeder::class,
+            PricingSeeder::class,
+
+
             //RateMatrixSeeder::class,
         ]);
     }

@@ -13,13 +13,11 @@ class TransactionTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $transactionTypes = [
-            'Purchase',
-            'Refinance',
+        $types = [
+            ['name' => 'Purchase'],
+            ['name' => 'Refinance'],
         ];
 
-        foreach ($transactionTypes as $transactionType) {
-            TransactionType::firstOrCreate(['name' => $transactionType]);
-        }
+        TransactionType::upsert($types, ['name']);
     }
 }
