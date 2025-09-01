@@ -72,7 +72,7 @@
                         @if (count($matrixData) > 0)
                         @foreach ($matrixData as $loanType => $rows)
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="20" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="21" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 {{ $loanType }}
                             </th>
                         </tr>
@@ -96,6 +96,9 @@
 
                             <!-- Interest Rate Pricing -->
                             <th class="py-2 px-1 text-center border border-white" colspan="6">INTEREST RATE PRICING</th>
+
+                            <!-- Actions -->
+                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Actions</th>
                         </tr>
                         <tr class="bg-green-700 text-white text-xs">
                             <!-- Rehab Sub-headers -->
@@ -196,6 +199,14 @@
                                 $row->ir_gte_500k . '%' : 'N/A' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->lp_gte_500k ?
                                 $row->lp_gte_500k : 'N/A' }}</td>
+
+                            <!-- Actions -->
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                <a href="{{ route('loan-programs.edit', $row->loan_rule_id ?? 0) }}"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
+                                    Edit
+                                </a>
+                            </td>
                         </tr>
                         @endforeach
                         @endforeach
