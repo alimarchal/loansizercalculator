@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('experiences', function (Blueprint $table) {
             $table->id();
+            $table->foreignId(column: 'loan_type_id')->constrained()->cascadeOnUpdate();
             $table->string('experiences_range')->nullable();
             $table->integer('min_experience')->nullable();
             $table->integer('max_experience')->nullable();
