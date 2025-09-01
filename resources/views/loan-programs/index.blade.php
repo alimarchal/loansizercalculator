@@ -69,8 +69,7 @@
                 <table class="min-w-max w-full table-auto text-xs border-collapse">
                     <thead>
                         <tr class="bg-green-800 text-white uppercase text-xs">
-                            <!-- Basic Info -->
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Loan Type</th>
+                            <!-- Basic Info (removed Loan Type column) -->
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">Experience</th>
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">FICO</th>
                             <th class="py-2 px-1 text-center border border-white" rowspan="2">Transaction Type</th>
@@ -124,12 +123,20 @@
                         </tr>
                     </thead>
                     <tbody class="text-black text-xs leading-normal">
-                        @foreach ($matrixData as $row)
+                        @foreach ($matrixData as $loanType => $rows)
+                        <!-- Loan Type Section Header -->
+                        <tr class="bg-blue-100 border-t-2 border-blue-300">
+                            <td colspan="19"
+                                class="py-3 px-4 text-center font-bold text-lg text-blue-800 border border-gray-300">
+                                {{ $loanType }}
+                            </td>
+                        </tr>
+
+                        <!-- Matrix Data Rows for this Loan Type -->
+                        @foreach ($rows as $row)
                         <tr
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
-                            <!-- Basic Info -->
-                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->loan_type ??
-                                'N/A' }}</td>
+                            <!-- Basic Info (removed Loan Type column) -->
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->experience
                                 ?? 'N/A' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->fico ??
@@ -185,6 +192,7 @@
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->lp_gte_500k ?
                                 $row->lp_gte_500k : 'N/A' }}</td>
                         </tr>
+                        @endforeach
                         @endforeach
                     </tbody>
                 </table>

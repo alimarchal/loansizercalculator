@@ -111,7 +111,15 @@ class LoanProgramController extends Controller
                 ];
             });
 
-            // Get data for filter dropdowns
+            // Group data by loan type and add rowspan information
+            $groupedData = $matrixData->groupBy('loan_type');
+            $processedData = [];
+
+            foreach ($groupedData as $loanType => $rows) {
+                $processedData[$loanType] = $rows;
+            }
+
+            $matrixData = $processedData;            // Get data for filter dropdowns
             $loanTypes = LoanType::orderBy('name')->get(['id', 'name']);
             $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
             $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
