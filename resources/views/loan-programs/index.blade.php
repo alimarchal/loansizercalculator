@@ -1,7 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight inline-block">
+            @if($isQuickSearch)
+            Search Results
+            @if(isset($searchInfo['credit_score']))
+            - Credit Score: {{ $searchInfo['credit_score'] }}
+            @endif
+            @if(isset($searchInfo['experience_years']))
+            - Experience: {{ $searchInfo['experience_years'] }} years
+            @endif
+            @else
             Loan Programs Matrix
+            @endif
         </h2>
 
         <div class="flex justify-center items-center float-right">
@@ -40,6 +50,52 @@
             style="display: none">
             <div class="p-6">
                 <form method="GET" action="{{ route('loan-programs.index') }}">
+                    <!-- Quick Search Section -->
+                    <div
+                        class="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">Quick Loan Rule Finder
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Credit Score Input -->
+                            <div class="form-group">
+                                <label for="credit_score"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Credit Score (FICO)
+                                </label>
+                                <input type="number" name="credit_score" id="credit_score"
+                                    value="{{ request('credit_score') }}" min="300" max="850"
+                                    placeholder="Enter your credit score (e.g., 700)"
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <small class="text-gray-500 dark:text-gray-400">Range: 300-850</small>
+                            </div>
+
+                            <!-- Experience Years Input -->
+                            <div class="form-group">
+                                <label for="experience_years"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Years of Experience
+                                </label>
+                                <input type="number" name="experience_years" id="experience_years"
+                                    value="{{ request('experience_years') }}" min="0" max="50"
+                                    placeholder="Enter years of experience (e.g., 3)"
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <small class="text-gray-500 dark:text-gray-400">Enter 0 for no experience, 10+ for
+                                    experienced</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                Find Matching Rules
+                            </button>
+                            <a href="{{ route('loan-programs.index') }}"
+                                class="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                Clear Search
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Filters Section -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <!-- Filter by Loan Program -->
                         <div class="form-group">
@@ -114,10 +170,44 @@
                     <thead>
                         <!-- Dynamic Header for Loan Program -->
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="21" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="20" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                                @if($isQuickSearch)
+                                Search Results - Fix and Flip
+                                @if(isset($searchInfo['credit_score']))
+                                (Credit Score: {{ $searchInfo['credit_score'] }})
+                                @endif
+                                @if(isset($searchInfo['experience_years']))
+                                (Experience: {{ $searchInfo['experience_years'] }} years)
+                                @endif
+                                @else
                                 Fix and Flip - {{ $currentLoanProgram }}
+                                @endif
                             </th>
                         </tr>
+
+                        @if($isQuickSearch && count($matrixData) > 0)
+                        <!-- Search Result Summary -->
+                        <tr class="bg-blue-100 dark:bg-blue-900">
+                            <th colspan="20"
+                                class="py-2 px-4 text-center text-blue-800 dark:text-blue-200 border border-gray-300">
+                                @if(count($matrixData) > 0)
+                                @php $firstRow = collect($matrixData)->flatten()->first(); @endphp
+                                @if($firstRow)
+                                Found matching rules:
+                                @if(isset($searchInfo['credit_score']))
+                                FICO Range: {{ $firstRow->fico }} |
+                                @endif
+                                @if(isset($searchInfo['experience_years']))
+                                Experience Range: {{ $firstRow->experience }}
+                                @endif
+                                @if($firstRow->loan_program)
+                                | Program: {{ $firstRow->loan_program }}
+                                @endif
+                                @endif
+                                @endif
+                            </th>
+                        </tr>
+                        @endif
 
                         <tr class="bg-green-800 text-white uppercase text-xs">
                             <!-- Basic Info (removed Loan Type column) -->

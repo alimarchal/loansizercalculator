@@ -57,8 +57,20 @@ class LoanProgramController extends Controller
                 ->join('experiences', 'loan_rules.experience_id', '=', 'experiences.id')
                 ->join('fico_bands', 'loan_rules.fico_band_id', '=', 'fico_bands.id')
                 ->join('loan_types', 'experiences.loan_type_id', '=', 'loan_types.id')
-                // Filter by FULL APPRAISAL by default unless loan_program filter is specified
-                ->when(!$request->has('filter.loan_program'), function ($query) {
+                // Handle credit score search
+                ->when($request->has('credit_score') && $request->credit_score, function ($query) use ($request) {
+                    $creditScore = (int) $request->credit_score;
+                    $query->where('fico_bands.fico_min', '<=', $creditScore)
+                        ->where('fico_bands.fico_max', '>=', $creditScore);
+                })
+                // Handle experience years search
+                ->when($request->has('experience_years') && is_numeric($request->experience_years), function ($query) use ($request) {
+                    $experienceYears = (int) $request->experience_years;
+                    $query->where('experiences.min_experience', '<=', $experienceYears)
+                        ->where('experiences.max_experience', '>=', $experienceYears);
+                })
+                // Filter by FULL APPRAISAL by default unless loan_program filter is specified or quick search is used
+                ->when(!$request->has('filter.loan_program') && !$request->has('credit_score') && !$request->has('experience_years'), function ($query) {
                     $query->where('loan_types.loan_program', 'FULL APPRAISAL');
                 })
                 ->orderByRaw("
@@ -147,7 +159,19 @@ class LoanProgramController extends Controller
             // Determine current loan program for header
             $currentLoanProgram = $request->get('filter.loan_program', 'FULL APPRAISAL');
 
-            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'ficoBands', 'transactionTypes', 'currentLoanProgram'));
+            // Check if this is a quick search
+            $isQuickSearch = $request->has('credit_score') || $request->has('experience_years');
+            $searchInfo = [];
+            if ($isQuickSearch) {
+                if ($request->credit_score) {
+                    $searchInfo['credit_score'] = $request->credit_score;
+                }
+                if ($request->experience_years !== null && $request->experience_years !== '') {
+                    $searchInfo['experience_years'] = $request->experience_years;
+                }
+            }
+
+            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'ficoBands', 'transactionTypes', 'currentLoanProgram', 'isQuickSearch', 'searchInfo'));
 
         } catch (\Exception $e) {
             // If there's an error, return to dashboard with error message
