@@ -25,7 +25,8 @@ class LoanTypePropertyTypeSeeder extends Seeder
         $desktopPropertyTypes = \App\Models\PropertyType::whereIn('name', [
             'Single Family',
             'Condo',
-            'Townhome'
+            'Townhome',
+            '2-4 Unit'
         ])->get();
 
         // Full Appraisal Fix & Flip - all property types
