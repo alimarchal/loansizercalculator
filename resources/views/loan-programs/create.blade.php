@@ -84,8 +84,10 @@
                                         @foreach($experiences as $experience)
                                         <option value="{{ $experience->id }}" {{ old('experience_id')==$experience->id ?
                                             'selected' : '' }}>
-                                            {{ $experience->experiences_range }} ({{ $experience->loanType->name ??
-                                            'N/A' }})
+                                            {{ $experience->experiences_range }}
+                                            ({{ $experience->loanType->name ?? 'N/A' }}{{
+                                            $experience->loanType->loan_program ? ' - ' .
+                                            $experience->loanType->loan_program : '' }})
                                         </option>
                                         @endforeach
                                     </select>
@@ -372,7 +374,7 @@
                                 <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Basic Information</h4>
                                 <ul class="text-gray-600 dark:text-gray-400 space-y-1">
                                     <li>• Choose the borrower's experience level</li>
-                                    <li>• Select appropriate FICO score range</li>
+                                    <li>• Select loan type and program (Full/Desktop Appraisal)</li>
                                     <li>• Pick transaction type (Purchase/Refinance)</li>
                                     <li>• Set maximum loan and budget amounts</li>
                                 </ul>

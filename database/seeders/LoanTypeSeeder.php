@@ -14,13 +14,17 @@ class LoanTypeSeeder extends Seeder
     public function run(): void
     {
         $loanTypes = [
-            'Fix and Flip',
-            'New Construction',
-            'DSCR Rental',
+            ['name' => 'Fix and Flip', 'loan_program' => 'FULL APPRAISAL'],
+            ['name' => 'Fix and Flip', 'loan_program' => 'DESKTOP APPRAISAL'],
+            ['name' => 'New Construction', 'loan_program' => null],
+            ['name' => 'DSCR Rental', 'loan_program' => null],
         ];
 
         foreach ($loanTypes as $loanType) {
-            LoanType::firstOrCreate(['name' => $loanType]);
+            LoanType::firstOrCreate([
+                'name' => $loanType['name'],
+                'loan_program' => $loanType['loan_program']
+            ]);
         }
     }
 }

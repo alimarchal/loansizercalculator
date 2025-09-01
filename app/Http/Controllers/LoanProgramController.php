@@ -78,6 +78,10 @@ class LoanProgramController extends Controller
                 return (object) [
                     'loan_rule_id' => $rule->id,
                     'loan_type' => $rule->experience->loanType->name ?? 'N/A',
+                    'loan_program' => $rule->experience->loanType->loan_program ?? null,
+                    'display_name' => $rule->experience->loanType->loan_program
+                        ? ($rule->experience->loanType->name . ' - ' . $rule->experience->loanType->loan_program)
+                        : ($rule->experience->loanType->name ?? 'N/A'),
                     'experience' => $rule->experience->experiences_range ?? 'N/A',
                     'fico' => $rule->ficoBand->fico_range ?? 'N/A',
                     'transaction_type' => $rule->transactionType->name ?? 'N/A',
@@ -115,12 +119,12 @@ class LoanProgramController extends Controller
                 ];
             });
 
-            // Group data by loan type and add rowspan information
-            $groupedData = $matrixData->groupBy('loan_type');
+            // Group data by display_name (loan type + program) instead of just loan_type
+            $groupedData = $matrixData->groupBy('display_name');
             $processedData = [];
 
-            foreach ($groupedData as $loanType => $rows) {
-                $processedData[$loanType] = $rows;
+            foreach ($groupedData as $displayName => $rows) {
+                $processedData[$displayName] = $rows;
             }
 
             $matrixData = $processedData;            // Get data for filter dropdowns

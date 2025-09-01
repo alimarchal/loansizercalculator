@@ -97,7 +97,7 @@
                         @if (count($matrixData) > 0)
                         @foreach ($matrixData as $loanType => $rows)
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="22" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="21" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 {{ $loanType }}
                             </th>
                         </tr>
@@ -168,8 +168,12 @@
                         <tr
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
                             <!-- Basic Info (added Loan Type column back) -->
-                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->loan_type ??
-                                'N/A' }}</td>
+                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">
+                                {{ $row->loan_type ?? 'N/A' }}
+                                @if($row->loan_program)
+                                <br><span class="text-xs text-gray-600">{{ $row->loan_program }}</span>
+                                @endif
+                            </td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->experience
                                 ?? 'N/A' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->fico ??

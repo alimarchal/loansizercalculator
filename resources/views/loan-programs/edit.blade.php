@@ -41,8 +41,10 @@
                                         @foreach($experiences as $experience)
                                         <option value="{{ $experience->id }}" {{ old('experience_id', $loanRule->
                                             experience_id) == $experience->id ? 'selected' : '' }}>
-                                            {{ $experience->experiences_range }} ({{ $experience->loanType->name ??
-                                            'N/A' }})
+                                            {{ $experience->experiences_range }}
+                                            ({{ $experience->loanType->name ?? 'N/A' }}{{
+                                            $experience->loanType->loan_program ? ' - ' .
+                                            $experience->loanType->loan_program : '' }})
                                         </option>
                                         @endforeach
                                     </select>
