@@ -77,6 +77,31 @@
                         <x-transaction-type-select :transactionTypes="$transactionTypes" />
                     </div>
 
+                    <!-- Loan Type Restrictions Info -->
+                    <div id="loan-type-restrictions" class="mt-6 hidden">
+                        <div
+                            class="border border-gray-200 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                            <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">Selected Loan Program
+                                Restrictions</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h5 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Available States:</h5>
+                                    <div id="available-states"
+                                        class="text-sm text-gray-600 dark:text-gray-400 max-h-32 overflow-y-auto border border-gray-300 dark:border-gray-500 rounded p-2 bg-white dark:bg-gray-800">
+                                        Select a loan program to view available states
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Property Types:</h5>
+                                    <div id="available-property-types"
+                                        class="text-sm text-gray-600 dark:text-gray-400 max-h-32 overflow-y-auto border border-gray-300 dark:border-gray-500 rounded p-2 bg-white dark:bg-gray-800">
+                                        Select a loan program to view available property types
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Submit Button -->
                     <x-filter-buttons />
                 </form>
@@ -333,6 +358,60 @@
         const style = document.createElement('style');
         style.textContent = `#filters {transition: opacity 0.3s ease, transform 0.3s ease;}`;
         document.head.appendChild(style);
+
+        // Handle loan type selection for restrictions
+        const loanTypeSelect = document.getElementById('loan_type');
+        const restrictionsDiv = document.getElementById('loan-type-restrictions');
+        const statesDiv = document.getElementById('available-states');
+        const propertyTypesDiv = document.getElementById('available-property-types');
+
+        if (loanTypeSelect) {
+            loanTypeSelect.addEventListener('change', function() {
+                const loanTypeId = this.value;
+                
+                if (!loanTypeId) {
+                    restrictionsDiv.classList.add('hidden');
+                    return;
+                }
+                
+                // Show loading state
+                statesDiv.innerHTML = 'Loading...';
+                propertyTypesDiv.innerHTML = 'Loading...';
+                restrictionsDiv.classList.remove('hidden');
+                
+                // Fetch restrictions
+                fetch(`{{ route('loan-programs.restrictions') }}?loan_type_id=${loanTypeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            statesDiv.innerHTML = `Error: ${data.error}`;
+                            propertyTypesDiv.innerHTML = `Error: ${data.error}`;
+                            return;
+                        }
+                        
+                        // Display states
+                        if (data.states && data.states.length > 0) {
+                            const statesList = data.states.map(state => `<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">${state.code}</span>`).join('');
+                            statesDiv.innerHTML = `<div class="flex flex-wrap">${statesList}</div><p class="text-xs text-gray-500 mt-2">${data.states.length} states available</p>`;
+                        } else {
+                            statesDiv.innerHTML = '<span class="text-red-500">No states available</span>';
+                        }
+                        
+                        // Display property types  
+                        if (data.property_types && data.property_types.length > 0) {
+                            const propertyTypesList = data.property_types.map(pt => `<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-1 mb-1">${pt.name}</span>`).join('');
+                            propertyTypesDiv.innerHTML = `<div class="flex flex-wrap">${propertyTypesList}</div><p class="text-xs text-gray-500 mt-2">${data.property_types.length} property types available</p>`;
+                        } else {
+                            propertyTypesDiv.innerHTML = '<span class="text-red-500">No property types available</span>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching restrictions:', error);
+                        statesDiv.innerHTML = 'Error loading states';
+                        propertyTypesDiv.innerHTML = 'Error loading property types';
+                    });
+            });
+        }
     </script>
     @endpush
 </x-app-layout>

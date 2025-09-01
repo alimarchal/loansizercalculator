@@ -6,7 +6,7 @@
         @if(isset($loanTypes))
         @foreach($loanTypes as $loanType)
         <option value="{{ $loanType->id }}" {{ request('filter.loan_type_id')==$loanType->id ? 'selected' : '' }}>
-            {{ $loanType->name }}
+            {{ $loanType->name }}{{ $loanType->loan_program ? ' - ' . $loanType->loan_program : '' }}
         </option>
         @endforeach
         @endif

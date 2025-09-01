@@ -21,4 +21,14 @@ class LoanType extends Model
     {
         return $this->hasMany(Experience::class);
     }
+
+    public function states()
+    {
+        return $this->belongsToMany(State::class, 'loan_type_states');
+    }
+
+    public function propertyTypes()
+    {
+        return $this->belongsToMany(PropertyType::class, 'loan_type_property_types');
+    }
 }

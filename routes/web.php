@@ -12,6 +12,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         return view('dashboard');
     })->name('dashboard');
 
+    // Loan program restrictions API - must be before resource route
+    Route::get('loan-programs/api/restrictions', [LoanProgramController::class, 'getLoanTypeRestrictions'])
+        ->name('loan-programs.restrictions');
+
     // Loan Program Matrix Routes
     Route::resource('loan-programs', LoanProgramController::class)->names([
         'index' => 'loan-programs.index',

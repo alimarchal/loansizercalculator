@@ -128,7 +128,9 @@ class LoanProgramController extends Controller
             }
 
             $matrixData = $processedData;            // Get data for filter dropdowns
-            $loanTypes = LoanType::orderBy('name')->get(['id', 'name']);
+            $loanTypes = LoanType::with(['states', 'propertyTypes'])
+                ->orderBy('name')
+                ->get(['id', 'name', 'loan_program']);
             $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
             $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
 
@@ -398,5 +400,43 @@ class LoanProgramController extends Controller
                 ->with('error', 'Error updating loan program: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    /**
+     * Get loan type restrictions (states and property types)
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLoanTypeRestrictions(Request $request)
+    {
+        $loanTypeId = $request->query('loan_type_id');
+
+        if (!$loanTypeId) {
+            return response()->json(['error' => 'Loan type ID is required'], 400);
+        }
+
+        $loanType = LoanType::with(['states', 'propertyTypes'])->find($loanTypeId);
+
+        if (!$loanType) {
+            return response()->json(['error' => 'Loan type not found'], 404);
+        }
+
+        return response()->json([
+            'states' => $loanType->states->map(function ($state) {
+                return [
+                    'id' => $state->id,
+                    'code' => $state->code,
+                    'name' => $state->code // Since we only have code, use it as name too
+                ];
+            }),
+            'property_types' => $loanType->propertyTypes->map(function ($propertyType) {
+                return [
+                    'id' => $propertyType->id,
+                    'name' => $propertyType->name
+                ];
+            }),
+            'loan_program' => $loanType->loan_program
+        ]);
     }
 }
