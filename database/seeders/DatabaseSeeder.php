@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             PricingSeeder::class,
             DesktopAppraisalLoanRuleSeeder::class, // Desktop Appraisal specific rules
             ExperiencedBuilderLoanRuleSeeder::class, // Experienced Builder specific rules
+            NewBuilderLoanRuleSeeder::class, // New Builder specific rules
 
                 // Relationship seeders (run after the base data)
             LoanTypeStateSeeder::class,

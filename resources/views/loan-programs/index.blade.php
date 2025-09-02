@@ -98,6 +98,10 @@
                                     request('filter.loan_program')=='EXPERIENCED BUILDER' ? 'selected' : '' }}>
                                     EXPERIENCED BUILDER
                                 </option>
+                                <option value="NEW BUILDER" {{ request('filter.loan_program')=='NEW BUILDER'
+                                    ? 'selected' : '' }}>
+                                    NEW BUILDER
+                                </option>
                             </select>
                         </div>
 
@@ -144,6 +148,7 @@
                                 'FULL APPRAISAL' => 'Fix and Flip - FULL APPRAISAL',
                                 'DESKTOP APPRAISAL' => 'Fix and Flip - DESKTOP APPRAISAL',
                                 'EXPERIENCED BUILDER' => 'New Construction - EXPERIENCED BUILDER',
+                                'NEW BUILDER' => 'New Construction - NEW BUILDER',
                                 default => 'Fix and Flip - FULL APPRAISAL'
                                 };
                                 @endphp

@@ -193,16 +193,16 @@ class LoanTypeStateSeeder extends Seeder
             $experiencedBuilder->states()->syncWithoutDetaching($stateIds);
         }
 
-        // NEW BUILDER can use same as Full Appraisal states
+        // NEW BUILDER can use same as EXPERIENCED BUILDER states
         if ($newBuilder) {
             $stateIds = [];
-            foreach ($fullAppraisalStates as $stateCode) {
+            foreach ($experiencedBuilderStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
                     $stateIds[] = $state->id;
                 }
             }
-            $newBuilder->states()->syncWithoutDetaching($stateIds);
+            $newBuilder->states()->sync($stateIds);
         }
 
         if ($dscrRental) {

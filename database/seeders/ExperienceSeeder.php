@@ -15,8 +15,9 @@ class ExperienceSeeder extends Seeder
         $fullAppraisalId = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'FULL APPRAISAL')->first()?->id;
         $desktopAppraisalId = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'DESKTOP APPRAISAL')->first()?->id;
 
-        // Get the loan type ID for New Construction - Experienced Builder program
+        // Get the loan type IDs for New Construction programs
         $experiencedBuilderId = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first()?->id;
+        $newBuilderId = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first()?->id;
 
         $experienceRanges = [
             ['experiences_range' => '0', 'min_experience' => 0, 'max_experience' => 0],
@@ -45,6 +46,13 @@ class ExperienceSeeder extends Seeder
         if ($experiencedBuilderId) {
             foreach ($experienceRanges as $range) {
                 $data[] = array_merge(['loan_type_id' => $experiencedBuilderId], $range);
+            }
+        }
+
+        // Create experiences for New Construction - New Builder program
+        if ($newBuilderId) {
+            foreach ($experienceRanges as $range) {
+                $data[] = array_merge(['loan_type_id' => $newBuilderId], $range);
             }
         }
 

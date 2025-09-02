@@ -48,10 +48,10 @@ class LoanTypePropertyTypeSeeder extends Seeder
             $experiencedBuilder->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
         }
 
-        // NEW BUILDER New Construction - all property types
+        // NEW BUILDER New Construction - limited property types (same as EXPERIENCED BUILDER)
         if ($newBuilder) {
-            $propertyTypeIds = $allPropertyTypes->pluck('id')->toArray();
-            $newBuilder->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
+            $propertyTypeIds = $limitedPropertyTypes->pluck('id')->toArray();
+            $newBuilder->propertyTypes()->sync($propertyTypeIds);
         }
 
         if ($dscrRental) {
