@@ -94,8 +94,8 @@
                                     ? 'selected' : '' }}>
                                     DESKTOP APPRAISAL
                                 </option>
-                                <option value="EXPERIENCED BUILDER" {{ request('filter.loan_program')=='EXPERIENCED BUILDER'
-                                    ? 'selected' : '' }}>
+                                <option value="EXPERIENCED BUILDER" {{
+                                    request('filter.loan_program')=='EXPERIENCED BUILDER' ? 'selected' : '' }}>
                                     EXPERIENCED BUILDER
                                 </option>
                             </select>
@@ -140,12 +140,12 @@
                                 @endif
                                 @else
                                 @php
-                                    $headerText = match($currentLoanProgram) {
-                                        'FULL APPRAISAL' => 'Fix and Flip - FULL APPRAISAL',
-                                        'DESKTOP APPRAISAL' => 'Fix and Flip - DESKTOP APPRAISAL', 
-                                        'EXPERIENCED BUILDER' => 'New Construction - EXPERIENCED BUILDER',
-                                        default => 'Fix and Flip - FULL APPRAISAL'
-                                    };
+                                $headerText = match($currentLoanProgram) {
+                                'FULL APPRAISAL' => 'Fix and Flip - FULL APPRAISAL',
+                                'DESKTOP APPRAISAL' => 'Fix and Flip - DESKTOP APPRAISAL',
+                                'EXPERIENCED BUILDER' => 'New Construction - EXPERIENCED BUILDER',
+                                default => 'Fix and Flip - FULL APPRAISAL'
+                                };
                                 @endphp
                                 {{ $headerText }}
                                 @endif

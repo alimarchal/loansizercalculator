@@ -14,7 +14,7 @@ class ExperienceSeeder extends Seeder
         // Get the loan type IDs for Fix and Flip programs
         $fullAppraisalId = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'FULL APPRAISAL')->first()?->id;
         $desktopAppraisalId = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'DESKTOP APPRAISAL')->first()?->id;
-        
+
         // Get the loan type ID for New Construction - Experienced Builder program
         $experiencedBuilderId = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first()?->id;
 
@@ -40,7 +40,7 @@ class ExperienceSeeder extends Seeder
                 $data[] = array_merge(['loan_type_id' => $desktopAppraisalId], $range);
             }
         }
-        
+
         // Create experiences for New Construction - Experienced Builder program
         if ($experiencedBuilderId) {
             foreach ($experienceRanges as $range) {
