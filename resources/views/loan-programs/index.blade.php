@@ -94,6 +94,10 @@
                                     ? 'selected' : '' }}>
                                     DESKTOP APPRAISAL
                                 </option>
+                                <option value="EXPERIENCED BUILDER" {{ request('filter.loan_program')=='EXPERIENCED BUILDER'
+                                    ? 'selected' : '' }}>
+                                    EXPERIENCED BUILDER
+                                </option>
                             </select>
                         </div>
 
@@ -127,7 +131,7 @@
                         <tr class="bg-green-800 text-white uppercase">
                             <th colspan="20" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 @if($isQuickSearch)
-                                Search Results - Fix and Flip
+                                Search Results
                                 @if(isset($searchInfo['credit_score']))
                                 (Credit Score: {{ $searchInfo['credit_score'] }})
                                 @endif
@@ -135,7 +139,15 @@
                                 (Experience: {{ $searchInfo['experience_years'] }} years)
                                 @endif
                                 @else
-                                Fix and Flip - {{ $currentLoanProgram }}
+                                @php
+                                    $headerText = match($currentLoanProgram) {
+                                        'FULL APPRAISAL' => 'Fix and Flip - FULL APPRAISAL',
+                                        'DESKTOP APPRAISAL' => 'Fix and Flip - DESKTOP APPRAISAL', 
+                                        'EXPERIENCED BUILDER' => 'New Construction - EXPERIENCED BUILDER',
+                                        default => 'Fix and Flip - FULL APPRAISAL'
+                                    };
+                                @endphp
+                                {{ $headerText }}
                                 @endif
                             </th>
                         </tr>
