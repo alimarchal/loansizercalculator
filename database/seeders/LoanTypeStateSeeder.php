@@ -102,49 +102,118 @@ class LoanTypeStateSeeder extends Seeder
             'WY'
         ];
 
+        $experiencedBuilderStates = [
+            'AL',
+            'AK',
+            'AZ',
+            'CA',
+            'CO',
+            'CT',
+            'DE',
+            'DC',
+            'FL',
+            'GA',
+            'IL',
+            'IN',
+            'KY',
+            'LA',
+            'ME',
+            'NH',
+            'NJ',
+            'NM',
+            'NY',
+            'NC',
+            'OH',
+            'OK',
+            'MD',
+            'MA',
+            'MI',
+            'MS',
+            'MO',
+            'PA',
+            'RI',
+            'SC',
+            'TN',
+            'TX',
+            'UT',
+            'VA',
+            'WA',
+            'WV',
+            'WI',
+            'IA',
+            'ID',
+            'KS',
+            'MN',
+            'MT',
+            'NE',
+            'OR',
+            'WY'
+        ];
+
         // Get loan types
         $fixFlipFull = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'FULL APPRAISAL')->first();
         $fixFlipDesktop = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'DESKTOP APPRAISAL')->first();
-        $newConstruction = \App\Models\LoanType::where('name', 'New Construction')->first();
+        $experiencedBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first();
+        $newBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first();
         $dscrRental = \App\Models\LoanType::where('name', 'DSCR Rental')->first();
 
         // Attach states to Full Appraisal Fix & Flip
         if ($fixFlipFull) {
+            $stateIds = [];
             foreach ($fullAppraisalStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
-                    $fixFlipFull->states()->attach($state->id);
+                    $stateIds[] = $state->id;
                 }
             }
+            $fixFlipFull->states()->syncWithoutDetaching($stateIds);
         }
 
         // Attach states to Desktop Appraisal Fix & Flip
         if ($fixFlipDesktop) {
+            $stateIds = [];
             foreach ($desktopAppraisalStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
-                    $fixFlipDesktop->states()->attach($state->id);
+                    $stateIds[] = $state->id;
                 }
             }
+            $fixFlipDesktop->states()->syncWithoutDetaching($stateIds);
         }
 
-        // New Construction and DSCR can use same as Full Appraisal states
-        if ($newConstruction) {
+        // Attach states to EXPERIENCED BUILDER New Construction
+        if ($experiencedBuilder) {
+            $stateIds = [];
+            foreach ($experiencedBuilderStates as $stateCode) {
+                $state = \App\Models\State::where('code', $stateCode)->first();
+                if ($state) {
+                    $stateIds[] = $state->id;
+                }
+            }
+            $experiencedBuilder->states()->syncWithoutDetaching($stateIds);
+        }
+
+        // NEW BUILDER can use same as Full Appraisal states
+        if ($newBuilder) {
+            $stateIds = [];
             foreach ($fullAppraisalStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
-                    $newConstruction->states()->attach($state->id);
+                    $stateIds[] = $state->id;
                 }
             }
+            $newBuilder->states()->syncWithoutDetaching($stateIds);
         }
 
         if ($dscrRental) {
+            $stateIds = [];
             foreach ($fullAppraisalStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
-                    $dscrRental->states()->attach($state->id);
+                    $stateIds[] = $state->id;
                 }
             }
+            $dscrRental->states()->syncWithoutDetaching($stateIds);
         }
     }
 }

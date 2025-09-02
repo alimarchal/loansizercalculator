@@ -15,14 +15,15 @@ class LoanTypePropertyTypeSeeder extends Seeder
         // Get loan types
         $fixFlipFull = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'FULL APPRAISAL')->first();
         $fixFlipDesktop = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'DESKTOP APPRAISAL')->first();
-        $newConstruction = \App\Models\LoanType::where('name', 'New Construction')->first();
+        $experiencedBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first();
+        $newBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first();
         $dscrRental = \App\Models\LoanType::where('name', 'DSCR Rental')->first();
 
         // Get all property types for Full Appraisal
         $allPropertyTypes = \App\Models\PropertyType::all();
 
-        // Desktop Appraisal property types (typically more limited)
-        $desktopPropertyTypes = \App\Models\PropertyType::whereIn('name', [
+        // Desktop Appraisal and EXPERIENCED BUILDER property types (limited set)
+        $limitedPropertyTypes = \App\Models\PropertyType::whereIn('name', [
             'Single Family',
             'Condo',
             'Townhome',
@@ -31,29 +32,31 @@ class LoanTypePropertyTypeSeeder extends Seeder
 
         // Full Appraisal Fix & Flip - all property types
         if ($fixFlipFull) {
-            foreach ($allPropertyTypes as $propertyType) {
-                $fixFlipFull->propertyTypes()->attach($propertyType->id);
-            }
+            $propertyTypeIds = $allPropertyTypes->pluck('id')->toArray();
+            $fixFlipFull->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
         }
 
         // Desktop Appraisal Fix & Flip - limited property types
         if ($fixFlipDesktop) {
-            foreach ($desktopPropertyTypes as $propertyType) {
-                $fixFlipDesktop->propertyTypes()->attach($propertyType->id);
-            }
+            $propertyTypeIds = $limitedPropertyTypes->pluck('id')->toArray();
+            $fixFlipDesktop->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
         }
 
-        // New Construction and DSCR - all property types
-        if ($newConstruction) {
-            foreach ($allPropertyTypes as $propertyType) {
-                $newConstruction->propertyTypes()->attach($propertyType->id);
-            }
+        // EXPERIENCED BUILDER New Construction - limited property types
+        if ($experiencedBuilder) {
+            $propertyTypeIds = $limitedPropertyTypes->pluck('id')->toArray();
+            $experiencedBuilder->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
+        }
+
+        // NEW BUILDER New Construction - all property types
+        if ($newBuilder) {
+            $propertyTypeIds = $allPropertyTypes->pluck('id')->toArray();
+            $newBuilder->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
         }
 
         if ($dscrRental) {
-            foreach ($allPropertyTypes as $propertyType) {
-                $dscrRental->propertyTypes()->attach($propertyType->id);
-            }
+            $propertyTypeIds = $allPropertyTypes->pluck('id')->toArray();
+            $dscrRental->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
         }
     }
 }
