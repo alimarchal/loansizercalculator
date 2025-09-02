@@ -16,8 +16,10 @@ class LoanTypeSeeder extends Seeder
         $loanTypes = [
             ['name' => 'Fix and Flip', 'loan_program' => 'FULL APPRAISAL'],
             ['name' => 'Fix and Flip', 'loan_program' => 'DESKTOP APPRAISAL'],
-            ['name' => 'New Construction', 'loan_program' => null],
+            ['name' => 'New Construction', 'loan_program' => 'EXPERIENCED BUILDER'],
+            ['name' => 'New Construction', 'loan_program' => 'NEW BUILDER'],
             ['name' => 'DSCR Rental', 'loan_program' => null],
+
         ];
 
         foreach ($loanTypes as $loanType) {
