@@ -187,7 +187,8 @@ class LoanMatrixApiController extends Controller
                     $applicableMaxLtfc,
                     $request->purchase_price ?: 0,
                     $request->rehab_budget ?: 0,
-                    $request->arv ?: 0
+                    $request->arv ?: 0,
+                    $rule->experience->loanType->name ?? null
                 );
 
                 // Determine pricing tier based on total loan amount and get rates
@@ -254,6 +255,7 @@ class LoanMatrixApiController extends Controller
                         'lender_points' => $pricingInfo['lender_points'],
                         'max_ltv' => $applicableMaxLtv,
                         'max_ltc' => $applicableMaxLtc,
+                        'max_ltfc' => $applicableMaxLtfc,
                         'percentage_max_ltv_max_ltc' => (float) number_format($rehabPercentage, 2, '.', ''),
                         'rehab_category' => $applicableRehabCategory,
                         'purchase_loan_up_to' => $loanCalculations['purchase_loan_up_to'],
@@ -416,9 +418,10 @@ class LoanMatrixApiController extends Controller
      * @param float $purchasePrice Property purchase price
      * @param float $rehabBudget Rehabilitation budget
      * @param float $arv After Repair Value
+     * @param string $loanType Loan type (Fix and Flip, New Construction, etc.)
      * @return array
      */
-    private function calculateLoanAmountsFromInputs($maxLtv, $maxLtc, $maxLtfc, $purchasePrice, $rehabBudget, $arv)
+    private function calculateLoanAmountsFromInputs($maxLtv, $maxLtc, $maxLtfc, $purchasePrice, $rehabBudget, $arv, $loanType = null)
     {
         // Initialize default values
         $totalLoanUpTo = 0;
@@ -434,9 +437,19 @@ class LoanMatrixApiController extends Controller
             // Calculate Max LTC Amount: (Max LTC % × Purchase Price) + Rehab Budget  
             $maxLtcAmount = (($maxLtc / 100) * $purchasePrice) + $rehabBudget;
 
-            // Apply loan calculation formula based on rehab budget vs purchase price
-            if ($rehabBudget >= $purchasePrice) {
-                // IF REHAB BUDGET >= PURCHASE PRICE
+            // Special calculation for New Construction when rehab budget > purchase price
+            if ($loanType === 'New Construction' && $rehabBudget > $purchasePrice) {
+                // For New Construction: Total Cost = Purchase Price + Rehab Budget
+                $totalCost = $purchasePrice + $rehabBudget;
+
+                // Calculate Max LTFC Amount: Max LTFC % × Total Cost
+                $maxLtfcAmount = ($maxLtfc / 100) * $totalCost;
+
+                // Get the minimum of Max LTV Amount and Max LTFC Amount
+                $totalLoanUpTo = min($maxLtvAmount, $maxLtfcAmount);
+
+            } elseif ($rehabBudget >= $purchasePrice) {
+                // Original logic for Fix and Flip when rehab budget >= purchase price
                 // MAX TOTAL LOAN = The Minimum of (Max LTV × ARV) & ((Max LTC × Purchase Price) + Rehab Budget) & (Max LTFC × (Purchase Price + Rehab Budget))
 
                 // Calculate Max LTFC Amount: Max LTFC % × (Purchase Price + Rehab Budget)
