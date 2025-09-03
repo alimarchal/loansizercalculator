@@ -15,8 +15,8 @@ class LoanCalculatorController extends Controller
      */
     public function index()
     {
-        // Get all dropdown options from database
-        $loanTypes = LoanType::select('id', 'name', 'loan_program')->get();
+        // Get all dropdown options from database - ensuring unique values
+        $loanTypes = LoanType::select('name')->distinct()->get();
         $transactionTypes = TransactionType::select('id', 'name')->get();
         $propertyTypes = PropertyType::select('id', 'name')->get();
         $states = State::select('id', 'code')->orderBy('code')->get();
