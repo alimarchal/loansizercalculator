@@ -155,6 +155,7 @@ class LoanMatrixApiController extends Controller
                 $applicableRehabCategory = 'LIGHT REHAB'; // Default
                 $applicableMaxLtv = 0;
                 $applicableMaxLtc = 0;
+                $applicableMaxLtfc = 0;
 
                 if ($request->purchase_price && $request->rehab_budget) {
                     $rehabPercentage = ($request->rehab_budget / $request->purchase_price) * 100;
@@ -170,14 +171,27 @@ class LoanMatrixApiController extends Controller
                         $applicableRehabCategory = 'EXTENSIVE REHAB'; // >100%
                     }
 
-                    // Get the max_ltv and max_ltc for the applicable rehab category
+                    // Get the max_ltv, max_ltc, and max_ltfc for the applicable rehab category
                     $applicableRehabLimit = $rehabLimits->get($applicableRehabCategory);
                     if ($applicableRehabLimit) {
                         $applicableMaxLtv = $applicableRehabLimit->max_ltv ? (float) number_format((float) $applicableRehabLimit->max_ltv, 2, '.', '') : 0.00;
                         $applicableMaxLtc = $applicableRehabLimit->max_ltc ? (float) number_format((float) $applicableRehabLimit->max_ltc, 2, '.', '') : 0.00;
+                        $applicableMaxLtfc = $applicableRehabLimit->max_ltfc ? (float) number_format((float) $applicableRehabLimit->max_ltfc, 2, '.', '') : 0.00;
                     }
                 }
 
+                // Calculate loan amounts using the loan calculation function
+                $loanCalculations = $this->calculateLoanAmountsFromInputs(
+                    $applicableMaxLtv,
+                    $applicableMaxLtc,
+                    $applicableMaxLtfc,
+                    $request->purchase_price ?: 0,
+                    $request->rehab_budget ?: 0,
+                    $request->arv ?: 0
+                );
+
+                // Determine pricing tier based on total loan amount and get rates
+                $pricingInfo = $this->getPricingByLoanAmount($pricings, $loanCalculations['total_loan_up_to'], $request->loan_term ?: 12);
                 return [
                     'loan_rule_id' => $rule->id,
                     'loan_type' => $rule->experience->loanType->name ?? 'N/A',
@@ -236,15 +250,15 @@ class LoanMatrixApiController extends Controller
                     // Additional loan type and loan program table data
                     'loan_type_and_loan_program_table' => [
                         'loan_term' => $request->loan_term ? $request->loan_term . ' Months' : '0 Months',
-                        'intrest_rate' => 0,
-                        'lender_points' => 0,
+                        'intrest_rate' => $pricingInfo['interest_rate'],
+                        'lender_points' => $pricingInfo['lender_points'],
                         'max_ltv' => $applicableMaxLtv,
                         'max_ltc' => $applicableMaxLtc,
                         'percentage_max_ltv_max_ltc' => (float) number_format($rehabPercentage, 2, '.', ''),
                         'rehab_category' => $applicableRehabCategory,
-                        'purchase_loan_up_to' => 0,
-                        'rehab_loan_up_to' => 0,
-                        'total_loan_up_to' => 0,
+                        'purchase_loan_up_to' => $loanCalculations['purchase_loan_up_to'],
+                        'rehab_loan_up_to' => $loanCalculations['rehab_loan_up_to'],
+                        'total_loan_up_to' => $loanCalculations['total_loan_up_to'],
                     ],
                 ];
             });
@@ -391,6 +405,116 @@ class LoanMatrixApiController extends Controller
             ->first();
 
         return $loanRule;
+    }
+
+    /**
+     * Calculate loan amounts based on the rule and inputs using business formulas
+     * 
+     * @param float $maxLtv Maximum Loan to Value percentage
+     * @param float $maxLtc Maximum Loan to Cost percentage  
+     * @param float $maxLtfc Maximum Loan to Future Cost percentage
+     * @param float $purchasePrice Property purchase price
+     * @param float $rehabBudget Rehabilitation budget
+     * @param float $arv After Repair Value
+     * @return array
+     */
+    private function calculateLoanAmountsFromInputs($maxLtv, $maxLtc, $maxLtfc, $purchasePrice, $rehabBudget, $arv)
+    {
+        // Initialize default values
+        $totalLoanUpTo = 0;
+        $purchaseLoanUpTo = 0;
+        $rehabLoanUpTo = 0;
+
+        // Only calculate if we have the required inputs
+        if ($purchasePrice > 0 && $arv > 0) {
+
+            // Calculate Max LTV Amount: Max LTV % × ARV
+            $maxLtvAmount = ($maxLtv / 100) * $arv;
+
+            // Calculate Max LTC Amount: (Max LTC % × Purchase Price) + Rehab Budget  
+            $maxLtcAmount = (($maxLtc / 100) * $purchasePrice) + $rehabBudget;
+
+            // Apply loan calculation formula based on rehab budget vs purchase price
+            if ($rehabBudget >= $purchasePrice) {
+                // IF REHAB BUDGET >= PURCHASE PRICE
+                // MAX TOTAL LOAN = The Minimum of (Max LTV × ARV) & ((Max LTC × Purchase Price) + Rehab Budget) & (Max LTFC × (Purchase Price + Rehab Budget))
+
+                // Calculate Max LTFC Amount: Max LTFC % × (Purchase Price + Rehab Budget)
+                $maxLtfcAmount = ($maxLtfc / 100) * ($purchasePrice + $rehabBudget);
+
+                // Get the minimum of all three amounts
+                $totalLoanUpTo = min($maxLtvAmount, $maxLtcAmount, $maxLtfcAmount);
+
+            } else {
+                // IF REHAB BUDGET < PURCHASE PRICE  
+                // MAX TOTAL LOAN = The Minimum of (Max LTV % × ARV) & ((Max LTC × Purchase Price) + Rehab Budget)
+
+                // Get the minimum of LTV and LTC amounts (no LTFC consideration)
+                $totalLoanUpTo = min($maxLtvAmount, $maxLtcAmount);
+            }
+
+            // Calculate individual loan components based on total loan capacity
+            // Purchase Loan = Total Loan - Rehab Budget (but not less than 0)
+            $purchaseLoanUpTo = max(0, $totalLoanUpTo - $rehabBudget);
+
+            // Rehab Loan = Minimum of (Rehab Budget, Total Loan Capacity)
+            $rehabLoanUpTo = min($rehabBudget, $totalLoanUpTo);
+        }
+
+        return [
+            'total_loan_up_to' => (float) number_format($totalLoanUpTo, 2, '.', ''),
+            'purchase_loan_up_to' => (float) number_format($purchaseLoanUpTo, 2, '.', ''),
+            'rehab_loan_up_to' => (float) number_format($rehabLoanUpTo, 2, '.', ''),
+        ];
+    }
+
+    /**
+     * Get pricing information based on loan amount with loan term adjustments
+     * 
+     * @param \Illuminate\Support\Collection $pricings Collection of pricing data
+     * @param float $loanAmount Total loan amount to determine pricing tier
+     * @param int $loanTerm Loan term in months
+     * @return array
+     */
+    private function getPricingByLoanAmount($pricings, $loanAmount, $loanTerm = 12)
+    {
+        $interestRate = 0;
+        $lenderPoints = 0;
+
+        // Determine pricing tier based on loan amount
+        if ($loanAmount < 250000) {
+            // < $250K pricing tier
+            $pricing = $pricings->get('<250k');
+            if ($pricing) {
+                $interestRate = (float) $pricing->interest_rate;
+                $lenderPoints = (float) $pricing->lender_points;
+            }
+        } elseif ($loanAmount < 500000) {
+            // $250K-$500K pricing tier  
+            $pricing = $pricings->get('250-500k');
+            if ($pricing) {
+                $interestRate = (float) $pricing->interest_rate;
+                $lenderPoints = (float) $pricing->lender_points;
+            }
+        } else {
+            // ≥ $500K pricing tier
+            $pricing = $pricings->get('>=500k');
+            if ($pricing) {
+                $interestRate = (float) $pricing->interest_rate;
+                $lenderPoints = (float) $pricing->lender_points;
+            }
+        }
+
+        // Apply loan term adjustment: +0.50% if loan term is 18 months
+        if ($loanTerm == 18) {
+            $interestRate += 0.50;
+            $lenderPoints += 0.50;
+        }
+
+        return [
+            'interest_rate' => (float) number_format($interestRate, 2, '.', ''),
+            'lender_points' => (float) number_format($lenderPoints, 2, '.', ''),
+        ];
     }
 
     /**
