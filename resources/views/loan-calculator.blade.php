@@ -104,14 +104,14 @@
                                         Score</label>
                                     <input type="number" id="credit_score" name="credit_score" min="300" max="850"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="-- Enter Credit Score --" value="">
+                                        placeholder="Enter credit score" value="">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Experience
                                         (Years)</label>
                                     <input type="number" id="experience" name="experience" min="0" max="50"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="-- Enter Experience --" value="">
+                                        placeholder="Enter years of experience" value="">
                                 </div>
                             </div>
                         </div>
@@ -123,19 +123,19 @@
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Name</label>
                                     <input type="text" id="borrower_name" name="borrower_name"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="-- Enter Name --" value="">
+                                        placeholder="Enter full name" value="">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
                                     <input type="email" id="borrower_email" name="borrower_email"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="-- Enter Email --" value="">
+                                        placeholder="Enter email address" value="">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Phone</label>
                                     <input type="tel" id="borrower_phone" name="borrower_phone"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="-- Enter Phone --" value="">
+                                        placeholder="Enter phone number" value="">
                                 </div>
                             </div>
                         </div>
@@ -149,25 +149,25 @@
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Name</label>
                             <input type="text" id="broker_name" name="broker_name"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="-- Enter Broker Name --" value="">
+                                placeholder="Enter broker name" value="">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Email</label>
                             <input type="email" id="broker_email" name="broker_email"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="-- Enter Broker Email --" value="">
+                                placeholder="Enter broker email" value="">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Phone</label>
                             <input type="tel" id="broker_phone" name="broker_phone"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="-- Enter Broker Phone --" value="">
+                                placeholder="Enter broker phone" value="">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Points (%)</label>
                             <input type="number" id="broker_points" name="broker_points" min="0" max="10" step="0.1"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="-- Enter Points --" value="">
+                                placeholder="Enter points percentage" value="">
                         </div>
                     </div>
                 </div>
@@ -248,7 +248,7 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Zip Code</label>
                                 <input type="text" id="zip_code" name="zip_code"
                                     class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                    placeholder="-- Enter Zip Code --" value="">
+                                    placeholder="Enter zip code" value="">
                             </div>
                         </div>
                     </div>
@@ -260,7 +260,7 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Property Address</label>
                                 <input type="text" id="property_address" name="property_address"
                                     class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                    placeholder="-- Enter Property Address --" value="">
+                                    placeholder="Enter property address" value="">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Purchase Price</label>
@@ -268,7 +268,7 @@
                                     <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
                                     <input type="number" id="purchase_price" name="purchase_price" min="0"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
-                                        placeholder="-- Enter Purchase Price --" value="">
+                                        placeholder="Enter purchase price" value="">
                                 </div>
                             </div>
                             <div>
@@ -277,7 +277,7 @@
                                     <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
                                     <input type="number" id="rehab_budget" name="rehab_budget" min="0"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
-                                        placeholder="-- Enter Rehab Budget --" value="">
+                                        placeholder="Enter rehab budget" value="">
                                 </div>
                             </div>
                             <div>
@@ -286,7 +286,7 @@
                                     <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
                                     <input type="number" id="arv" name="arv" min="0"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
-                                        placeholder="-- Enter ARV --" value="">
+                                        placeholder="Enter ARV amount" value="">
                                 </div>
                             </div>
                         </div>
@@ -303,46 +303,61 @@
                     </h3>
 
                     <!-- Compact Results Table -->
-                    <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-lg p-2 border border-gray-100">
+                    <div class="bg-white rounded-lg p-2 border border-gray-100">
                         <div class="overflow-x-auto">
-                            <table class="w-full text-xs">
-                                <thead class="bg-gray-100 text-gray-800">
+                            <table class="w-full text-xs border-collapse" style="border: 1px solid #000;">
+                                <thead>
                                     <tr>
-                                        <th class="px-1 py-1 text-left font-semibold">Program</th>
-                                        <th class="px-1 py-1 text-center font-semibold">Rate</th>
-                                        <th class="px-1 py-1 text-center font-semibold">Points</th>
-                                        <th class="px-1 py-1 text-center font-semibold">Max LTV</th>
-                                        <th class="px-1 py-1 text-center font-semibold">Max LTC</th>
-                                        <th class="px-1 py-1 text-center font-semibold">Purchase Loan</th>
-                                        <th class="px-1 py-1 text-center font-semibold">Rehab Loan</th>
-                                        <th class="px-1 py-1 text-center font-semibold">Total Loan</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-left font-semibold bg-gray-100">Program</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Rate</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Points</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Max LTV</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Max LTC</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Purchase Loan</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Rehab Loan</th>
+                                        <th style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Total Loan</th>
                                     </tr>
                                 </thead>
                                 <tbody id="compactResultsTable" class="text-xs">
                                     <!-- Default rows showing 0.00 values -->
-                                    <tr class="border-b border-gray-200 hover:bg-blue-50" id="fullAppraisalRow">
-                                        <td class="px-1 py-1 font-medium text-blue-700">
+                                    <tr id="fullAppraisalRow">
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 font-medium text-blue-700">
                                             <i class="fas fa-file-alt mr-1"></i>Full Appraisal
                                         </td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center text-blue-600 font-medium">$0.00</td>
-                                        <td class="px-1 py-1 text-center text-green-600 font-medium">$0.00</td>
-                                        <td class="px-1 py-1 text-center text-purple-600 font-medium">$0.00</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
+                                        <td style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                                        <td style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
                                     </tr>
-                                    <tr class="border-b border-gray-200 hover:bg-green-50" id="desktopAppraisalRow">
-                                        <td class="px-1 py-1 font-medium text-green-700">
+                                    <tr id="desktopAppraisalRow">
+                                        <td style="border: 1px solid #000;"
+                                            class="px-2 py-2 font-medium text-green-700">
                                             <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
                                         </td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center">0.00%</td>
-                                        <td class="px-1 py-1 text-center text-blue-600 font-medium">$0.00</td>
-                                        <td class="px-1 py-1 text-center text-green-600 font-medium">$0.00</td>
-                                        <td class="px-1 py-1 text-center text-purple-600 font-medium">$0.00</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                                        <td style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
+                                        <td style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                                        <td style="border: 1px solid #000;"
+                                            class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
                                     </tr>
                                 </tbody>
                             </table>
