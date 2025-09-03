@@ -199,11 +199,14 @@ class LoanMatrixApiController extends Controller
 
                     // Additional loan type and loan program table data
                     'loan_type_and_loan_program_table' => [
-                        'loan_term' => 0,
+                        'loan_term' => $request->loan_term ? $request->loan_term . ' Months' : '0 Months',
                         'intrest_rate' => 0,
                         'lender_points' => 0,
                         'max_ltv' => 0,
                         'max_ltc' => 0,
+                        'purchase_loan_up_to' => 'You qualify for a Purchase Loan up to',
+                        'rehab_loan_up_to' => 'You qualify for a Rehab Loan up to',
+                        'total_loan_up_to' => 'You qualify for Total Loan up to',
                     ],
                 ];
             });
