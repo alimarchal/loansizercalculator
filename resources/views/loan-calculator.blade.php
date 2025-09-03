@@ -369,7 +369,7 @@
                         </div>
 
                         <!-- Results Table -->
-                        <div id="resultsSection" class="hidden">
+                        <div id="resultsSection" class="">
                             <div class="bg-white rounded-lg shadow overflow-hidden">
                                 <table class="w-full border-collapse" style="border: 1px solid #000;">
                                     <thead>
@@ -428,14 +428,18 @@
                                                 class="px-4 py-3 text-center text-green-600 font-medium">$0.00</td>
                                             <td style="border: 1px solid #000;"
                                                 class="px-4 py-3 text-center text-purple-600 font-medium">$0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loanCalculatorForm');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const errorMessage = document.getElementById('errorMessage');
@@ -580,12 +584,12 @@
                 return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         });
-            </script>
+        </script>
 
-            <script src="{{ url('select2/jquery-3.5.1.js') }}"></script>
-            <script src="{{ url('select2/select2.min.js') }}" defer></script>
-            <script>
-                $(document).ready(function () {
+        <script src="{{ url('select2/jquery-3.5.1.js') }}"></script>
+        <script src="{{ url('select2/select2.min.js') }}" defer></script>
+        <script>
+            $(document).ready(function () {
                 $('.select2').select2();
             });
 
@@ -593,12 +597,12 @@
                 // If x-button does not render as a traditional submit button, target it directly by ID or class
                 $('#submit-btn').attr('disabled', 'disabled');
             });
-            </script>
-            @stack('modals')
+        </script>
+        @stack('modals')
 
-            {{-- Allow views to push inline scripts -- e.g. @push('scripts') -- so they are rendered here --}}
-            @stack('scripts')
-            @livewireScripts
+        {{-- Allow views to push inline scripts -- e.g. @push('scripts') -- so they are rendered here --}}
+        @stack('scripts')
+        @livewireScripts
 </body>
 
 </html>
