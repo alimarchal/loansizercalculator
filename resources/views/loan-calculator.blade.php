@@ -181,10 +181,10 @@
                         Loan Summary
                     </h3>
 
-                    <!-- Row 3: Loan & Property Details (4 inputs) -->
+                    <!-- Row 3: Loan & Property Details (6 inputs) -->
                     <div
                         class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-4 border border-orange-100 mb-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Loan Type</label>
                                 <select id="loan_type" name="loan_type"
@@ -234,23 +234,10 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 4: Address & Location (4 inputs) -->
-                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 border border-red-100 mb-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                            <div class="lg:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Property
-                                    Address</label>
-                                <input type="text" id="property_address" name="property_address"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
-                                    placeholder="2344 Meriden Pkwy CT" value="2344 Meriden Pkwy CT">
-                            </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">State</label>
                                 <select id="state" name="state"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm">
+                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm">
                                     <option value="">Select State</option>
                                     @foreach($states as $state)
                                     <option value="{{ $state->code }}" {{ $state->code == 'CT' ? 'selected' : ''
@@ -263,8 +250,20 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Zip Code</label>
                                 <input type="text" id="zip_code" name="zip_code"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
+                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm"
                                     placeholder="06489" value="06489">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Property Address (1 input - full width) -->
+                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 border border-red-100 mb-4">
+                        <div class="grid grid-cols-1 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Property Address</label>
+                                <input type="text" id="property_address" name="property_address"
+                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
+                                    placeholder="2344 Meriden Pkwy CT" value="2344 Meriden Pkwy CT">
                             </div>
                         </div>
                     </div>
