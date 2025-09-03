@@ -210,16 +210,16 @@ class LoanMatrixApiController extends Controller
                     'extensive_rehab_100_plus_percent_max_ltfc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltfc ? (float) number_format((float) $rehabLimits->get('EXTENSIVE REHAB')->max_ltfc, 2, '.', '') : 0.00,
 
                     // Pricing < $250k
-                    'ir_lt_250k' => $pricings->get('<250k')?->interest_rate ? (float) number_format((float) $pricings->get('<250k')->interest_rate, 2, '.', '') : 0.00,
-                    'lp_lt_250k' => $pricings->get('<250k')?->lender_points ? (float) number_format((float) $pricings->get('<250k')->lender_points, 2, '.', '') : 0.00,
+                    'loan_size_less_than_250k_interest_rate' => $pricings->get('<250k')?->interest_rate ? (float) number_format((float) $pricings->get('<250k')->interest_rate, 2, '.', '') : 0.00,
+                    'loan_size_less_than_250k_lender_points' => $pricings->get('<250k')?->lender_points ? (float) number_format((float) $pricings->get('<250k')->lender_points, 2, '.', '') : 0.00,
 
                     // Pricing $250k-$500k
-                    'ir_250_500k' => $pricings->get('250-500k')?->interest_rate ? (float) number_format((float) $pricings->get('250-500k')->interest_rate, 2, '.', '') : 0.00,
-                    'lp_250_500k' => $pricings->get('250-500k')?->lender_points ? (float) number_format((float) $pricings->get('250-500k')->lender_points, 2, '.', '') : 0.00,
+                    'loan_size_250k_to_500k_interest_rate' => $pricings->get('250-500k')?->interest_rate ? (float) number_format((float) $pricings->get('250-500k')->interest_rate, 2, '.', '') : 0.00,
+                    'loan_size_250k_to_500k_lender_points' => $pricings->get('250-500k')?->lender_points ? (float) number_format((float) $pricings->get('250-500k')->lender_points, 2, '.', '') : 0.00,
 
                     // Pricing ≥ $500k
-                    'ir_gte_500k' => $pricings->get('>=500k')?->interest_rate ? (float) number_format((float) $pricings->get('>=500k')->interest_rate, 2, '.', '') : 0.00,
-                    'lp_gte_500k' => $pricings->get('>=500k')?->lender_points ? (float) number_format((float) $pricings->get('>=500k')->lender_points, 2, '.', '') : 0.00,
+                    'loan_size_500k_and_above_interest_rate' => $pricings->get('>=500k')?->interest_rate ? (float) number_format((float) $pricings->get('>=500k')->interest_rate, 2, '.', '') : 0.00,
+                    'loan_size_500k_and_above_lender_points' => $pricings->get('>=500k')?->lender_points ? (float) number_format((float) $pricings->get('>=500k')->lender_points, 2, '.', '') : 0.00,
 
                     // User inputs data
                     'user_inputs' => [
