@@ -389,6 +389,8 @@
                                                 class="px-4 py-3 text-center font-semibold text-gray-900">Max LTV</th>
                                             <th style="border: 1px solid #000;"
                                                 class="px-4 py-3 text-center font-semibold text-gray-900">Max LTC</th>
+                                            <th style="border: 1px solid #000;"
+                                                class="px-4 py-3 text-center font-semibold text-gray-900">Max LTFC</th>
                                         </tr>
                                     </thead>
                                     <tbody id="compactResultsTable">
@@ -402,12 +404,14 @@
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                         </tr>
                                         <tr id="desktopAppraisalRow">
                                             <td style="border: 1px solid #000;"
                                                 class="px-4 py-3 font-medium text-green-700">
                                                 <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
                                             </td>
+                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
@@ -430,7 +434,8 @@
                                     </div>
                                     <div class="space-y-2">
                                         <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to:
-                                            <span id="fullAppraisalPurchase" class="text-blue-600">$0.00</span></p>
+                                            <span id="fullAppraisalPurchase" class="text-blue-600">$0.00</span>
+                                        </p>
                                         <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to: <span
                                                 id="fullAppraisalRehab" class="text-green-600">$0.00</span></p>
                                         <p class="text-purple-700 font-medium">You qualify for Total Loan up to: <span
@@ -449,7 +454,8 @@
                                     </div>
                                     <div class="space-y-2">
                                         <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to:
-                                            <span id="desktopAppraisalPurchase" class="text-blue-600">$0.00</span></p>
+                                            <span id="desktopAppraisalPurchase" class="text-blue-600">$0.00</span>
+                                        </p>
                                         <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to: <span
                                                 id="desktopAppraisalRehab" class="text-green-600">$0.00</span></p>
                                         <p class="text-purple-700 font-medium">You qualify for Total Loan up to: <span
@@ -543,6 +549,7 @@
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
                     `;
                     
                     // Update Full Appraisal card
@@ -562,6 +569,7 @@
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
                     `;
                     
                     // Update Desktop Appraisal card
@@ -584,6 +592,7 @@
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                 `;
                 
                 // Reset Desktop Appraisal table row to defaults
@@ -591,6 +600,7 @@
                     <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-green-700">
                         <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
                     </td>
+                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
