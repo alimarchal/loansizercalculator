@@ -98,10 +98,6 @@
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
                         <!-- Profile Details (2 inputs) -->
                         <div class="lg:col-span-2">
-                            <h3 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
-                                <i class="fas fa-chart-line text-blue-600 mr-2"></i>
-                                Profile Details
-                            </h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Credit
@@ -122,10 +118,6 @@
 
                         <!-- Borrower Information (3 inputs) -->
                         <div class="lg:col-span-3">
-                            <h3 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
-                                <i class="fas fa-address-card text-green-600 mr-2"></i>
-                                Borrower Information
-                            </h3>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Name</label>
@@ -152,31 +144,27 @@
 
                 <!-- Row 2: Broker Information (4 inputs) -->
                 <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-100 mb-4">
-                    <h3 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
-                        <i class="fas fa-handshake text-purple-600 mr-2"></i>
-                        Broker Information
-                    </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Name</label>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Name</label>
                             <input type="text" id="broker_name" name="broker_name"
                                 class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
                                 placeholder="John Doe" value="John Doe">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Email</label>
                             <input type="email" id="broker_email" name="broker_email"
                                 class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
                                 placeholder="hedwards@goldmanfunding.com" value="hedwards@goldmanfunding.com">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Phone</label>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Phone</label>
                             <input type="tel" id="broker_phone" name="broker_phone"
                                 class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
                                 placeholder="631-602-0460" value="631-602-0460">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Points (%)</label>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1"> Broker Points (%)</label>
                             <input type="number" id="broker_points" name="broker_points" min="0" max="10" step="0.1"
                                 class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
                                 placeholder="1" value="1">
