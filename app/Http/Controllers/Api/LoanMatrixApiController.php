@@ -204,9 +204,9 @@ class LoanMatrixApiController extends Controller
                         'lender_points' => 0,
                         'max_ltv' => 0,
                         'max_ltc' => 0,
-                        'purchase_loan_up_to' => 'You qualify for a Purchase Loan up to',
-                        'rehab_loan_up_to' => 'You qualify for a Rehab Loan up to',
-                        'total_loan_up_to' => 'You qualify for Total Loan up to',
+                        'purchase_loan_up_to' => 0,
+                        'rehab_loan_up_to' => 0,
+                        'total_loan_up_to' => 0,
                     ],
                 ];
             });
