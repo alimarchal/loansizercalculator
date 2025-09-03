@@ -184,6 +184,15 @@ class LoanMatrixApiController extends Controller
                     // Pricing ≥ $500k
                     'ir_gte_500k' => $pricings->get('>=500k')?->interest_rate,
                     'lp_gte_500k' => $pricings->get('>=500k')?->lender_points,
+
+                    // Additional loan type and loan program table data
+                    'loan_type_and_loan_program_table' => [
+                        'loan_term' => 0,
+                        'intrest_rate' => 0,
+                        'lender_points' => 0,
+                        'max_ltv' => 0,
+                        'max_ltc' => 0,
+                    ],
                 ];
             });
 
