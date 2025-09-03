@@ -104,14 +104,14 @@
                                         Score</label>
                                     <input type="number" id="credit_score" name="credit_score" min="300" max="850"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="e.g. 740" value="740">
+                                        placeholder="-- Enter Credit Score --" value="">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Experience
                                         (Years)</label>
                                     <input type="number" id="experience" name="experience" min="0" max="50"
-                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
-                                        placeholder="e.g. 4" value="4">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                        placeholder="-- Enter Experience --" value="">
                                 </div>
                             </div>
                         </div>
@@ -122,20 +122,20 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Name</label>
                                     <input type="text" id="borrower_name" name="borrower_name"
-                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-xs"
-                                        placeholder="Jimmy Test" value="Jimmy Test">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                        placeholder="-- Enter Name --" value="">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
                                     <input type="email" id="borrower_email" name="borrower_email"
-                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-xs"
-                                        placeholder="hedwards@goldmanfunding.com" value="hedwards@goldmanfunding.com">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                        placeholder="-- Enter Email --" value="">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Phone</label>
                                     <input type="tel" id="borrower_phone" name="borrower_phone"
-                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-xs"
-                                        placeholder="631-602-0460" value="631-602-0460">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                        placeholder="-- Enter Phone --" value="">
                                 </div>
                             </div>
                         </div>
@@ -148,26 +148,26 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Name</label>
                             <input type="text" id="broker_name" name="broker_name"
-                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
-                                placeholder="John Doe" value="John Doe">
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                placeholder="-- Enter Broker Name --" value="">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Email</label>
                             <input type="email" id="broker_email" name="broker_email"
-                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
-                                placeholder="hedwards@goldmanfunding.com" value="hedwards@goldmanfunding.com">
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                placeholder="-- Enter Broker Email --" value="">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Phone</label>
                             <input type="tel" id="broker_phone" name="broker_phone"
-                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
-                                placeholder="631-602-0460" value="631-602-0460">
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                placeholder="-- Enter Broker Phone --" value="">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Points (%)</label>
                             <input type="number" id="broker_points" name="broker_points" min="0" max="10" step="0.1"
-                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
-                                placeholder="1" value="1">
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                placeholder="-- Enter Points --" value="">
                         </div>
                     </div>
                 </div>
@@ -188,11 +188,10 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Loan Type</label>
                                 <select id="loan_type" name="loan_type"
-                                    class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none select2 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
-                                    <option value="">Select Loan Type</option>
+                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
+                                    <option value="">-- Select Loan Type --</option>
                                     @foreach($loanTypes as $loanType)
-                                    <option value="{{ $loanType->name }}" {{ $loanType->name == 'Fix and Flip' ?
-                                        'selected' : '' }}>
+                                    <option value="{{ $loanType->name }}">
                                         {{ $loanType->name }}
                                     </option>
                                     @endforeach
@@ -202,11 +201,10 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction
                                     Type</label>
                                 <select id="transaction_type" name="transaction_type"
-                                    class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none  select2 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
-                                    <option value="">Select Transaction Type</option>
+                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
+                                    <option value="">-- Select Transaction Type --</option>
                                     @foreach($transactionTypes as $transactionType)
-                                    <option value="{{ $transactionType->name }}" {{ $transactionType->name ==
-                                        'Purchase' ? 'selected' : '' }}>
+                                    <option value="{{ $transactionType->name }}">
                                         {{ $transactionType->name }}
                                     </option>
                                     @endforeach
@@ -215,8 +213,9 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Loan Term</label>
                                 <select id="loan_term" name="loan_term"
-                                    class="w-full px-2 py-1 border border-gray-200 rounded-md select2 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
-                                    <option value="12" selected>12 Months</option>
+                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
+                                    <option value="">-- Select Loan Term --</option>
+                                    <option value="12">12 Months</option>
                                     <option value="18">18 Months</option>
                                 </select>
                             </div>
@@ -224,11 +223,10 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Property
                                     Type</label>
                                 <select id="property_type" name="property_type"
-                                    class="w-full px-2 py-1 border border-gray-200 rounded-md select2 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
-                                    <option value="">Select Property Type</option>
+                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
+                                    <option value="">-- Select Property Type --</option>
                                     @foreach($propertyTypes as $propertyType)
-                                    <option value="{{ $propertyType->name }}" {{ $propertyType->name == 'Single
-                                        Family' ? 'selected' : '' }}>
+                                    <option value="{{ $propertyType->name }}">
                                         {{ $propertyType->name }}
                                     </option>
                                     @endforeach
@@ -237,11 +235,10 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">State</label>
                                 <select id="state" name="state"
-                                    class="w-full px-2 py-1 border border-gray-200 rounded-md select2 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
-                                    <option value="">Select State</option>
+                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
+                                    <option value="">-- Select State --</option>
                                     @foreach($states as $state)
-                                    <option value="{{ $state->code }}" {{ $state->code == 'CT' ? 'selected' : ''
-                                        }}>
+                                    <option value="{{ $state->code }}">
                                         {{ $state->code }}
                                     </option>
                                     @endforeach
@@ -250,8 +247,8 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Zip Code</label>
                                 <input type="text" id="zip_code" name="zip_code"
-                                    class="w-full px-2 py-1 border border-gray-200 rounded-md  focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs"
-                                    placeholder="06489" value="06489">
+                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                    placeholder="-- Enter Zip Code --" value="">
                             </div>
                         </div>
                     </div>
@@ -262,34 +259,34 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Property Address</label>
                                 <input type="text" id="property_address" name="property_address"
-                                    class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
-                                    placeholder="2344 Meriden Pkwy CT" value="2344 Meriden Pkwy CT">
+                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                                    placeholder="-- Enter Property Address --" value="">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Purchase Price</label>
                                 <div class="relative">
-                                    <span class="absolute left-1 top-1 text-gray-500 text-xs">$</span>
+                                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
                                     <input type="number" id="purchase_price" name="purchase_price" min="0"
-                                        class="w-full pl-4 pr-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
-                                        placeholder="100,000" value="100000">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
+                                        placeholder="-- Enter Purchase Price --" value="">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Rehab Budget</label>
                                 <div class="relative">
-                                    <span class="absolute left-1 top-1 text-gray-500 text-xs">$</span>
+                                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
                                     <input type="number" id="rehab_budget" name="rehab_budget" min="0"
-                                        class="w-full pl-4 pr-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
-                                        placeholder="40,000" value="40000">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
+                                        placeholder="-- Enter Rehab Budget --" value="">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">ARV</label>
                                 <div class="relative">
-                                    <span class="absolute left-1 top-1 text-gray-500 text-xs">$</span>
+                                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
                                     <input type="number" id="arv" name="arv" min="0"
-                                        class="w-full pl-4 pr-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
-                                        placeholder="1,100,000" value="1100000">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
+                                        placeholder="-- Enter ARV --" value="">
                                 </div>
                             </div>
                         </div>
