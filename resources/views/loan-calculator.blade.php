@@ -77,7 +77,7 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <div class="py-12">
+    <div class="py-4">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="p-6 lg:p-8 bg-white border-b border-gray-200">
@@ -368,69 +368,72 @@
                             </div>
                         </div>
 
-                        <!-- Results Table -->
+                        <!-- Results Cards -->
                         <div id="resultsSection" class="">
-                            <div class="bg-white rounded-lg shadow overflow-hidden">
-                                <table class="w-full border-collapse" style="border: 1px solid #000;">
-                                    <thead>
-                                        <tr class="bg-gray-50">
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-left font-semibold text-gray-900">Program</th>
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center font-semibold text-gray-900">Rate</th>
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center font-semibold text-gray-900">Points</th>
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center font-semibold text-gray-900">Max LTV</th>
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center font-semibold text-gray-900">Max LTC</th>
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center font-semibold text-gray-900">Purchase Loan
-                                            </th>
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center font-semibold text-gray-900">Rehab Loan
-                                            </th>
-                                            <th style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center font-semibold text-gray-900">Total Loan
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="compactResultsTable">
-                                        <!-- Default rows showing 0.00 values -->
-                                        <tr id="fullAppraisalRow">
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 font-medium text-blue-700">
-                                                <i class="fas fa-file-alt mr-2"></i>Full Appraisal
-                                            </td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center text-blue-600 font-medium">$0.00</td>
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center text-green-600 font-medium">$0.00</td>
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center text-purple-600 font-medium">$0.00</td>
-                                        </tr>
-                                        <tr id="desktopAppraisalRow">
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 font-medium text-green-700">
-                                                <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
-                                            </td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center text-blue-600 font-medium">$0.00</td>
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center text-green-600 font-medium">$0.00</td>
-                                            <td style="border: 1px solid #000;"
-                                                class="px-4 py-3 text-center text-purple-600 font-medium">$0.00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <!-- Full Appraisal Card -->
+                            <div id="fullAppraisalCard"
+                                class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-4">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-blue-100 p-2 rounded-full mr-3">
+                                        <i class="fas fa-file-alt text-blue-600"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-blue-700">For Full Appraisal</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <p class="text-sm text-gray-600">Rate: <span id="fullAppraisalRate"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                        <p class="text-sm text-gray-600 mt-1">Points: <span id="fullAppraisalPoints"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <p class="text-sm text-gray-600">Max LTV: <span id="fullAppraisalLTV"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                        <p class="text-sm text-gray-600 mt-1">Max LTC: <span id="fullAppraisalLTC"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 space-y-2">
+                                    <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to: <span
+                                            id="fullAppraisalPurchase" class="text-blue-600">$0.00</span></p>
+                                    <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to: <span
+                                            id="fullAppraisalRehab" class="text-green-600">$0.00</span></p>
+                                    <p class="text-purple-700 font-medium">You qualify for Total Loan up to: <span
+                                            id="fullAppraisalTotal" class="text-purple-600">$0.00</span></p>
+                                </div>
+                            </div>
+
+                            <!-- Desktop Appraisal Card -->
+                            <div id="desktopAppraisalCard"
+                                class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-green-100 p-2 rounded-full mr-3">
+                                        <i class="fas fa-desktop text-green-600"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-green-700">For Desktop Appraisal</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <p class="text-sm text-gray-600">Rate: <span id="desktopAppraisalRate"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                        <p class="text-sm text-gray-600 mt-1">Points: <span id="desktopAppraisalPoints"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <p class="text-sm text-gray-600">Max LTV: <span id="desktopAppraisalLTV"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                        <p class="text-sm text-gray-600 mt-1">Max LTC: <span id="desktopAppraisalLTC"
+                                                class="font-medium text-gray-900">0.00%</span></p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 space-y-2">
+                                    <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to: <span
+                                            id="desktopAppraisalPurchase" class="text-blue-600">$0.00</span></p>
+                                    <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to: <span
+                                            id="desktopAppraisalRehab" class="text-green-600">$0.00</span></p>
+                                    <p class="text-purple-700 font-medium">You qualify for Total Loan up to: <span
+                                            id="desktopAppraisalTotal" class="text-purple-600">$0.00</span></p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -494,9 +497,6 @@
             });
             
             function populateCompactResults(loans) {
-                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
-                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
-                
                 // Separate loans by program type
                 const fullAppraisalLoans = loans.filter(loan => 
                     loan.loan_program === 'FULL APPRAISAL' || 
@@ -507,72 +507,49 @@
                     loan.display_name?.includes('DESKTOP APPRAISAL')
                 );
                 
-                // Update Full Appraisal row
+                // Update Full Appraisal card
                 if (fullAppraisalLoans.length > 0) {
                     const loanData = fullAppraisalLoans[0].loan_type_and_loan_program_table;
-                    fullAppraisalRow.innerHTML = `
-                        <td class="px-2 py-2 font-medium text-blue-700">
-                            <i class="fas fa-file-alt mr-1"></i>Full Appraisal
-                        </td>
-                        <td class="px-2 py-2 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$${numberWithCommas(loanData?.purchase_loan_up_to || 0)}</td>
-                        <td class="px-2 py-2 text-center text-green-600 font-medium">$${numberWithCommas(loanData?.rehab_loan_up_to || 0)}</td>
-                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$${numberWithCommas(loanData?.total_loan_up_to || 0)}</td>
-                    `;
+                    document.getElementById('fullAppraisalRate').textContent = loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%';
+                    document.getElementById('fullAppraisalPoints').textContent = loanData?.lender_points ? loanData.lender_points + '%' : '0.00%';
+                    document.getElementById('fullAppraisalLTV').textContent = loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%';
+                    document.getElementById('fullAppraisalLTC').textContent = loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%';
+                    document.getElementById('fullAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
+                    document.getElementById('fullAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
+                    document.getElementById('fullAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
                 }
                 
-                // Update Desktop Appraisal row
+                // Update Desktop Appraisal card
                 if (desktopAppraisalLoans.length > 0) {
                     const loanData = desktopAppraisalLoans[0].loan_type_and_loan_program_table;
-                    desktopAppraisalRow.innerHTML = `
-                        <td class="px-2 py-2 font-medium text-green-700">
-                            <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
-                        </td>
-                        <td class="px-2 py-2 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$${numberWithCommas(loanData?.purchase_loan_up_to || 0)}</td>
-                        <td class="px-2 py-2 text-center text-green-600 font-medium">$${numberWithCommas(loanData?.rehab_loan_up_to || 0)}</td>
-                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$${numberWithCommas(loanData?.total_loan_up_to || 0)}</td>
-                    `;
+                    document.getElementById('desktopAppraisalRate').textContent = loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%';
+                    document.getElementById('desktopAppraisalPoints').textContent = loanData?.lender_points ? loanData.lender_points + '%' : '0.00%';
+                    document.getElementById('desktopAppraisalLTV').textContent = loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%';
+                    document.getElementById('desktopAppraisalLTC').textContent = loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%';
+                    document.getElementById('desktopAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
+                    document.getElementById('desktopAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
+                    document.getElementById('desktopAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
                 }
             }
             
             function resetToDefaults() {
-                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
-                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
+                // Reset Full Appraisal card to defaults
+                document.getElementById('fullAppraisalRate').textContent = '0.00%';
+                document.getElementById('fullAppraisalPoints').textContent = '0.00%';
+                document.getElementById('fullAppraisalLTV').textContent = '0.00%';
+                document.getElementById('fullAppraisalLTC').textContent = '0.00%';
+                document.getElementById('fullAppraisalPurchase').textContent = '$0.00';
+                document.getElementById('fullAppraisalRehab').textContent = '$0.00';
+                document.getElementById('fullAppraisalTotal').textContent = '$0.00';
                 
-                // Reset Full Appraisal row to defaults
-                fullAppraisalRow.innerHTML = `
-                    <td class="px-2 py-2 font-medium text-blue-700">
-                        <i class="fas fa-file-alt mr-1"></i>Full Appraisal
-                    </td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
-                    <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
-                    <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
-                `;
-                
-                // Reset Desktop Appraisal row to defaults
-                desktopAppraisalRow.innerHTML = `
-                    <td class="px-2 py-2 font-medium text-green-700">
-                        <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
-                    </td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center">0.00%</td>
-                    <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
-                    <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
-                    <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
-                `;
+                // Reset Desktop Appraisal card to defaults
+                document.getElementById('desktopAppraisalRate').textContent = '0.00%';
+                document.getElementById('desktopAppraisalPoints').textContent = '0.00%';
+                document.getElementById('desktopAppraisalLTV').textContent = '0.00%';
+                document.getElementById('desktopAppraisalLTC').textContent = '0.00%';
+                document.getElementById('desktopAppraisalPurchase').textContent = '$0.00';
+                document.getElementById('desktopAppraisalRehab').textContent = '$0.00';
+                document.getElementById('desktopAppraisalTotal').textContent = '$0.00';
             }
             
             function showError(message) {
