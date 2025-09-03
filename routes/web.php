@@ -2,10 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoanProgramController;
+use App\Http\Controllers\LoanCalculatorController;
 
 Route::get('/', function () {
     return to_route('login');
 });
+
+// Public loan calculator route (no authentication required)
+Route::get('/loan-calculator', [LoanCalculatorController::class, 'index'])->name('loan-calculator');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::get('/dashboard', function () {
