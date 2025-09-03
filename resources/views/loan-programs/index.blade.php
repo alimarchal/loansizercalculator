@@ -133,7 +133,7 @@
                     <thead>
                         <!-- Dynamic Header for Loan Program -->
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="20" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="21" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 @if($isQuickSearch)
                                 Search Results
                                 @if(isset($searchInfo['credit_score']))
