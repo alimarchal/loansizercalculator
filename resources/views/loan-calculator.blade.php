@@ -88,15 +88,16 @@
         <form id="loanCalculatorForm" class="space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                <!-- Left Column -->
-                <div class="space-y-6">
+                <!-- Card 1: Borrower Profile & Information -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center border-b pb-4">
+                        <i class="fas fa-user-circle text-blue-600 mr-3"></i>
+                        Borrower Profile & Information
+                    </h2>
 
-                    <!-- Borrower Profile -->
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-user-circle text-blue-600 mr-2"></i>
-                            Borrower Profile
-                        </h2>
+                    <!-- Borrower Profile Section -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-700 mb-4">Profile Details</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Credit Score</label>
@@ -113,12 +114,12 @@
                         </div>
                     </div>
 
-                    <!-- Borrower Information -->
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <!-- Borrower Information Section -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-700 mb-4 flex items-center">
                             <i class="fas fa-address-card text-green-600 mr-2"></i>
                             Borrower Information
-                        </h2>
+                        </h3>
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Borrower Name</label>
@@ -141,12 +142,12 @@
                         </div>
                     </div>
 
-                    <!-- Broker Information -->
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <!-- Broker Information Section -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-4 flex items-center">
                             <i class="fas fa-handshake text-purple-600 mr-2"></i>
                             Broker Information
-                        </h2>
+                        </h3>
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Broker Name</label>
@@ -180,225 +181,222 @@
                     </div>
                 </div>
 
-                <!-- Right Column -->
-                <div class="space-y-6">
-
-                    <!-- Loan Summary -->
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-calculator text-orange-600 mr-2"></i>
-                            Loan Summary
-                        </h2>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Loan Type</label>
-                                    <select id="loan_type" name="loan_type"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Select Loan Type</option>
-                                        @foreach($loanTypes as $loanType)
-                                        <option value="{{ $loanType->name }}" {{ $loanType->name == 'Fix and Flip' ?
-                                            'selected' : '' }}>
-                                            {{ $loanType->name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Transaction Type</label>
-                                    <select id="transaction_type" name="transaction_type"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Select Transaction Type</option>
-                                        @foreach($transactionTypes as $transactionType)
-                                        <option value="{{ $transactionType->name }}" {{ $transactionType->name ==
-                                            'Purchase' ? 'selected' : '' }}>
-                                            {{ $transactionType->name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
+                <!-- Card 2: Loan Summary -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center border-b pb-4">
+                        <i class="fas fa-calculator text-orange-600 mr-3"></i>
+                        Loan Summary
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Property Address</label>
-                                <input type="text" id="property_address" name="property_address"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Loan Type</label>
+                                <select id="loan_type" name="loan_type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Loan Type</option>
+                                    @foreach($loanTypes as $loanType)
+                                    <option value="{{ $loanType->name }}" {{ $loanType->name == 'Fix and Flip' ?
+                                        'selected' : '' }}>
+                                        {{ $loanType->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Transaction Type</label>
+                                <select id="transaction_type" name="transaction_type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Transaction Type</option>
+                                    @foreach($transactionTypes as $transactionType)
+                                    <option value="{{ $transactionType->name }}" {{ $transactionType->name ==
+                                        'Purchase' ? 'selected' : '' }}>
+                                        {{ $transactionType->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Property Address</label>
+                            <input type="text" id="property_address" name="property_address"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="2344 Meriden Pkwy CT" value="2344 Meriden Pkwy CT">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+                                <select id="state" name="state"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select State</option>
+                                    @foreach($states as $state)
+                                    <option value="{{ $state->code }}" {{ $state->code == 'CT' ? 'selected' : '' }}>
+                                        {{ $state->code }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
+                                <input type="text" id="zip_code" name="zip_code"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="2344 Meriden Pkwy CT" value="2344 Meriden Pkwy CT">
+                                    placeholder="06489" value="06489">
                             </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
-                                    <select id="state" name="state"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Select State</option>
-                                        @foreach($states as $state)
-                                        <option value="{{ $state->code }}" {{ $state->code == 'CT' ? 'selected' : '' }}>
-                                            {{ $state->code }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
-                                    <input type="text" id="zip_code" name="zip_code"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="06489" value="06489">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
-                                    <select id="property_type" name="property_type"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Select Property Type</option>
-                                        @foreach($propertyTypes as $propertyType)
-                                        <option value="{{ $propertyType->name }}" {{ $propertyType->name == 'Single
-                                            Family' ? 'selected' : '' }}>
-                                            {{ $propertyType->name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Loan Term -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Loan Term</label>
-                                <div class="flex space-x-4">
-                                    <label class="flex items-center">
-                                        <input type="radio" name="loan_term" value="12" checked
-                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                        <span class="ml-2 text-gray-700">12 Months</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="loan_term" value="18"
-                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                        <span class="ml-2 text-gray-700">18 Months</span>
-                                    </label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                                <select id="property_type" name="property_type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Property Type</option>
+                                    @foreach($propertyTypes as $propertyType)
+                                    <option value="{{ $propertyType->name }}" {{ $propertyType->name == 'Single
+                                        Family' ? 'selected' : '' }}>
+                                        {{ $propertyType->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Loan Term -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Loan Term</label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="loan_term" value="12" checked
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <span class="ml-2 text-gray-700">12 Months</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="loan_term" value="18"
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <span class="ml-2 text-gray-700">18 Months</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Financial Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Price</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                                    <input type="number" id="purchase_price" name="purchase_price" min="0"
+                                        class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="100,000" value="100000">
                                 </div>
                             </div>
-
-                            <!-- Financial Details -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Price</label>
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2 text-gray-500">$</span>
-                                        <input type="number" id="purchase_price" name="purchase_price" min="0"
-                                            class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="100,000" value="100000">
-                                    </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Rehab Budget</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                                    <input type="number" id="rehab_budget" name="rehab_budget" min="0"
+                                        class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="40,000" value="40000">
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Rehab Budget</label>
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2 text-gray-500">$</span>
-                                        <input type="number" id="rehab_budget" name="rehab_budget" min="0"
-                                            class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="40,000" value="40000">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">ARV</label>
-                                    <div class="relative">
-                                        <span class="absolute left-3 top-2 text-gray-500">$</span>
-                                        <input type="number" id="arv" name="arv" min="0"
-                                            class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="1,100,000" value="1100000">
-                                    </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ARV</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                                    <input type="number" id="arv" name="arv" min="0"
+                                        class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="1,100,000" value="1100000">
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Calculate Button -->
-                    <div class="text-center">
-                        <button type="submit" id="calculateBtn"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
-                            <i class="fas fa-calculator mr-2"></i>
-                            Calculate Loan
-                        </button>
-                    </div>
                 </div>
             </div>
-        </form>
+    </div>
 
-        <!-- Loading Spinner -->
-        <div id="loadingSpinner" class="hidden text-center py-8">
-            <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
-            <p class="text-gray-600 mt-2">Calculating loan options...</p>
-        </div>
+    <!-- Calculate Button - Centered below both cards -->
+    <div class="text-center mt-8">
+        <button type="submit" id="calculateBtn"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg text-lg">
+            <i class="fas fa-calculator mr-3"></i>
+            Calculate Loan
+        </button>
+    </div>
+    </form>
 
-        <!-- Results Section -->
-        <div id="resultsSection" class="hidden mt-12">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Loan Program Results</h2>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden text-center py-8">
+        <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+        <p class="text-gray-600 mt-2">Calculating loan options...</p>
+    </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Full Appraisal Table -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-blue-800 mb-4 text-center">
-                        <i class="fas fa-file-alt mr-2"></i>
-                        Loan Program: Full Appraisal
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-gray-700">
-                            <thead class="bg-blue-50 text-blue-900">
-                                <tr>
-                                    <th class="px-3 py-2 text-left">Loan Term</th>
-                                    <th class="px-3 py-2 text-left">Interest Rate</th>
-                                    <th class="px-3 py-2 text-left">Lender Points</th>
-                                    <th class="px-3 py-2 text-left">Max LTV</th>
-                                    <th class="px-3 py-2 text-left">Max LTC</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fullAppraisalTable">
-                                <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Results Section -->
+    <div id="resultsSection" class="hidden mt-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Loan Program Results</h2>
 
-                <!-- Desktop Appraisal Table -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-green-800 mb-4 text-center">
-                        <i class="fas fa-desktop mr-2"></i>
-                        Loan Program: Desktop Appraisal
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-gray-700">
-                            <thead class="bg-green-50 text-green-900">
-                                <tr>
-                                    <th class="px-3 py-2 text-left">Loan Term</th>
-                                    <th class="px-3 py-2 text-left">Interest Rate</th>
-                                    <th class="px-3 py-2 text-left">Lender Points</th>
-                                    <th class="px-3 py-2 text-left">Max LTV</th>
-                                    <th class="px-3 py-2 text-left">Max LTC</th>
-                                </tr>
-                            </thead>
-                            <tbody id="desktopAppraisalTable">
-                                <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Loan Details -->
-            <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Loan Details
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Full Appraisal Table -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4 text-center">
+                    <i class="fas fa-file-alt mr-2"></i>
+                    Loan Program: Full Appraisal
                 </h3>
-                <div id="loanDetails" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <!-- Will be populated by JavaScript -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-gray-700">
+                        <thead class="bg-blue-50 text-blue-900">
+                            <tr>
+                                <th class="px-3 py-2 text-left">Loan Term</th>
+                                <th class="px-3 py-2 text-left">Interest Rate</th>
+                                <th class="px-3 py-2 text-left">Lender Points</th>
+                                <th class="px-3 py-2 text-left">Max LTV</th>
+                                <th class="px-3 py-2 text-left">Max LTC</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullAppraisalTable">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Desktop Appraisal Table -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-green-800 mb-4 text-center">
+                    <i class="fas fa-desktop mr-2"></i>
+                    Loan Program: Desktop Appraisal
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-gray-700">
+                        <thead class="bg-green-50 text-green-900">
+                            <tr>
+                                <th class="px-3 py-2 text-left">Loan Term</th>
+                                <th class="px-3 py-2 text-left">Interest Rate</th>
+                                <th class="px-3 py-2 text-left">Lender Points</th>
+                                <th class="px-3 py-2 text-left">Max LTV</th>
+                                <th class="px-3 py-2 text-left">Max LTC</th>
+                            </tr>
+                        </thead>
+                        <tbody id="desktopAppraisalTable">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Error Message -->
-        <div id="errorMessage" class="hidden mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            <i class="fas fa-exclamation-triangle mr-2"></i>
-            <span id="errorText"></span>
+        <!-- Additional Loan Details -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-info-circle mr-2"></i>
+                Loan Details
+            </h3>
+            <div id="loanDetails" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <!-- Will be populated by JavaScript -->
+            </div>
         </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        <span id="errorText"></span>
+    </div>
     </div>
 
     <script>
