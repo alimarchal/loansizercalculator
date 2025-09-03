@@ -256,38 +256,30 @@
                         </div>
                     </div>
 
-                    <!-- Row 4: Property Address (1 input - full width) -->
+                    <!-- Row 4: Property Address & Financial Details (4 inputs) -->
                     <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 border border-red-100 mb-4">
-                        <div class="grid grid-cols-1 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Property Address</label>
                                 <input type="text" id="property_address" name="property_address"
                                     class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
                                     placeholder="2344 Meriden Pkwy CT" value="2344 Meriden Pkwy CT">
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 5: Financial Details (3 inputs) -->
-                    <div class="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-4 border border-indigo-100">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Purchase
-                                    Price</label>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Purchase Price</label>
                                 <div class="relative">
                                     <span class="absolute left-2 top-2 text-gray-500 text-sm">$</span>
                                     <input type="number" id="purchase_price" name="purchase_price" min="0"
-                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm"
+                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
                                         placeholder="100,000" value="100000">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Rehab
-                                    Budget</label>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Rehab Budget</label>
                                 <div class="relative">
                                     <span class="absolute left-2 top-2 text-gray-500 text-sm">$</span>
                                     <input type="number" id="rehab_budget" name="rehab_budget" min="0"
-                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm"
+                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
                                         placeholder="40,000" value="40000">
                                 </div>
                             </div>
@@ -296,7 +288,7 @@
                                 <div class="relative">
                                     <span class="absolute left-2 top-2 text-gray-500 text-sm">$</span>
                                     <input type="number" id="arv" name="arv" min="0"
-                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm"
+                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
                                         placeholder="1,100,000" value="1100000">
                                 </div>
                             </div>
