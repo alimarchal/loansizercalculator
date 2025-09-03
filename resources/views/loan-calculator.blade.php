@@ -528,15 +528,94 @@
                 const fullAppraisalRow = document.getElementById('fullAppraisalRow');
                 const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
                 
-                // Separate loans by program type
-                const fullAppraisalLoans = loans.filter(loan => 
-                    loan.loan_program === 'FULL APPRAISAL' || 
-                    loan.display_name?.includes('FULL APPRAISAL')
-                );
-                const desktopAppraisalLoans = loans.filter(loan => 
-                    loan.loan_program === 'DESKTOP APPRAISAL' || 
-                    loan.display_name?.includes('DESKTOP APPRAISAL')
-                );
+                // Check if this is New Construction loan type
+                const isNewConstruction = loans.length > 0 && loans[0].loan_type === 'New Construction';
+                
+                if (isNewConstruction) {
+                    // For New Construction, separate by EXPERIENCED BUILDER and NEW BUILDER
+                    const experiencedBuilderLoans = loans.filter(loan => 
+                        loan.loan_program === 'EXPERIENCED BUILDER'
+                    );
+                    const newBuilderLoans = loans.filter(loan => 
+                        loan.loan_program === 'NEW BUILDER'
+                    );
+                    
+                    // Update labels and populate with New Construction data
+                    populateNewConstructionResults(experiencedBuilderLoans, newBuilderLoans);
+                } else {
+                    // Separate loans by program type (existing logic)
+                    const fullAppraisalLoans = loans.filter(loan => 
+                        loan.loan_program === 'FULL APPRAISAL' || 
+                        loan.display_name?.includes('FULL APPRAISAL')
+                    );
+                    const desktopAppraisalLoans = loans.filter(loan => 
+                        loan.loan_program === 'DESKTOP APPRAISAL' || 
+                        loan.display_name?.includes('DESKTOP APPRAISAL')
+                    );
+                    
+                    // Populate with regular loan data
+                    populateRegularResults(fullAppraisalLoans, desktopAppraisalLoans);
+                }
+            }
+            
+            function populateNewConstructionResults(experiencedBuilderLoans, newBuilderLoans) {
+                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
+                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
+                
+                // Update Experienced Builder row
+                if (experiencedBuilderLoans.length > 0) {
+                    const loanData = experiencedBuilderLoans[0].loan_type_and_loan_program_table;
+                    fullAppraisalRow.innerHTML = `
+                        <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-blue-700">
+                            <i class="fas fa-hammer mr-2"></i>Experienced Builder
+                        </td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                    `;
+                    
+                    // Update Experienced Builder card
+                    document.getElementById('fullAppraisalCard').querySelector('h3').textContent = 'For Experienced Builder';
+                    document.getElementById('fullAppraisalCard').querySelector('i').className = 'fas fa-hammer text-blue-600';
+                    document.getElementById('fullAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
+                    document.getElementById('fullAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
+                    document.getElementById('fullAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
+                }
+                
+                // Update New Builder row
+                if (newBuilderLoans.length > 0) {
+                    const loanData = newBuilderLoans[0].loan_type_and_loan_program_table;
+                    desktopAppraisalRow.innerHTML = `
+                        <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-green-700">
+                            <i class="fas fa-tools mr-2"></i>New Builder
+                        </td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                    `;
+                    
+                    // Update New Builder card
+                    document.getElementById('desktopAppraisalCard').querySelector('h3').textContent = 'For New Builder';
+                    document.getElementById('desktopAppraisalCard').querySelector('i').className = 'fas fa-tools text-green-600';
+                    document.getElementById('desktopAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
+                    document.getElementById('desktopAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
+                    document.getElementById('desktopAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
+                }
+            }
+            
+            function populateRegularResults(fullAppraisalLoans, desktopAppraisalLoans) {
+                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
+                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
+                
+                // Reset labels back to regular loan types
+                document.getElementById('fullAppraisalCard').querySelector('h3').textContent = 'For Full Appraisal';
+                document.getElementById('fullAppraisalCard').querySelector('i').className = 'fas fa-file-alt text-blue-600';
+                document.getElementById('desktopAppraisalCard').querySelector('h3').textContent = 'For Desktop Appraisal';
+                document.getElementById('desktopAppraisalCard').querySelector('i').className = 'fas fa-desktop text-green-600';
                 
                 // Update Full Appraisal table row
                 if (fullAppraisalLoans.length > 0) {
@@ -582,6 +661,12 @@
             function resetToDefaults() {
                 const fullAppraisalRow = document.getElementById('fullAppraisalRow');
                 const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
+                
+                // Reset labels back to default
+                document.getElementById('fullAppraisalCard').querySelector('h3').textContent = 'For Full Appraisal';
+                document.getElementById('fullAppraisalCard').querySelector('i').className = 'fas fa-file-alt text-blue-600';
+                document.getElementById('desktopAppraisalCard').querySelector('h3').textContent = 'For Desktop Appraisal';
+                document.getElementById('desktopAppraisalCard').querySelector('i').className = 'fas fa-desktop text-green-600';
                 
                 // Reset Full Appraisal table row to defaults
                 fullAppraisalRow.innerHTML = `
