@@ -187,14 +187,14 @@ class LoanMatrixApiController extends Controller
 
                     // User inputs data
                     'user_inputs' => [
-                        'credit_score' => $creditScore,
+                        'credit_score' => $creditScore ? (float) number_format((float) $creditScore, 2, '.', '') : 0.00,
                         'experience' => $experience,
                         'loan_type' => $loanType,
                         'transaction_type' => $transactionType,
-                        'loan_term' => $request->loan_term,
-                        'purchase_price' => $request->purchase_price,
-                        'arv' => $request->arv,
-                        'rehab_budget' => $request->rehab_budget,
+                        'loan_term' => $request->loan_term ? (float) number_format((float) $request->loan_term, 2, '.', '') : 0.00,
+                        'purchase_price' => $request->purchase_price ? (float) number_format((float) $request->purchase_price, 2, '.', '') : 0.00,
+                        'arv' => $request->arv ? (float) number_format((float) $request->arv, 2, '.', '') : 0.00,
+                        'rehab_budget' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
                     ],
 
                     // Additional loan type and loan program table data
