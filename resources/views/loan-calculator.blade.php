@@ -77,317 +77,494 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-2 py-1 max-w-7xl">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
         <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Loan Calculator</h1>
+            <p class="text-gray-600 mt-2">Calculate loan options based on your requirements</p>
+        </div>
 
         <!-- Main Form -->
-        <form id="loanCalculatorForm" class="space-y-2">
+        <form id="loanCalculatorForm" method="POST" action="/calculate-loan">
+            @csrf
 
-            <!-- Single Card: Borrower Profile & Loan Summary -->
-            <div
-                class="bg-white rounded-xl shadow-lg px-3 py-2 border border-gray-100 hover:shadow-xl transition-all duration-300">
-                <h2 class="text-lg font-bold text-gray-800 mb-2 flex items-center pb-1 border-b border-gray-200">
-                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-1 rounded-full mr-2">
-                        <i class="fas fa-user-circle text-white text-sm"></i>
-                    </div>
-                    Borrower Profile & Information
-                </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-                <!-- Row 1: Profile Details + Borrower Information (5 inputs total) -->
-                <div class="bg-gradient-to-br from-blue-50 to-green-50 rounded-lg p-2 border border-blue-100 mb-1">
-                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-2">
-                        <!-- Profile Details (2 inputs) -->
-                        <div class="lg:col-span-2">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Credit
-                                        Score</label>
-                                    <input type="number" id="credit_score" name="credit_score" min="300" max="850"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="Enter credit score" value="">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Experience
-                                        (Years)</label>
-                                    <input type="number" id="experience" name="experience" min="0" max="50"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="Enter years of experience" value="">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Borrower Information (3 inputs) -->
-                        <div class="lg:col-span-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Name</label>
-                                    <input type="text" id="borrower_name" name="borrower_name"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="Enter full name" value="">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
-                                    <input type="email" id="borrower_email" name="borrower_email"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="Enter email address" value="">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Phone</label>
-                                    <input type="tel" id="borrower_phone" name="borrower_phone"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                        placeholder="Enter phone number" value="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Credit Score -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="credit_score">
+                        Credit Score
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="number" name="credit_score" id="credit_score" min="300" max="850" value=""
+                        placeholder="Enter credit score">
                 </div>
 
-                <!-- Row 2: Broker Information (4 inputs) -->
-                <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-2 border border-purple-100 mb-1">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Name</label>
-                            <input type="text" id="broker_name" name="broker_name"
-                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="Enter broker name" value="">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Email</label>
-                            <input type="email" id="broker_email" name="broker_email"
-                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="Enter broker email" value="">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Phone</label>
-                            <input type="tel" id="broker_phone" name="broker_phone"
-                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="Enter broker phone" value="">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Points (%)</label>
-                            <input type="number" id="broker_points" name="broker_points" min="0" max="10" step="0.1"
-                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                placeholder="Enter points percentage" value="">
-                        </div>
-                    </div>
+                <!-- Experience -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="experience">
+                        Experience (Years)
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="number" name="experience" id="experience" min="0" max="50" value=""
+                        placeholder="Enter years of experience">
                 </div>
 
-                <!-- Loan Summary Section -->
-                <div class="border-t border-gray-200 pt-2">
-                    <h3 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
-                        <div class="bg-gradient-to-r from-orange-500 to-red-600 p-1 rounded-full mr-2">
-                            <i class="fas fa-calculator text-white text-sm"></i>
-                        </div>
-                        Loan Summary
-                    </h3>
-
-                    <!-- Row 3: Loan & Property Details (6 inputs) -->
-                    <div
-                        class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-2 border border-orange-100 mb-1">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Loan Type</label>
-                                <select id="loan_type" name="loan_type"
-                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
-                                    <option value="">-- Select Loan Type --</option>
-                                    @foreach($loanTypes as $loanType)
-                                    <option value="{{ $loanType->name }}">
-                                        {{ $loanType->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction
-                                    Type</label>
-                                <select id="transaction_type" name="transaction_type"
-                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
-                                    <option value="">-- Select Transaction Type --</option>
-                                    @foreach($transactionTypes as $transactionType)
-                                    <option value="{{ $transactionType->name }}">
-                                        {{ $transactionType->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Loan Term</label>
-                                <select id="loan_term" name="loan_term"
-                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
-                                    <option value="">-- Select Loan Term --</option>
-                                    <option value="12">12 Months</option>
-                                    <option value="18">18 Months</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Property
-                                    Type</label>
-                                <select id="property_type" name="property_type"
-                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
-                                    <option value="">-- Select Property Type --</option>
-                                    @foreach($propertyTypes as $propertyType)
-                                    <option value="{{ $propertyType->name }}">
-                                        {{ $propertyType->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">State</label>
-                                <select id="state" name="state"
-                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full select2">
-                                    <option value="">-- Select State --</option>
-                                    @foreach($states as $state)
-                                    <option value="{{ $state->code }}">
-                                        {{ $state->code }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Zip Code</label>
-                                <input type="text" id="zip_code" name="zip_code"
-                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                    placeholder="Enter zip code" value="">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 4: Property Address & Financial Details (4 inputs) -->
-                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-2 border border-red-100 mb-1">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Property Address</label>
-                                <input type="text" id="property_address" name="property_address"
-                                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-                                    placeholder="Enter property address" value="">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Purchase Price</label>
-                                <div class="relative">
-                                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
-                                    <input type="number" id="purchase_price" name="purchase_price" min="0"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
-                                        placeholder="Enter purchase price" value="">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Rehab Budget</label>
-                                <div class="relative">
-                                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
-                                    <input type="number" id="rehab_budget" name="rehab_budget" min="0"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
-                                        placeholder="Enter rehab budget" value="">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">ARV</label>
-                                <div class="relative">
-                                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
-                                    <input type="number" id="arv" name="arv" min="0"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
-                                        placeholder="Enter ARV amount" value="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Borrower Name -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="borrower_name">
+                        Borrower Name
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="text" name="borrower_name" id="borrower_name" value="" placeholder="Enter full name">
                 </div>
 
-                <!-- Loan Program Results Section -->
-                <div class="border-t border-gray-200 pt-2 mt-2">
-                    <h3 class="text-lg font-bold text-gray-800 mb-1 flex items-center">
-                        <div class="bg-gradient-to-r from-green-500 to-teal-600 p-1 rounded-full mr-2">
-                            <i class="fas fa-chart-bar text-white text-xs"></i>
-                        </div>
-                        Loan Program Results
-                    </h3>
-
-                    <!-- Compact Results Table -->
-                    <div class="bg-white rounded-lg p-2 border border-gray-100">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-xs border-collapse" style="border: 1px solid #000;">
-                                <thead>
-                                    <tr>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-left font-semibold bg-gray-100">Program</th>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Rate</th>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Points</th>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Max LTV</th>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Max LTC</th>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Purchase Loan</th>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Rehab Loan</th>
-                                        <th style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center font-semibold bg-gray-100">Total Loan</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="compactResultsTable" class="text-xs">
-                                    <!-- Default rows showing 0.00 values -->
-                                    <tr id="fullAppraisalRow">
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 font-medium text-blue-700">
-                                            <i class="fas fa-file-alt mr-1"></i>Full Appraisal
-                                        </td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
-                                        <td style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
-                                        <td style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
-                                    </tr>
-                                    <tr id="desktopAppraisalRow">
-                                        <td style="border: 1px solid #000;"
-                                            class="px-2 py-2 font-medium text-green-700">
-                                            <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
-                                        </td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
-                                        <td style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
-                                        <td style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
-                                        <td style="border: 1px solid #000;"
-                                            class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Loading Spinner (moved inside card) -->
-                    <div id="loadingSpinner" class="hidden text-center py-2">
-                        <i class="fas fa-spinner fa-spin text-lg text-blue-600"></i>
-                        <p class="text-gray-600 text-xs mt-1">Calculating loan options...</p>
-                    </div>
-
-                    <!-- Error Message (moved inside card) -->
-                    <div id="errorMessage"
-                        class="hidden mt-2 bg-red-50 border border-red-200 text-red-700 px-2 py-1 rounded-md text-xs">
-                        <i class="fas fa-exclamation-triangle mr-1"></i>
-                        <span id="errorText"></span>
-                    </div>
+                <!-- Borrower Email -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="borrower_email">
+                        Borrower Email
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="email" name="borrower_email" id="borrower_email" value=""
+                        placeholder="Enter email address">
                 </div>
 
-                <!-- Calculate Button - Inside card -->
-                <div class="text-center mt-2 pt-2 border-t border-gray-200">
-                    <button type="submit" id="calculateBtn"
-                        class="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md text-sm border border-transparent hover:border-white">
-                        <i class="fas fa-calculator mr-1"></i>
-                        Calculate Loan Options
-                    </button>
+                <!-- Borrower Phone -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="borrower_phone">
+                        Borrower Phone
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="tel" name="borrower_phone" id="borrower_phone" value="" placeholder="Enter phone number">
                 </div>
+
+                <!-- Broker Name -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="broker_name">
+                        Broker Name
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="text" name="broker_name" id="broker_name" value="" placeholder="Enter broker name">
+                </div>
+
+                <!-- Broker Email -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="broker_email">
+                        Broker Email
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="email" name="broker_email" id="broker_email" value="" placeholder="Enter broker email">
+                </div>
+
+                <!-- Broker Phone -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="broker_phone">
+                        Broker Phone
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="tel" name="broker_phone" id="broker_phone" value="" placeholder="Enter broker phone">
+                </div>
+
+                <!-- Broker Points -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="broker_points">
+                        Broker Points (%)
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="number" name="broker_points" id="broker_points" min="0" max="10" step="0.1" value=""
+                        placeholder="Enter points percentage">
+                </div>
+
+                <!-- Loan Type -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="loan_type">
+                        Loan Type
+                    </label>
+                    <select name="loan_type" id="loan_type"
+                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">-- Select Loan Type --</option>
+                        @foreach($loanTypes as $loanType)
+                        <option value="{{ $loanType->name }}">{{ $loanType->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Transaction Type -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="transaction_type">
+                        Transaction Type
+                    </label>
+                    <select name="transaction_type" id="transaction_type"
+                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">-- Select Transaction Type --</option>
+                        @foreach($transactionTypes as $transactionType)
+                        <option value="{{ $transactionType->name }}">{{ $transactionType->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Loan Term -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="loan_term">
+                        Loan Term
+                    </label>
+                    <select name="loan_term" id="loan_term"
+                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">-- Select Loan Term --</option>
+                        <option value="12">12 Months</option>
+                        <option value="18">18 Months</option>
+                    </select>
+                </div>
+
+                <!-- Property Type -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="property_type">
+                        Property Type
+                    </label>
+                    <select name="property_type" id="property_type"
+                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">-- Select Property Type --</option>
+                        @foreach($propertyTypes as $propertyType)
+                        <option value="{{ $propertyType->name }}">{{ $propertyType->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- State -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="state">
+                        State
+                    </label>
+                    <select name="state" id="state"
+                        class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">-- Select State --</option>
+                        @foreach($states as $state)
+                        <option value="{{ $state->code }}">{{ $state->code }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Zip Code -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="zip_code">
+                        Zip Code
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="text" name="zip_code" id="zip_code" value="" placeholder="Enter zip code">
+                </div>
+
+                <!-- Property Address -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="property_address">
+                        Property Address
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="text" name="property_address" id="property_address" value=""
+                        placeholder="Enter property address">
+                </div>
+
+                <!-- Purchase Price -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="purchase_price">
+                        Purchase Price
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="number" name="purchase_price" id="purchase_price" min="0" value=""
+                        placeholder="Enter purchase price">
+                </div>
+
+                <!-- Rehab Budget -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="rehab_budget">
+                        Rehab Budget
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="number" name="rehab_budget" id="rehab_budget" min="0" value=""
+                        placeholder="Enter rehab budget">
+                </div>
+
+                <!-- ARV -->
+                <div>
+                    <label class="block font-medium text-sm text-gray-700" for="arv">
+                        ARV (After Repair Value)
+                    </label>
+                    <input
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        type="number" name="arv" id="arv" min="0" value="" placeholder="Enter ARV amount">
+                </div>
+
+            </div>
+
+            <!-- Submit and Reset Buttons -->
+            <div class="mt-6 flex space-x-4">
+                <button type="submit" id="calculateBtn"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    Calculate Loan Options
+                </button>
+                <button type="reset"
+                    class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                        </path>
+                    </svg>
+                    Reset Form
+                </button>
             </div>
         </form>
+
+        <!-- Results Section -->
+        <div class="mt-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Loan Program Results</h2>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="hidden text-center py-8">
+                <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <p class="text-gray-600 text-sm mt-2">Calculating loan options...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage"
+                class="hidden mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+                <div class="flex">
+                    <svg class="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            <div id="resultsSection" class="hidden">
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <table class="w-full border-collapse" style="border: 1px solid #000;">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-left font-semibold text-gray-900">Program</th>
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center font-semibold text-gray-900">Rate</th>
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center font-semibold text-gray-900">Points</th>
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center font-semibold text-gray-900">Max LTV</th>
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center font-semibold text-gray-900">Max LTC</th>
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center font-semibold text-gray-900">Purchase Loan</th>
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center font-semibold text-gray-900">Rehab Loan</th>
+                                <th style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center font-semibold text-gray-900">Total Loan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compactResultsTable">
+                            <!-- Default rows showing 0.00 values -->
+                            <tr id="fullAppraisalRow">
+                                <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-blue-700">
+                                    <i class="fas fa-file-alt mr-2"></i>Full Appraisal
+                                </td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center text-blue-600 font-medium">$0.00</td>
+                                <td style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center text-green-600 font-medium">$0.00</td>
+                                <td style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center text-purple-600 font-medium">$0.00</td>
+                            </tr>
+                            <tr id="desktopAppraisalRow">
+                                <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-green-700">
+                                    <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
+                                </td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                <td style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center text-blue-600 font-medium">$0.00</td>
+                                <td style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center text-green-600 font-medium">$0.00</td>
+                                <td style="border: 1px solid #000;"
+                                    class="px-4 py-3 text-center text-purple-600 font-medium">$0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div>
+        <label class="block text-xs font-semibold text-gray-700 mb-1">Zip Code</label>
+        <input type="text" id="zip_code" name="zip_code"
+            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+            placeholder="Enter zip code" value="">
+    </div>
+    </div>
+    </div>
+
+    <!-- Row 4: Property Address & Financial Details (4 inputs) -->
+    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-2 border border-red-100 mb-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Property Address</label>
+                <input type="text" id="property_address" name="property_address"
+                    class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
+                    placeholder="Enter property address" value="">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Purchase Price</label>
+                <div class="relative">
+                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
+                    <input type="number" id="purchase_price" name="purchase_price" min="0"
+                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
+                        placeholder="Enter purchase price" value="">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Rehab Budget</label>
+                <div class="relative">
+                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
+                    <input type="number" id="rehab_budget" name="rehab_budget" min="0"
+                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
+                        placeholder="Enter rehab budget" value="">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">ARV</label>
+                <div class="relative">
+                    <span class="absolute left-2 top-2 text-gray-500 text-xs">$</span>
+                    <input type="number" id="arv" name="arv" min="0"
+                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full pl-6"
+                        placeholder="Enter ARV amount" value="">
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Loan Program Results Section -->
+    <div class="border-t border-gray-200 pt-2 mt-2">
+        <h3 class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+            <div class="bg-gradient-to-r from-green-500 to-teal-600 p-1 rounded-full mr-2">
+                <i class="fas fa-chart-bar text-white text-xs"></i>
+            </div>
+            Loan Program Results
+        </h3>
+
+        <!-- Compact Results Table -->
+        <div class="bg-white rounded-lg p-2 border border-gray-100">
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs border-collapse" style="border: 1px solid #000;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-left font-semibold bg-gray-100">
+                                Program</th>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-center font-semibold bg-gray-100">
+                                Rate</th>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-center font-semibold bg-gray-100">
+                                Points</th>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-center font-semibold bg-gray-100">
+                                Max LTV</th>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-center font-semibold bg-gray-100">
+                                Max LTC</th>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-center font-semibold bg-gray-100">
+                                Purchase Loan</th>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-center font-semibold bg-gray-100">
+                                Rehab Loan</th>
+                            <th style="border: 1px solid #000;" class="px-2 py-2 text-center font-semibold bg-gray-100">
+                                Total Loan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="compactResultsTable" class="text-xs">
+                        <!-- Default rows showing 0.00 values -->
+                        <tr id="fullAppraisalRow">
+                            <td style="border: 1px solid #000;" class="px-2 py-2 font-medium text-blue-700">
+                                <i class="fas fa-file-alt mr-1"></i>Full Appraisal
+                            </td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-blue-600 font-medium">
+                                $0.00</td>
+                            <td style="border: 1px solid #000;"
+                                class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                            <td style="border: 1px solid #000;"
+                                class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                        </tr>
+                        <tr id="desktopAppraisalRow">
+                            <td style="border: 1px solid #000;" class="px-2 py-2 font-medium text-green-700">
+                                <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
+                            </td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center">0.00%</td>
+                            <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-blue-600 font-medium">
+                                $0.00</td>
+                            <td style="border: 1px solid #000;"
+                                class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                            <td style="border: 1px solid #000;"
+                                class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Loading Spinner (moved inside card) -->
+        <div id="loadingSpinner" class="hidden text-center py-2">
+            <i class="fas fa-spinner fa-spin text-lg text-blue-600"></i>
+            <p class="text-gray-600 text-xs mt-1">Calculating loan options...</p>
+        </div>
+
+        <!-- Error Message (moved inside card) -->
+        <div id="errorMessage"
+            class="hidden mt-2 bg-red-50 border border-red-200 text-red-700 px-2 py-1 rounded-md text-xs">
+            <i class="fas fa-exclamation-triangle mr-1"></i>
+            <span id="errorText"></span>
+        </div>
+    </div>
+
+    <!-- Calculate Button - Inside card -->
+    <div class="text-center mt-2 pt-2 border-t border-gray-200">
+        <button type="submit" id="calculateBtn"
+            class="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md text-sm border border-transparent hover:border-white">
+            <i class="fas fa-calculator mr-1"></i>
+            Calculate Loan Options
+        </button>
+    </div>
+    </div>
+    </form>
     </div>
 
     <script>
