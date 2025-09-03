@@ -96,23 +96,23 @@
                             <!-- Credit Score -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="credit_score">
-                                    Credit Score
+                                    Credit Score <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
                                     type="number" name="credit_score" id="credit_score" min="300" max="850" value=""
-                                    placeholder="Enter credit score">
+                                    placeholder="Enter credit score" required>
                             </div>
 
                             <!-- Experience -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="experience">
-                                    Experience (Years)
+                                    Experience (Years) <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
                                     type="number" name="experience" id="experience" min="0" max="50" value=""
-                                    placeholder="Enter years of experience">
+                                    placeholder="Enter years of experience" required>
                             </div>
 
                             <!-- Borrower Name -->
@@ -195,10 +195,11 @@
                             <!-- Loan Type -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="loan_type">
-                                    Loan Type
+                                    Loan Type <span class="text-red-500">*</span>
                                 </label>
                                 <select name="loan_type" id="loan_type"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    required>
                                     <option value="">-- Select Loan Type --</option>
                                     @foreach($loanTypes as $loanType)
                                     <option value="{{ $loanType->name }}">{{ $loanType->name }}</option>
@@ -209,10 +210,11 @@
                             <!-- Transaction Type -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="transaction_type">
-                                    Transaction Type
+                                    Transaction Type <span class="text-red-500">*</span>
                                 </label>
                                 <select name="transaction_type" id="transaction_type"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    required>
                                     <option value="">-- Select Transaction Type --</option>
                                     @foreach($transactionTypes as $transactionType)
                                     <option value="{{ $transactionType->name }}">{{ $transactionType->name }}</option>
@@ -223,10 +225,11 @@
                             <!-- Loan Term -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="loan_term">
-                                    Loan Term
+                                    Loan Term <span class="text-red-500">*</span>
                                 </label>
                                 <select name="loan_term" id="loan_term"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    required>
                                     <option value="">-- Select Loan Term --</option>
                                     <option value="12">12 Months</option>
                                     <option value="18">18 Months</option>
@@ -236,10 +239,11 @@
                             <!-- Property Type -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="property_type">
-                                    Property Type
+                                    Property Type <span class="text-red-500">*</span>
                                 </label>
                                 <select name="property_type" id="property_type"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    required>
                                     <option value="">-- Select Property Type --</option>
                                     @foreach($propertyTypes as $propertyType)
                                     <option value="{{ $propertyType->name }}">{{ $propertyType->name }}</option>
@@ -285,33 +289,34 @@
                             <!-- Purchase Price -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="purchase_price">
-                                    Purchase Price
+                                    Purchase Price <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
                                     type="number" name="purchase_price" id="purchase_price" min="0" value=""
-                                    placeholder="Enter purchase price">
+                                    placeholder="Enter purchase price" required>
                             </div>
 
                             <!-- Rehab Budget -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="rehab_budget">
-                                    Rehab Budget
+                                    Rehab Budget <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
                                     type="number" name="rehab_budget" id="rehab_budget" min="0" value=""
-                                    placeholder="Enter rehab budget">
+                                    placeholder="Enter rehab budget" required>
                             </div>
 
                             <!-- ARV -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="arv">
-                                    ARV (After Repair Value)
+                                    ARV (After Repair Value) <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="arv" id="arv" min="0" value="" placeholder="Enter ARV amount">
+                                    type="number" name="arv" id="arv" min="0" value="" placeholder="Enter ARV amount"
+                                    required>
                             </div>
 
                         </div>
