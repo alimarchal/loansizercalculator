@@ -77,40 +77,40 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-2 max-w-7xl">
+    <div class="container mx-auto px-2 py-1 max-w-7xl">
         <!-- Header -->
 
         <!-- Main Form -->
-        <form id="loanCalculatorForm" class="space-y-10">
+        <form id="loanCalculatorForm" class="space-y-2">
 
             <!-- Single Card: Borrower Profile & Loan Summary -->
             <div
-                class="bg-white rounded-2xl shadow-xl px-6 py-2 border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                <h2 class="text-2xl font-bold text-gray-800 mb-2 flex items-center pb-1 border-b  border-gray-200">
-                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-full mr-3">
-                        <i class="fas fa-user-circle text-white text-lg"></i>
+                class="bg-white rounded-xl shadow-lg px-3 py-2 border border-gray-100 hover:shadow-xl transition-all duration-300">
+                <h2 class="text-lg font-bold text-gray-800 mb-2 flex items-center pb-1 border-b border-gray-200">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-1 rounded-full mr-2">
+                        <i class="fas fa-user-circle text-white text-sm"></i>
                     </div>
                     Borrower Profile & Information
                 </h2>
 
                 <!-- Row 1: Profile Details + Borrower Information (5 inputs total) -->
-                <div class="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100 mb-1">
-                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <div class="bg-gradient-to-br from-blue-50 to-green-50 rounded-lg p-2 border border-blue-100 mb-1">
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-2">
                         <!-- Profile Details (2 inputs) -->
                         <div class="lg:col-span-2">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Credit
                                         Score</label>
                                     <input type="number" id="credit_score" name="credit_score" min="300" max="850"
-                                        class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
                                         placeholder="e.g. 740" value="740">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Experience
                                         (Years)</label>
                                     <input type="number" id="experience" name="experience" min="0" max="50"
-                                        class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
                                         placeholder="e.g. 4" value="4">
                                 </div>
                             </div>
@@ -118,23 +118,23 @@
 
                         <!-- Borrower Information (3 inputs) -->
                         <div class="lg:col-span-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Name</label>
                                     <input type="text" id="borrower_name" name="borrower_name"
-                                        class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-sm"
+                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-xs"
                                         placeholder="Jimmy Test" value="Jimmy Test">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
                                     <input type="email" id="borrower_email" name="borrower_email"
-                                        class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-sm"
+                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-xs"
                                         placeholder="hedwards@goldmanfunding.com" value="hedwards@goldmanfunding.com">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Phone</label>
                                     <input type="tel" id="borrower_phone" name="borrower_phone"
-                                        class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-sm"
+                                        class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-xs"
                                         placeholder="631-602-0460" value="631-602-0460">
                                 </div>
                             </div>
@@ -143,39 +143,39 @@
                 </div>
 
                 <!-- Row 2: Broker Information (4 inputs) -->
-                <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-100 mb-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-2 border border-purple-100 mb-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Name</label>
                             <input type="text" id="broker_name" name="broker_name"
-                                class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
+                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
                                 placeholder="John Doe" value="John Doe">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Email</label>
                             <input type="email" id="broker_email" name="broker_email"
-                                class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
+                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
                                 placeholder="hedwards@goldmanfunding.com" value="hedwards@goldmanfunding.com">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Phone</label>
                             <input type="tel" id="broker_phone" name="broker_phone"
-                                class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
+                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
                                 placeholder="631-602-0460" value="631-602-0460">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1"> Broker Points (%)</label>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Broker Points (%)</label>
                             <input type="number" id="broker_points" name="broker_points" min="0" max="10" step="0.1"
-                                class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm"
+                                class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-xs"
                                 placeholder="1" value="1">
                         </div>
                     </div>
                 </div>
 
                 <!-- Loan Summary Section -->
-                <div class="border-t border-gray-200 pt-4">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <div class="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-full mr-3">
+                <div class="border-t border-gray-200 pt-2">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                        <div class="bg-gradient-to-r from-orange-500 to-red-600 p-1 rounded-full mr-2">
                             <i class="fas fa-calculator text-white text-sm"></i>
                         </div>
                         Loan Summary
@@ -183,12 +183,12 @@
 
                     <!-- Row 3: Loan & Property Details (6 inputs) -->
                     <div
-                        class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-4 border border-orange-100 mb-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                        class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-2 border border-orange-100 mb-1">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Loan Type</label>
                                 <select id="loan_type" name="loan_type"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm">
+                                    class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none select2 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
                                     <option value="">Select Loan Type</option>
                                     @foreach($loanTypes as $loanType)
                                     <option value="{{ $loanType->name }}" {{ $loanType->name == 'Fix and Flip' ?
@@ -202,7 +202,7 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction
                                     Type</label>
                                 <select id="transaction_type" name="transaction_type"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm">
+                                    class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none  select2 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
                                     <option value="">Select Transaction Type</option>
                                     @foreach($transactionTypes as $transactionType)
                                     <option value="{{ $transactionType->name }}" {{ $transactionType->name ==
@@ -215,7 +215,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Loan Term</label>
                                 <select id="loan_term" name="loan_term"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm">
+                                    class="w-full px-2 py-1 border border-gray-200 rounded-md select2 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
                                     <option value="12" selected>12 Months</option>
                                     <option value="18">18 Months</option>
                                 </select>
@@ -224,7 +224,7 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Property
                                     Type</label>
                                 <select id="property_type" name="property_type"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm">
+                                    class="w-full px-2 py-1 border border-gray-200 rounded-md select2 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
                                     <option value="">Select Property Type</option>
                                     @foreach($propertyTypes as $propertyType)
                                     <option value="{{ $propertyType->name }}" {{ $propertyType->name == 'Single
@@ -237,7 +237,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">State</label>
                                 <select id="state" name="state"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm">
+                                    class="w-full px-2 py-1 border border-gray-200 rounded-md select2 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs">
                                     <option value="">Select State</option>
                                     @foreach($states as $state)
                                     <option value="{{ $state->code }}" {{ $state->code == 'CT' ? 'selected' : ''
@@ -250,45 +250,45 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Zip Code</label>
                                 <input type="text" id="zip_code" name="zip_code"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-sm"
+                                    class="w-full px-2 py-1 border border-gray-200 rounded-md  focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-xs"
                                     placeholder="06489" value="06489">
                             </div>
                         </div>
                     </div>
 
                     <!-- Row 4: Property Address & Financial Details (4 inputs) -->
-                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 border border-red-100 mb-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-2 border border-red-100 mb-1">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Property Address</label>
                                 <input type="text" id="property_address" name="property_address"
-                                    class="w-full px-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
+                                    class="w-full px-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
                                     placeholder="2344 Meriden Pkwy CT" value="2344 Meriden Pkwy CT">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Purchase Price</label>
                                 <div class="relative">
-                                    <span class="absolute left-2 top-2 text-gray-500 text-sm">$</span>
+                                    <span class="absolute left-1 top-1 text-gray-500 text-xs">$</span>
                                     <input type="number" id="purchase_price" name="purchase_price" min="0"
-                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
+                                        class="w-full pl-4 pr-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
                                         placeholder="100,000" value="100000">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Rehab Budget</label>
                                 <div class="relative">
-                                    <span class="absolute left-2 top-2 text-gray-500 text-sm">$</span>
+                                    <span class="absolute left-1 top-1 text-gray-500 text-xs">$</span>
                                     <input type="number" id="rehab_budget" name="rehab_budget" min="0"
-                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
+                                        class="w-full pl-4 pr-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
                                         placeholder="40,000" value="40000">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">ARV</label>
                                 <div class="relative">
-                                    <span class="absolute left-2 top-2 text-gray-500 text-sm">$</span>
+                                    <span class="absolute left-1 top-1 text-gray-500 text-xs">$</span>
                                     <input type="number" id="arv" name="arv" min="0"
-                                        class="w-full pl-6 pr-2 py-1.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-sm"
+                                        class="w-full pl-4 pr-2 py-1 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all duration-200 text-xs"
                                         placeholder="1,100,000" value="1100000">
                                 </div>
                             </div>
@@ -297,55 +297,55 @@
                 </div>
 
                 <!-- Loan Program Results Section -->
-                <div class="border-t border-gray-200 pt-4 mt-4">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <div class="bg-gradient-to-r from-green-500 to-teal-600 p-2 rounded-full mr-3">
-                            <i class="fas fa-chart-bar text-white text-sm"></i>
+                <div class="border-t border-gray-200 pt-2 mt-2">
+                    <h3 class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+                        <div class="bg-gradient-to-r from-green-500 to-teal-600 p-1 rounded-full mr-2">
+                            <i class="fas fa-chart-bar text-white text-xs"></i>
                         </div>
                         Loan Program Results
                     </h3>
 
                     <!-- Compact Results Table -->
-                    <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-100">
+                    <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-lg p-2 border border-gray-100">
                         <div class="overflow-x-auto">
                             <table class="w-full text-xs">
                                 <thead class="bg-gray-100 text-gray-800">
                                     <tr>
-                                        <th class="px-2 py-2 text-left font-semibold">Program</th>
-                                        <th class="px-2 py-2 text-center font-semibold">Rate</th>
-                                        <th class="px-2 py-2 text-center font-semibold">Points</th>
-                                        <th class="px-2 py-2 text-center font-semibold">Max LTV</th>
-                                        <th class="px-2 py-2 text-center font-semibold">Max LTC</th>
-                                        <th class="px-2 py-2 text-center font-semibold">Purchase Loan</th>
-                                        <th class="px-2 py-2 text-center font-semibold">Rehab Loan</th>
-                                        <th class="px-2 py-2 text-center font-semibold">Total Loan</th>
+                                        <th class="px-1 py-1 text-left font-semibold">Program</th>
+                                        <th class="px-1 py-1 text-center font-semibold">Rate</th>
+                                        <th class="px-1 py-1 text-center font-semibold">Points</th>
+                                        <th class="px-1 py-1 text-center font-semibold">Max LTV</th>
+                                        <th class="px-1 py-1 text-center font-semibold">Max LTC</th>
+                                        <th class="px-1 py-1 text-center font-semibold">Purchase Loan</th>
+                                        <th class="px-1 py-1 text-center font-semibold">Rehab Loan</th>
+                                        <th class="px-1 py-1 text-center font-semibold">Total Loan</th>
                                     </tr>
                                 </thead>
                                 <tbody id="compactResultsTable" class="text-xs">
                                     <!-- Default rows showing 0.00 values -->
                                     <tr class="border-b border-gray-200 hover:bg-blue-50" id="fullAppraisalRow">
-                                        <td class="px-2 py-2 font-medium text-blue-700">
+                                        <td class="px-1 py-1 font-medium text-blue-700">
                                             <i class="fas fa-file-alt mr-1"></i>Full Appraisal
                                         </td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
-                                        <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
-                                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center text-blue-600 font-medium">$0.00</td>
+                                        <td class="px-1 py-1 text-center text-green-600 font-medium">$0.00</td>
+                                        <td class="px-1 py-1 text-center text-purple-600 font-medium">$0.00</td>
                                     </tr>
                                     <tr class="border-b border-gray-200 hover:bg-green-50" id="desktopAppraisalRow">
-                                        <td class="px-2 py-2 font-medium text-green-700">
+                                        <td class="px-1 py-1 font-medium text-green-700">
                                             <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
                                         </td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center">0.00%</td>
-                                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
-                                        <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
-                                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center">0.00%</td>
+                                        <td class="px-1 py-1 text-center text-blue-600 font-medium">$0.00</td>
+                                        <td class="px-1 py-1 text-center text-green-600 font-medium">$0.00</td>
+                                        <td class="px-1 py-1 text-center text-purple-600 font-medium">$0.00</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -353,24 +353,24 @@
                     </div>
 
                     <!-- Loading Spinner (moved inside card) -->
-                    <div id="loadingSpinner" class="hidden text-center py-4">
-                        <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
-                        <p class="text-gray-600 text-sm mt-1">Calculating loan options...</p>
+                    <div id="loadingSpinner" class="hidden text-center py-2">
+                        <i class="fas fa-spinner fa-spin text-lg text-blue-600"></i>
+                        <p class="text-gray-600 text-xs mt-1">Calculating loan options...</p>
                     </div>
 
                     <!-- Error Message (moved inside card) -->
                     <div id="errorMessage"
-                        class="hidden mt-3 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        class="hidden mt-2 bg-red-50 border border-red-200 text-red-700 px-2 py-1 rounded-md text-xs">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
                         <span id="errorText"></span>
                     </div>
                 </div>
 
                 <!-- Calculate Button - Inside card -->
-                <div class="text-center mt-6 pt-4 border-t border-gray-200">
+                <div class="text-center mt-2 pt-2 border-t border-gray-200">
                     <button type="submit" id="calculateBtn"
-                        class="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-bold py-3 px-12 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg text-lg border-2 border-transparent hover:border-white">
-                        <i class="fas fa-calculator mr-2"></i>
+                        class="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md text-sm border border-transparent hover:border-white">
+                        <i class="fas fa-calculator mr-1"></i>
                         Calculate Loan Options
                     </button>
                 </div>
