@@ -77,117 +77,125 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">Loan Calculator</h1>
-            <p class="text-gray-600">Calculate your loan options with ease</p>
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-gray-800 mb-4">Loan Calculator</h1>
+            <p class="text-xl text-gray-600">Calculate your loan options with ease</p>
+            <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mt-4 rounded-full"></div>
         </div>
 
         <!-- Main Form -->
-        <form id="loanCalculatorForm" class="space-y-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <form id="loanCalculatorForm" class="space-y-10">
+            
+            <!-- Card 1: Borrower Profile & Information - Full Width -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center pb-4">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-full mr-4">
+                        <i class="fas fa-user-circle text-white text-xl"></i>
+                    </div>
+                    Borrower Profile & Information
+                </h2>
 
-                <!-- Card 1: Borrower Profile & Information -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center border-b pb-4">
-                        <i class="fas fa-user-circle text-blue-600 mr-3"></i>
-                        Borrower Profile & Information
-                    </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     <!-- Borrower Profile Section -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-medium text-gray-700 mb-4">Profile Details</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                            Profile Details
+                        </h3>
+                        <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Credit Score</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Credit Score</label>
                                 <input type="number" id="credit_score" name="credit_score" min="300" max="850"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                                     placeholder="e.g. 740" value="740">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Experience (Years)</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Experience (Years)</label>
                                 <input type="number" id="experience" name="experience" min="0" max="50"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                                     placeholder="e.g. 4" value="4">
                             </div>
                         </div>
                     </div>
 
                     <!-- Borrower Information Section -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-medium text-gray-700 mb-4 flex items-center">
+                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
                             <i class="fas fa-address-card text-green-600 mr-2"></i>
                             Borrower Information
                         </h3>
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Borrower Name</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Borrower Name</label>
                                 <input type="text" id="borrower_name" name="borrower_name"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                                     placeholder="Jimmy Test" value="Jimmy Test">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Borrower Email</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Borrower Email</label>
                                 <input type="email" id="borrower_email" name="borrower_email"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                                     placeholder="hedwards@goldmanfunding.com" value="hedwards@goldmanfunding.com">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Borrower Phone</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Borrower Phone</label>
                                 <input type="tel" id="borrower_phone" name="borrower_phone"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                                     placeholder="631-602-0460" value="631-602-0460">
                             </div>
                         </div>
                     </div>
 
                     <!-- Broker Information Section -->
-                    <div>
-                        <h3 class="text-lg font-medium text-gray-700 mb-4 flex items-center">
+                    <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-6 border border-purple-100">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
                             <i class="fas fa-handshake text-purple-600 mr-2"></i>
                             Broker Information
                         </h3>
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Broker Name</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Broker Name</label>
                                 <input type="text" id="broker_name" name="broker_name"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
                                     placeholder="John Doe" value="John Doe">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Broker Email</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Broker Email</label>
                                 <input type="email" id="broker_email" name="broker_email"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
                                     placeholder="hedwards@goldmanfunding.com" value="hedwards@goldmanfunding.com">
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Broker Phone</label>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Broker Phone</label>
                                     <input type="tel" id="broker_phone" name="broker_phone"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
                                         placeholder="631-602-0460" value="631-602-0460">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Broker Points
-                                        (%)</label>
-                                    <input type="number" id="broker_points" name="broker_points" min="0" max="10"
-                                        step="0.1"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Broker Points (%)</label>
+                                    <input type="number" id="broker_points" name="broker_points" min="0" max="10" step="0.1"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
                                         placeholder="1" value="1">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Card 2: Loan Summary -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center border-b pb-4">
-                        <i class="fas fa-calculator text-orange-600 mr-3"></i>
-                        Loan Summary
-                    </h2>
-                    <div class="space-y-4">
+            <!-- Card 2: Loan Summary - Full Width -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center pb-4">
+                    <div class="bg-gradient-to-r from-orange-500 to-red-600 p-3 rounded-full mr-4">
+                        <i class="fas fa-calculator text-white text-xl"></i>
+                    </div>
+                    Loan Summary
+                </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Loan Type</label>
