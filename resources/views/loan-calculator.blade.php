@@ -77,7 +77,7 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="container mx-auto px-4 py-2 max-w-7xl">
         <!-- Header -->
 
         <!-- Main Form -->
@@ -85,8 +85,8 @@
 
             <!-- Single Card: Borrower Profile & Loan Summary -->
             <div
-                class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center pb-3 border-b border-gray-200">
+                class="bg-white rounded-2xl shadow-xl px-6 py-2 border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2 flex items-center pb-1 border-b  border-gray-200">
                     <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-full mr-3">
                         <i class="fas fa-user-circle text-white text-lg"></i>
                     </div>
@@ -94,7 +94,7 @@
                 </h2>
 
                 <!-- Row 1: Profile Details + Borrower Information (5 inputs total) -->
-                <div class="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100 mb-4">
+                <div class="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100 mb-1">
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
                         <!-- Profile Details (2 inputs) -->
                         <div class="lg:col-span-2">
