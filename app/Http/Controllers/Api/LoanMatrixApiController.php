@@ -81,16 +81,23 @@ class LoanMatrixApiController extends Controller
                 }
             }
 
-            // Handle experience parameter
+            // Handle experience parameter - convert numeric input to range
             $experienceRange = null;
+            $originalExperience = $experience;
             if ($experience) {
                 if (is_numeric($experience)) {
-                    // If numeric, treat as experience ID and get its range
-                    $experienceModel = \App\Models\Experience::find($experience);
+                    // If numeric, find the experience range that contains this number
+                    $experienceValue = (int) $experience;
+                    $experienceModel = \App\Models\Experience::where('min_experience', '<=', $experienceValue)
+                        ->where('max_experience', '>=', $experienceValue)
+                        ->first();
                     $experienceRange = $experienceModel ? $experienceModel->experiences_range : null;
                 } else {
-                    // If string, treat as experience range directly
+                    // If string (like "1-2"), use it as the range directly
                     $experienceRange = $experience;
+                    // Try to find a representative numeric value for this range
+                    $experienceModel = \App\Models\Experience::where('experiences_range', $experience)->first();
+                    $originalExperience = $experienceModel ? $experienceModel->min_experience : $experience;
                 }
             }
             // Build query to get loan rules matching the criteria
@@ -136,7 +143,7 @@ class LoanMatrixApiController extends Controller
             $loanRules = $matrixQuery->get();
 
             // Transform the data to match the matrix format (same as LoanProgramController)
-            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $experience, $loanType, $transactionType) {
+            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType) {
                 // Get rehab limits grouped by rehab level
                 $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
 
@@ -150,7 +157,8 @@ class LoanMatrixApiController extends Controller
                     'display_name' => $rule->experience->loanType->loan_program
                         ? ($rule->experience->loanType->name . ' - ' . $rule->experience->loanType->loan_program)
                         : ($rule->experience->loanType->name ?? 'N/A'),
-                    'experience' => $rule->experience->experiences_range ?? 'N/A',
+                    'experience' => $originalExperience, // Show original input
+                    'experience_range' => $rule->experience->experiences_range ?? 'N/A', // Show database range
                     'fico' => $rule->ficoBand->fico_range ?? 'N/A',
                     'transaction_type' => $rule->transactionType->name ?? 'N/A',
                     'max_total_loan' => $rule->max_total_loan ? (float) number_format((float) $rule->max_total_loan, 2, '.', '') : 0.00,
@@ -188,7 +196,7 @@ class LoanMatrixApiController extends Controller
                     // User inputs data
                     'user_inputs' => [
                         'credit_score' => $creditScore ? (float) number_format((float) $creditScore, 2, '.', '') : 0.00,
-                        'experience' => $experience,
+                        'experience' => $originalExperience,
                         'loan_type' => $loanType,
                         'transaction_type' => $transactionType,
                         'loan_term' => $request->loan_term ? (float) number_format((float) $request->loan_term, 2, '.', '') : 0.00,
