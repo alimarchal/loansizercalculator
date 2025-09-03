@@ -316,109 +316,99 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Calculate Button - Centered below form -->
-            <div class="text-center mt-8">
-                <button type="submit" id="calculateBtn"
-                    class="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-bold py-4 px-16 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl text-xl border-2 border-transparent hover:border-white">
-                    <i class="fas fa-calculator mr-3"></i>
-                    Calculate Loan Options
-                </button>
-            </div>
-    </div>
-    </div>
-    </form> <!-- Loading Spinner -->
-    <div id="loadingSpinner" class="hidden text-center py-8">
-        <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
-        <p class="text-gray-600 mt-2">Calculating loan options...</p>
-    </div>
+                <!-- Loan Program Results Section -->
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <div class="bg-gradient-to-r from-green-500 to-teal-600 p-2 rounded-full mr-3">
+                            <i class="fas fa-chart-bar text-white text-sm"></i>
+                        </div>
+                        Loan Program Results
+                    </h3>
 
-    <!-- Results Section -->
-    <div id="resultsSection" class="hidden mt-12">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Loan Program Results</h2>
+                    <!-- Compact Results Table -->
+                    <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-100">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs">
+                                <thead class="bg-gray-100 text-gray-800">
+                                    <tr>
+                                        <th class="px-2 py-2 text-left font-semibold">Program</th>
+                                        <th class="px-2 py-2 text-center font-semibold">Rate</th>
+                                        <th class="px-2 py-2 text-center font-semibold">Points</th>
+                                        <th class="px-2 py-2 text-center font-semibold">Max LTV</th>
+                                        <th class="px-2 py-2 text-center font-semibold">Max LTC</th>
+                                        <th class="px-2 py-2 text-center font-semibold">Purchase Loan</th>
+                                        <th class="px-2 py-2 text-center font-semibold">Rehab Loan</th>
+                                        <th class="px-2 py-2 text-center font-semibold">Total Loan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="compactResultsTable" class="text-xs">
+                                    <!-- Default rows showing 0.00 values -->
+                                    <tr class="border-b border-gray-200 hover:bg-blue-50" id="fullAppraisalRow">
+                                        <td class="px-2 py-2 font-medium text-blue-700">
+                                            <i class="fas fa-file-alt mr-1"></i>Full Appraisal
+                                        </td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
+                                        <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200 hover:bg-green-50" id="desktopAppraisalRow">
+                                        <td class="px-2 py-2 font-medium text-green-700">
+                                            <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
+                                        </td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center">0.00%</td>
+                                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
+                                        <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Full Appraisal Table -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <h3 class="text-xl font-semibold text-blue-800 mb-4 text-center">
-                    <i class="fas fa-file-alt mr-2"></i>
-                    Loan Program: Full Appraisal
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-gray-700">
-                        <thead class="bg-blue-50 text-blue-900">
-                            <tr>
-                                <th class="px-3 py-2 text-left">Loan Term</th>
-                                <th class="px-3 py-2 text-left">Interest Rate</th>
-                                <th class="px-3 py-2 text-left">Lender Points</th>
-                                <th class="px-3 py-2 text-left">Max LTV</th>
-                                <th class="px-3 py-2 text-left">Max LTC</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fullAppraisalTable">
-                            <!-- Will be populated by JavaScript -->
-                        </tbody>
-                    </table>
+                    <!-- Loading Spinner (moved inside card) -->
+                    <div id="loadingSpinner" class="hidden text-center py-4">
+                        <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
+                        <p class="text-gray-600 text-sm mt-1">Calculating loan options...</p>
+                    </div>
+
+                    <!-- Error Message (moved inside card) -->
+                    <div id="errorMessage"
+                        class="hidden mt-3 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+
+                <!-- Calculate Button - Inside card -->
+                <div class="text-center mt-6 pt-4 border-t border-gray-200">
+                    <button type="submit" id="calculateBtn"
+                        class="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-bold py-3 px-12 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg text-lg border-2 border-transparent hover:border-white">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Calculate Loan Options
+                    </button>
                 </div>
             </div>
-
-            <!-- Desktop Appraisal Table -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <h3 class="text-xl font-semibold text-green-800 mb-4 text-center">
-                    <i class="fas fa-desktop mr-2"></i>
-                    Loan Program: Desktop Appraisal
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-gray-700">
-                        <thead class="bg-green-50 text-green-900">
-                            <tr>
-                                <th class="px-3 py-2 text-left">Loan Term</th>
-                                <th class="px-3 py-2 text-left">Interest Rate</th>
-                                <th class="px-3 py-2 text-left">Lender Points</th>
-                                <th class="px-3 py-2 text-left">Max LTV</th>
-                                <th class="px-3 py-2 text-left">Max LTC</th>
-                            </tr>
-                        </thead>
-                        <tbody id="desktopAppraisalTable">
-                            <!-- Will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Additional Loan Details -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                <i class="fas fa-info-circle mr-2"></i>
-                Loan Details
-            </h3>
-            <div id="loanDetails" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <!-- Will be populated by JavaScript -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Error Message -->
-    <div id="errorMessage" class="hidden mt-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-        <i class="fas fa-exclamation-triangle mr-2"></i>
-        <span id="errorText"></span>
-    </div>
+        </form>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loanCalculatorForm');
             const loadingSpinner = document.getElementById('loadingSpinner');
-            const resultsSection = document.getElementById('resultsSection');
             const errorMessage = document.getElementById('errorMessage');
             
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // Hide previous results and errors
-                resultsSection.classList.add('hidden');
+                // Hide previous errors
                 errorMessage.classList.add('hidden');
                 
                 // Show loading spinner
@@ -450,28 +440,23 @@
                     loadingSpinner.classList.add('hidden');
                     
                     if (data.success && data.data && data.data.length > 0) {
-                        populateResults(data.data);
-                        resultsSection.classList.remove('hidden');
+                        populateCompactResults(data.data);
                     } else {
                         showError('No loan programs found for the given criteria.');
+                        resetToDefaults();
                     }
                     
                 } catch (error) {
                     loadingSpinner.classList.add('hidden');
                     showError('An error occurred while calculating loan options. Please try again.');
+                    resetToDefaults();
                     console.error('API Error:', error);
                 }
             });
             
-            function populateResults(loans) {
-                const fullAppraisalTable = document.getElementById('fullAppraisalTable');
-                const desktopAppraisalTable = document.getElementById('desktopAppraisalTable');
-                const loanDetails = document.getElementById('loanDetails');
-                
-                // Clear existing content
-                fullAppraisalTable.innerHTML = '';
-                desktopAppraisalTable.innerHTML = '';
-                loanDetails.innerHTML = '';
+            function populateCompactResults(loans) {
+                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
+                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
                 
                 // Separate loans by program type
                 const fullAppraisalLoans = loans.filter(loan => 
@@ -483,64 +468,72 @@
                     loan.display_name?.includes('DESKTOP APPRAISAL')
                 );
                 
-                // Populate Full Appraisal table
+                // Update Full Appraisal row
                 if (fullAppraisalLoans.length > 0) {
-                    fullAppraisalLoans.forEach(loan => {
-                        const loanData = loan.loan_type_and_loan_program_table;
-                        const row = document.createElement('tr');
-                        row.className = 'border-b hover:bg-blue-50';
-                        row.innerHTML = `
-                            <td class="px-3 py-2">${loanData?.loan_term || 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.lender_points ? loanData.lender_points + '%' : 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.max_ltv ? loanData.max_ltv + '%' : 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.max_ltc ? loanData.max_ltc + '%' : 'N/A'}</td>
-                        `;
-                        fullAppraisalTable.appendChild(row);
-                    });
-                } else {
-                    fullAppraisalTable.innerHTML = '<tr><td colspan="5" class="px-3 py-2 text-center text-gray-500">No data available</td></tr>';
-                }
-                
-                // Populate Desktop Appraisal table
-                if (desktopAppraisalLoans.length > 0) {
-                    desktopAppraisalLoans.forEach(loan => {
-                        const loanData = loan.loan_type_and_loan_program_table;
-                        const row = document.createElement('tr');
-                        row.className = 'border-b hover:bg-green-50';
-                        row.innerHTML = `
-                            <td class="px-3 py-2">${loanData?.loan_term || 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.lender_points ? loanData.lender_points + '%' : 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.max_ltv ? loanData.max_ltv + '%' : 'N/A'}</td>
-                            <td class="px-3 py-2">${loanData?.max_ltc ? loanData.max_ltc + '%' : 'N/A'}</td>
-                        `;
-                        desktopAppraisalTable.appendChild(row);
-                    });
-                } else {
-                    desktopAppraisalTable.innerHTML = '<tr><td colspan="5" class="px-3 py-2 text-center text-gray-500">No data available</td></tr>';
-                }
-                
-                // Populate loan details
-                if (loans.length > 0) {
-                    const firstLoan = loans[0];
-                    const loanData = firstLoan.loan_type_and_loan_program_table;
-                    
-                    loanDetails.innerHTML = `
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-600">$${numberWithCommas(loanData?.purchase_loan_up_to || 0)}</div>
-                            <div class="text-gray-600">Purchase Loan</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-green-600">$${numberWithCommas(loanData?.rehab_loan_up_to || 0)}</div>
-                            <div class="text-gray-600">Rehab Loan</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-purple-600">$${numberWithCommas(loanData?.total_loan_up_to || 0)}</div>
-                            <div class="text-gray-600">Total Loan</div>
-                        </div>
+                    const loanData = fullAppraisalLoans[0].loan_type_and_loan_program_table;
+                    fullAppraisalRow.innerHTML = `
+                        <td class="px-2 py-2 font-medium text-blue-700">
+                            <i class="fas fa-file-alt mr-1"></i>Full Appraisal
+                        </td>
+                        <td class="px-2 py-2 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$${numberWithCommas(loanData?.purchase_loan_up_to || 0)}</td>
+                        <td class="px-2 py-2 text-center text-green-600 font-medium">$${numberWithCommas(loanData?.rehab_loan_up_to || 0)}</td>
+                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$${numberWithCommas(loanData?.total_loan_up_to || 0)}</td>
                     `;
                 }
+                
+                // Update Desktop Appraisal row
+                if (desktopAppraisalLoans.length > 0) {
+                    const loanData = desktopAppraisalLoans[0].loan_type_and_loan_program_table;
+                    desktopAppraisalRow.innerHTML = `
+                        <td class="px-2 py-2 font-medium text-green-700">
+                            <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
+                        </td>
+                        <td class="px-2 py-2 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td class="px-2 py-2 text-center text-blue-600 font-medium">$${numberWithCommas(loanData?.purchase_loan_up_to || 0)}</td>
+                        <td class="px-2 py-2 text-center text-green-600 font-medium">$${numberWithCommas(loanData?.rehab_loan_up_to || 0)}</td>
+                        <td class="px-2 py-2 text-center text-purple-600 font-medium">$${numberWithCommas(loanData?.total_loan_up_to || 0)}</td>
+                    `;
+                }
+            }
+            
+            function resetToDefaults() {
+                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
+                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
+                
+                // Reset Full Appraisal row to defaults
+                fullAppraisalRow.innerHTML = `
+                    <td class="px-2 py-2 font-medium text-blue-700">
+                        <i class="fas fa-file-alt mr-1"></i>Full Appraisal
+                    </td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
+                    <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                    <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                `;
+                
+                // Reset Desktop Appraisal row to defaults
+                desktopAppraisalRow.innerHTML = `
+                    <td class="px-2 py-2 font-medium text-green-700">
+                        <i class="fas fa-desktop mr-1"></i>Desktop Appraisal
+                    </td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center">0.00%</td>
+                    <td class="px-2 py-2 text-center text-blue-600 font-medium">$0.00</td>
+                    <td class="px-2 py-2 text-center text-green-600 font-medium">$0.00</td>
+                    <td class="px-2 py-2 text-center text-purple-600 font-medium">$0.00</td>
+                `;
             }
             
             function showError(message) {
