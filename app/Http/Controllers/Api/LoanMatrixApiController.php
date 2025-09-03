@@ -164,22 +164,22 @@ class LoanMatrixApiController extends Controller
                     'max_total_loan' => $rule->max_total_loan ? (float) number_format((float) $rule->max_total_loan, 2, '.', '') : 0.00,
                     'max_budget' => $rule->max_budget ? (float) number_format((float) $rule->max_budget, 2, '.', '') : 0.00,
 
-                    // Light Rehab
-                    'light_ltc' => $rehabLimits->get('LIGHT REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('LIGHT REHAB')->max_ltc, 2, '.', '') : 0.00,
-                    'light_ltv' => $rehabLimits->get('LIGHT REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('LIGHT REHAB')->max_ltv, 2, '.', '') : 0.00,
+                    // Light Rehab (0-25%)
+                    'light_rehab_0_25_percent_max_ltc' => $rehabLimits->get('LIGHT REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('LIGHT REHAB')->max_ltc, 2, '.', '') : 0.00,
+                    'light_rehab_0_25_percent_max_ltv' => $rehabLimits->get('LIGHT REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('LIGHT REHAB')->max_ltv, 2, '.', '') : 0.00,
 
-                    // Moderate Rehab
-                    'moderate_ltc' => $rehabLimits->get('MODERATE REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('MODERATE REHAB')->max_ltc, 2, '.', '') : 0.00,
-                    'moderate_ltv' => $rehabLimits->get('MODERATE REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('MODERATE REHAB')->max_ltv, 2, '.', '') : 0.00,
+                    // Moderate Rehab (25-50%)
+                    'moderate_rehab_25_50_percent_max_ltc' => $rehabLimits->get('MODERATE REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('MODERATE REHAB')->max_ltc, 2, '.', '') : 0.00,
+                    'moderate_rehab_25_50_percent_max_ltv' => $rehabLimits->get('MODERATE REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('MODERATE REHAB')->max_ltv, 2, '.', '') : 0.00,
 
-                    // Heavy Rehab
-                    'heavy_ltc' => $rehabLimits->get('HEAVY REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('HEAVY REHAB')->max_ltc, 2, '.', '') : 0.00,
-                    'heavy_ltv' => $rehabLimits->get('HEAVY REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('HEAVY REHAB')->max_ltv, 2, '.', '') : 0.00,
+                    // Heavy Rehab (50-100%)
+                    'heavy_rehab_50_100_percent_max_ltc' => $rehabLimits->get('HEAVY REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('HEAVY REHAB')->max_ltc, 2, '.', '') : 0.00,
+                    'heavy_rehab_50_100_percent_max_ltv' => $rehabLimits->get('HEAVY REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('HEAVY REHAB')->max_ltv, 2, '.', '') : 0.00,
 
-                    // Extensive Rehab
-                    'extensive_ltc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('EXTENSIVE REHAB')->max_ltc, 2, '.', '') : 0.00,
-                    'extensive_ltv' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('EXTENSIVE REHAB')->max_ltv, 2, '.', '') : 0.00,
-                    'extensive_ltfc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltfc ? (float) number_format((float) $rehabLimits->get('EXTENSIVE REHAB')->max_ltfc, 2, '.', '') : 0.00,
+                    // Extensive Rehab (100%+)
+                    'extensive_rehab_100_plus_percent_max_ltc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltc ? (float) number_format((float) $rehabLimits->get('EXTENSIVE REHAB')->max_ltc, 2, '.', '') : 0.00,
+                    'extensive_rehab_100_plus_percent_max_ltv' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltv ? (float) number_format((float) $rehabLimits->get('EXTENSIVE REHAB')->max_ltv, 2, '.', '') : 0.00,
+                    'extensive_rehab_100_plus_percent_max_ltfc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltfc ? (float) number_format((float) $rehabLimits->get('EXTENSIVE REHAB')->max_ltfc, 2, '.', '') : 0.00,
 
                     // Pricing < $250k
                     'ir_lt_250k' => $pricings->get('<250k')?->interest_rate ? (float) number_format((float) $pricings->get('<250k')->interest_rate, 2, '.', '') : 0.00,
