@@ -150,6 +150,34 @@ class LoanMatrixApiController extends Controller
                 // Get pricing data grouped by pricing tier
                 $pricings = $rule->pricings->keyBy('pricingTier.price_range');
 
+                // Calculate rehab percentage and determine category
+                $rehabPercentage = 0;
+                $applicableRehabCategory = 'LIGHT REHAB'; // Default
+                $applicableMaxLtv = 0;
+                $applicableMaxLtc = 0;
+
+                if ($request->purchase_price && $request->rehab_budget) {
+                    $rehabPercentage = ($request->rehab_budget / $request->purchase_price) * 100;
+
+                    // Determine rehab category based on percentage
+                    if ($rehabPercentage <= 25) {
+                        $applicableRehabCategory = 'LIGHT REHAB'; // 0-25%
+                    } elseif ($rehabPercentage <= 50) {
+                        $applicableRehabCategory = 'MODERATE REHAB'; // 25%-50%
+                    } elseif ($rehabPercentage <= 100) {
+                        $applicableRehabCategory = 'HEAVY REHAB'; // 50%-100%
+                    } else {
+                        $applicableRehabCategory = 'EXTENSIVE REHAB'; // >100%
+                    }
+
+                    // Get the max_ltv and max_ltc for the applicable rehab category
+                    $applicableRehabLimit = $rehabLimits->get($applicableRehabCategory);
+                    if ($applicableRehabLimit) {
+                        $applicableMaxLtv = $applicableRehabLimit->max_ltv ? (float) number_format((float) $applicableRehabLimit->max_ltv, 2, '.', '') : 0.00;
+                        $applicableMaxLtc = $applicableRehabLimit->max_ltc ? (float) number_format((float) $applicableRehabLimit->max_ltc, 2, '.', '') : 0.00;
+                    }
+                }
+
                 return [
                     'loan_rule_id' => $rule->id,
                     'loan_type' => $rule->experience->loanType->name ?? 'N/A',
@@ -210,8 +238,10 @@ class LoanMatrixApiController extends Controller
                         'loan_term' => $request->loan_term ? $request->loan_term . ' Months' : '0 Months',
                         'intrest_rate' => 0,
                         'lender_points' => 0,
-                        'max_ltv' => 0,
-                        'max_ltc' => 0,
+                        'max_ltv' => $applicableMaxLtv,
+                        'max_ltc' => $applicableMaxLtc,
+                        'percentage_max_ltv_max_ltc' => (float) number_format($rehabPercentage, 2, '.', ''),
+                        'rehab_category' => $applicableRehabCategory,
                         'purchase_loan_up_to' => 0,
                         'rehab_loan_up_to' => 0,
                         'total_loan_up_to' => 0,
