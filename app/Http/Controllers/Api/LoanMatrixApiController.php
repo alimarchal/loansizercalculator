@@ -136,7 +136,7 @@ class LoanMatrixApiController extends Controller
             $loanRules = $matrixQuery->get();
 
             // Transform the data to match the matrix format (same as LoanProgramController)
-            $matrixData = $loanRules->map(function ($rule) {
+            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $experience, $loanType, $transactionType) {
                 // Get rehab limits grouped by rehab level
                 $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
 
@@ -184,6 +184,18 @@ class LoanMatrixApiController extends Controller
                     // Pricing ≥ $500k
                     'ir_gte_500k' => $pricings->get('>=500k')?->interest_rate,
                     'lp_gte_500k' => $pricings->get('>=500k')?->lender_points,
+
+                    // User inputs data
+                    'user_inputs' => [
+                        'credit_score' => $creditScore,
+                        'experience' => $experience,
+                        'loan_type' => $loanType,
+                        'transaction_type' => $transactionType,
+                        'loan_term' => $request->loan_term,
+                        'purchase_price' => $request->purchase_price,
+                        'arv' => $request->arv,
+                        'rehab_budget' => $request->rehab_budget,
+                    ],
 
                     // Additional loan type and loan program table data
                     'loan_type_and_loan_program_table' => [
