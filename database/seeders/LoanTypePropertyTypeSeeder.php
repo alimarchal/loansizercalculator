@@ -12,7 +12,7 @@ class LoanTypePropertyTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get loan types - Purchase
+        // Get loan types
         $fixFlipFull = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'FULL APPRAISAL')->first();
         $fixFlipDesktop = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'DESKTOP APPRAISAL')->first();
         $experiencedBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first();
