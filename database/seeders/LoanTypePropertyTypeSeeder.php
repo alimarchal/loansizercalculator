@@ -12,12 +12,19 @@ class LoanTypePropertyTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get loan types
+        // Get loan types - Purchase
         $fixFlipFull = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'FULL APPRAISAL')->first();
         $fixFlipDesktop = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'DESKTOP APPRAISAL')->first();
         $experiencedBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first();
         $newBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first();
         $dscrRental = \App\Models\LoanType::where('name', 'DSCR Rental')->first();
+
+        // Get loan types - Refinance
+        $fixFlipFullRefinance = \App\Models\LoanType::where('name', 'Fix and Flip Refinance')->where('loan_program', 'FULL APPRAISAL')->first();
+        $fixFlipDesktopRefinance = \App\Models\LoanType::where('name', 'Fix and Flip Refinance')->where('loan_program', 'DESKTOP APPRAISAL')->first();
+        $experiencedBuilderRefinance = \App\Models\LoanType::where('name', 'New Construction Refinance')->where('loan_program', 'EXPERIENCED BUILDER')->first();
+        $newBuilderRefinance = \App\Models\LoanType::where('name', 'New Construction Refinance')->where('loan_program', 'NEW BUILDER')->first();
+        $dscrRentalRefinance = \App\Models\LoanType::where('name', 'DSCR Rental Refinance')->first();
 
         // Full Appraisal property types: Single Family, Condo, 2-4 Unit, Townhome
         $fullAppraisalPropertyTypes = \App\Models\PropertyType::whereIn('name', [
@@ -82,6 +89,38 @@ class LoanTypePropertyTypeSeeder extends Seeder
         if ($dscrRental) {
             $propertyTypeIds = $dscrPropertyTypes->pluck('id')->toArray();
             $dscrRental->propertyTypes()->sync($propertyTypeIds);
+        }
+
+        // Refinance loan types (same property types as purchase versions)
+
+        // Fix & Flip Refinance - Full Appraisal
+        if ($fixFlipFullRefinance) {
+            $propertyTypeIds = $fullAppraisalPropertyTypes->pluck('id')->toArray();
+            $fixFlipFullRefinance->propertyTypes()->sync($propertyTypeIds);
+        }
+
+        // Fix & Flip Refinance - Desktop Appraisal
+        if ($fixFlipDesktopRefinance) {
+            $propertyTypeIds = $desktopAppraisalPropertyTypes->pluck('id')->toArray();
+            $fixFlipDesktopRefinance->propertyTypes()->sync($propertyTypeIds);
+        }
+
+        // New Construction Refinance - Experienced Builder
+        if ($experiencedBuilderRefinance) {
+            $propertyTypeIds = $experiencedBuilderPropertyTypes->pluck('id')->toArray();
+            $experiencedBuilderRefinance->propertyTypes()->sync($propertyTypeIds);
+        }
+
+        // New Construction Refinance - New Builder
+        if ($newBuilderRefinance) {
+            $propertyTypeIds = $newBuilderPropertyTypes->pluck('id')->toArray();
+            $newBuilderRefinance->propertyTypes()->sync($propertyTypeIds);
+        }
+
+        // DSCR Rental Refinance - all property types that exist in database
+        if ($dscrRentalRefinance) {
+            $propertyTypeIds = $dscrPropertyTypes->pluck('id')->toArray();
+            $dscrRentalRefinance->propertyTypes()->sync($propertyTypeIds);
         }
     }
 }

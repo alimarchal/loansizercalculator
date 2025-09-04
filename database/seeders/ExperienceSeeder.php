@@ -19,6 +19,9 @@ class ExperienceSeeder extends Seeder
         $experiencedBuilderId = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first()?->id;
         $newBuilderId = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first()?->id;
 
+        // Get the loan type ID for DSCR Rental program
+        $dscrRentalId = \App\Models\LoanType::where('name', 'DSCR Rental')->first()?->id;
+
         $experienceRanges = [
             ['experiences_range' => '0', 'min_experience' => 0, 'max_experience' => 0],
             ['experiences_range' => '1-2', 'min_experience' => 1, 'max_experience' => 2],
@@ -53,6 +56,13 @@ class ExperienceSeeder extends Seeder
         if ($newBuilderId) {
             foreach ($experienceRanges as $range) {
                 $data[] = array_merge(['loan_type_id' => $newBuilderId], $range);
+            }
+        }
+
+        // Create experiences for DSCR Rental program
+        if ($dscrRentalId) {
+            foreach ($experienceRanges as $range) {
+                $data[] = array_merge(['loan_type_id' => $dscrRentalId], $range);
             }
         }
 
