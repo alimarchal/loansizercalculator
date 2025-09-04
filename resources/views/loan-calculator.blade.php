@@ -74,6 +74,22 @@
         .ltc-column {
             display: table-cell !important;
         }
+
+        /* Tab styles */
+        .active-tab {
+            border-color: #3b82f6 !important;
+            color: #3b82f6 !important;
+        }
+
+        .inactive-tab {
+            border-color: transparent !important;
+            color: #6b7280 !important;
+        }
+
+        .inactive-tab:hover {
+            color: #374151 !important;
+            border-color: #d1d5db !important;
+        }
     </style>
 
     <!-- Scripts -->
@@ -357,7 +373,23 @@
 
                     <!-- Results Section -->
                     <div class="mt-8">
-                        <h2 class="text-xl font-bold text-gray-900 mb-4">Loan Program Results</h2>
+                        <!-- Tab Navigation -->
+                        <div id="tabNavigation" class="hidden mb-4">
+                            <div class="border-b border-gray-200">
+                                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                    <button id="loanResultsTab"
+                                        class="active-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+                                        Loan Program Results
+                                    </button>
+                                    <button id="closingStatementTab"
+                                        class="inactive-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+                                        Estimated Closing Statement
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <h2 id="resultsTitle" class="text-xl font-bold text-gray-900 mb-4">Loan Program Results</h2>
 
                         <!-- Loading Spinner -->
                         <div id="loadingSpinner" class="hidden text-center py-8">
@@ -479,6 +511,135 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Estimated Closing Statement -->
+                        <div id="closingStatementSection" class="hidden">
+                            <div class="bg-white rounded-lg shadow-md border border-gray-800 overflow-hidden">
+                                <!-- Header -->
+                                <div class="bg-blue-700 text-white px-6 py-4">
+                                    <h3 class="text-xl font-bold text-center">Estimated Closing Statement</h3>
+                                </div>
+
+                                <div class="p-6">
+                                    <!-- Loan Amount Section -->
+                                    <div class="mb-6">
+                                        <div class="bg-gray-100 px-4 py-2 border border-black">
+                                            <h4 class="font-bold text-black">Loan Amount</h4>
+                                        </div>
+                                        <div class="border-l border-r border-black">
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Purchase Loan Amount</span>
+                                                <span id="closingPurchaseLoan" class="font-mono">$90,000.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Rehab Loan Amount</span>
+                                                <span id="closingRehabLoan" class="font-mono">$40,000.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-3 bg-gray-50 font-bold border-b-2 border-black">
+                                                <span class="ml-8">Total Loan Amount</span>
+                                                <span id="closingTotalLoan" class="font-mono">$130,000.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Buyer Related Charges Section -->
+                                    <div class="mb-6">
+                                        <div class="bg-gray-100 px-4 py-2 border border-black">
+                                            <h4 class="font-bold text-black">Buyer Related Charges:</h4>
+                                        </div>
+                                        <div class="border-l border-r border-black">
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8" id="purchasePriceLabel">Purchase Price</span>
+                                                <span id="closingPurchasePrice" class="font-mono">$90,000.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Rehab Budget</span>
+                                                <span id="closingRehabBudget" class="font-mono">$40,000.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-3 bg-gray-50 font-bold border-b-2 border-black">
+                                                <span class="ml-8">Subtotal Buyer Charges</span>
+                                                <span id="closingSubtotalBuyer" class="font-mono">$130,000.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Lender Related Charges Section -->
+                                    <div class="mb-6">
+                                        <div class="bg-gray-100 px-4 py-2 border border-black">
+                                            <h4 class="font-bold text-black">Lender Related Charges:</h4>
+                                        </div>
+                                        <div class="border-l border-r border-black">
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Lender Origination Fee</span>
+                                                <span id="closingLenderOrigination" class="font-mono">$2,600.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Broker Fee</span>
+                                                <span id="closingBrokerFee" class="font-mono">$0.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Underwriting & Processing Fee</span>
+                                                <span id="closingProcessingFee" class="font-mono">$1,495.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Interest Reserves</span>
+                                                <span id="closingInterestReserves" class="font-mono">$0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Title & Other Charges Section -->
+                                    <div class="mb-6">
+                                        <div class="bg-gray-100 px-4 py-2 border border-black">
+                                            <h4 class="font-bold text-black">Title & Other Charges:</h4>
+                                        </div>
+                                        <div class="border-l border-r border-black">
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Title Charges</span>
+                                                <span id="closingTitleCharges" class="font-mono">$0.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Property Insurance</span>
+                                                <span id="closingPropertyInsurance" class="font-mono">$0.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-2 border-b border-gray-300">
+                                                <span class="ml-8">Legal & Doc Prep Fee</span>
+                                                <span id="closingLegalFee" class="font-mono">$995.00</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center px-6 py-3 bg-gray-50 font-bold border-b-2 border-black">
+                                                <span class="ml-8">Subtotal Closing Costs</span>
+                                                <span id="closingSubtotalCosts" class="font-mono">$5,090.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cash Due Section -->
+                                    <div class="mb-0">
+                                        <div class="border-l border-r border-black">
+                                            <div
+                                                class="flex justify-between items-center px-6 py-4 bg-gray-200 font-bold border-t-2 border-b-2 border-black">
+                                                <span id="cashDueLabel" class="text-lg">Cash Due to Buyer</span>
+                                                <span id="closingCashDue" class="font-mono text-lg">$5,090.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -526,6 +687,10 @@
                     
                     if (data.success && data.data && data.data.length > 0) {
                         populateCompactResults(data.data);
+                        // Show tabs after successful calculation
+                        document.getElementById('tabNavigation').classList.remove('hidden');
+                        // Generate closing statement data
+                        generateClosingStatement(data.data);
                     } else {
                         showError('No loan programs found for the given criteria.');
                         resetToDefaults();
@@ -713,6 +878,14 @@
                 const fullAppraisalRow = document.getElementById('fullAppraisalRow');
                 const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
                 
+                // Hide tabs
+                document.getElementById('tabNavigation').classList.add('hidden');
+                
+                // Reset to loan results tab
+                document.getElementById('resultsSection').classList.remove('hidden');
+                document.getElementById('closingStatementSection').classList.add('hidden');
+                document.getElementById('resultsTitle').textContent = 'Loan Program Results';
+                
                 // Reset column visibility to default (Fix & Flip style - show LTC, hide LTFC)
                 const ltcHeader = document.getElementById('maxLtcHeader');
                 const ltfcHeader = document.getElementById('maxLtfcHeader');
@@ -771,6 +944,152 @@
             
             function numberWithCommas(x) {
                 return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            // Tab functionality
+            const loanResultsTab = document.getElementById('loanResultsTab');
+            const closingStatementTab = document.getElementById('closingStatementTab');
+            const resultsSection = document.getElementById('resultsSection');
+            const closingStatementSection = document.getElementById('closingStatementSection');
+            const resultsTitle = document.getElementById('resultsTitle');
+
+            loanResultsTab.addEventListener('click', function() {
+                // Update tab styles
+                loanResultsTab.className = 'active-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm';
+                closingStatementTab.className = 'inactive-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm';
+                
+                // Show/hide sections
+                resultsSection.classList.remove('hidden');
+                closingStatementSection.classList.add('hidden');
+                resultsTitle.textContent = 'Loan Program Results';
+            });
+
+            closingStatementTab.addEventListener('click', function() {
+                // Update tab styles
+                closingStatementTab.className = 'active-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm';
+                loanResultsTab.className = 'inactive-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm';
+                
+                // Show/hide sections
+                resultsSection.classList.add('hidden');
+                closingStatementSection.classList.remove('hidden');
+                resultsTitle.textContent = 'Estimated Closing Statement';
+            });
+
+            // Global variables to store loan data
+            let currentLoanData = null;
+
+            function generateClosingStatement(loansData) {
+                currentLoanData = loansData;
+                
+                // Get the preferred loan (Full Appraisal first, then Desktop Appraisal)
+                const fullAppraisalLoans = loansData.filter(loan => 
+                    loan.loan_program === 'FULL APPRAISAL' || 
+                    loan.display_name?.includes('FULL APPRAISAL')
+                );
+                const desktopAppraisalLoans = loansData.filter(loan => 
+                    loan.loan_program === 'DESKTOP APPRAISAL' || 
+                    loan.display_name?.includes('DESKTOP APPRAISAL')
+                );
+                
+                // Use Full Appraisal if available, otherwise use Desktop Appraisal
+                const selectedLoan = fullAppraisalLoans.length > 0 ? fullAppraisalLoans[0] : desktopAppraisalLoans[0];
+                
+                if (selectedLoan) {
+                    populateClosingStatement(selectedLoan);
+                }
+            }
+
+            function populateClosingStatement(loanData) {
+                const formData = new FormData(document.getElementById('loanCalculatorForm'));
+                
+                // Get form values
+                const purchasePrice = parseFloat(formData.get('purchase_price')) || 0;
+                const rehabBudget = parseFloat(formData.get('rehab_budget')) || 0;
+                const transactionType = formData.get('transaction_type');
+                const brokerPoints = parseFloat(formData.get('broker_points')) || 0;
+                
+                // Get loan details
+                const loanDetails = loanData.loan_type_and_loan_program_table;
+                const interestRate = parseFloat(loanDetails?.intrest_rate) || 0;
+                const lenderPoints = parseFloat(loanDetails?.lender_points) || 0;
+                const loanProgram = loanData.loan_program || '';
+
+                // Populate Loan Amount Section - Use user input values directly
+                const purchaseLoanAmount = purchasePrice; // Direct user input
+                const rehabLoanAmount = rehabBudget; // Direct user input  
+                const totalLoan = purchaseLoanAmount + rehabLoanAmount; // Sum of both
+
+                document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(purchaseLoanAmount.toFixed(2));
+                document.getElementById('closingRehabLoan').textContent = '$' + numberWithCommas(rehabLoanAmount.toFixed(2));
+                document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(totalLoan.toFixed(2));
+
+                // Populate Buyer Related Charges Section
+                let buyerChargeAmount = 0;
+                const purchasePriceLabel = document.getElementById('purchasePriceLabel');
+                const closingPurchasePrice = document.getElementById('closingPurchasePrice');
+                
+                if (transactionType === 'Refinance') {
+                    purchasePriceLabel.textContent = 'Payoff';
+                    buyerChargeAmount = purchasePrice;  // Using purchase_price input for payoff
+                } else {
+                    purchasePriceLabel.textContent = 'Purchase Price';
+                    buyerChargeAmount = purchasePrice;
+                }
+                
+                closingPurchasePrice.textContent = '$' + numberWithCommas(buyerChargeAmount.toFixed(2));
+                document.getElementById('closingRehabBudget').textContent = '$' + numberWithCommas(rehabBudget.toFixed(2));
+                
+                const subtotalBuyer = buyerChargeAmount + rehabBudget;
+                document.getElementById('closingSubtotalBuyer').textContent = '$' + numberWithCommas(subtotalBuyer.toFixed(2));
+
+                // Populate Lender Related Charges Section
+                const lenderOriginationFee = totalLoan * (lenderPoints / 100);
+                const brokerFee = totalLoan * (brokerPoints / 100);
+                const processingFee = 1495.00; // Static as requested
+                
+                // Interest Reserves calculation
+                let interestReserves = 0;
+                if (loanProgram === 'FULL APPRAISAL') {
+                    interestReserves = totalLoan * (interestRate / 100) / 12;
+                }
+                // For Desktop Appraisal, interest reserves = 0 (default)
+                
+                document.getElementById('closingLenderOrigination').textContent = '$' + numberWithCommas(lenderOriginationFee.toFixed(2));
+                document.getElementById('closingBrokerFee').textContent = '$' + numberWithCommas(brokerFee.toFixed(2));
+                document.getElementById('closingProcessingFee').textContent = '$' + numberWithCommas(processingFee.toFixed(2));
+                document.getElementById('closingInterestReserves').textContent = '$' + numberWithCommas(interestReserves.toFixed(2));
+
+                // Populate Title & Other Charges Section
+                const titleCharges = 0.00; // Static as requested
+                const propertyInsurance = 0.00; // Static as requested
+                
+                // Legal & Doc Prep Fee calculation
+                let legalFee = 0;
+                if (loanProgram === 'FULL APPRAISAL') {
+                    legalFee = 995.00;
+                }
+                // For Desktop Appraisal, legal fee = 0 (default)
+                
+                document.getElementById('closingTitleCharges').textContent = '$' + numberWithCommas(titleCharges.toFixed(2));
+                document.getElementById('closingPropertyInsurance').textContent = '$' + numberWithCommas(propertyInsurance.toFixed(2));
+                document.getElementById('closingLegalFee').textContent = '$' + numberWithCommas(legalFee.toFixed(2));
+                
+                // Calculate Subtotal Closing Costs
+                const subtotalClosingCosts = lenderOriginationFee + brokerFee + processingFee + interestReserves + titleCharges + propertyInsurance + legalFee;
+                document.getElementById('closingSubtotalCosts').textContent = '$' + numberWithCommas(subtotalClosingCosts.toFixed(2));
+
+                // Calculate Cash Due
+                const cashToClose = subtotalBuyer + subtotalClosingCosts - totalLoan;
+                const cashDueLabel = document.getElementById('cashDueLabel');
+                const closingCashDue = document.getElementById('closingCashDue');
+                
+                if (cashToClose > 0) {
+                    cashDueLabel.textContent = 'Cash Due from Buyer';
+                    closingCashDue.textContent = '$' + numberWithCommas(cashToClose.toFixed(2));
+                } else {
+                    cashDueLabel.textContent = 'Cash Due To Buyer';
+                    closingCashDue.textContent = '$' + numberWithCommas(Math.abs(cashToClose).toFixed(2));
+                }
             }
         });
         </script>
