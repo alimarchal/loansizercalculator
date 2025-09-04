@@ -262,6 +262,15 @@ class LoanMatrixApiController extends Controller
                         'rehab_loan_up_to' => $loanCalculations['rehab_loan_up_to'],
                         'total_loan_up_to' => $loanCalculations['total_loan_up_to'],
                     ],
+
+
+                    'estimated_closing_statement' => [
+                        'loan_amount_section' => 0.00,
+                    ],
+
+
+
+
                 ];
             });
 
