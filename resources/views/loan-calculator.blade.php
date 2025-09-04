@@ -63,6 +63,17 @@
             top: 8px !important;
             right: 10px !important;
         }
+
+        /* Default column visibility - hide LTFC by default, show LTC */
+        #maxLtfcHeader,
+        .ltfc-column {
+            display: none !important;
+        }
+
+        #maxLtcHeader,
+        .ltc-column {
+            display: table-cell !important;
+        }
     </style>
 
     <!-- Scripts -->
@@ -387,9 +398,9 @@
                                                 class="px-4 py-3 text-center font-semibold text-gray-900">Points</th>
                                             <th style="border: 1px solid #000;"
                                                 class="px-4 py-3 text-center font-semibold text-gray-900">Max LTV</th>
-                                            <th style="border: 1px solid #000;"
+                                            <th id="maxLtcHeader" style="border: 1px solid #000;"
                                                 class="px-4 py-3 text-center font-semibold text-gray-900">Max LTC</th>
-                                            <th style="border: 1px solid #000;"
+                                            <th id="maxLtfcHeader" style="border: 1px solid #000;"
                                                 class="px-4 py-3 text-center font-semibold text-gray-900">Max LTFC</th>
                                         </tr>
                                     </thead>
@@ -403,8 +414,10 @@
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                            <td style="border: 1px solid #000;"
+                                                class="ltc-column px-4 py-3 text-center">0.00%</td>
+                                            <td style="border: 1px solid #000;"
+                                                class="ltfc-column px-4 py-3 text-center">0.00%</td>
                                         </tr>
                                         <tr id="desktopAppraisalRow">
                                             <td style="border: 1px solid #000;"
@@ -414,8 +427,10 @@
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                                             <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                                            <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                                            <td style="border: 1px solid #000;"
+                                                class="ltc-column px-4 py-3 text-center">0.00%</td>
+                                            <td style="border: 1px solid #000;"
+                                                class="ltfc-column px-4 py-3 text-center">0.00%</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -524,12 +539,48 @@
                 }
             });
             
+            function setColumnVisibility(isNewConstruction) {
+                const ltcHeader = document.getElementById('maxLtcHeader');
+                const ltfcHeader = document.getElementById('maxLtfcHeader');
+                const ltcColumns = document.querySelectorAll('.ltc-column');
+                const ltfcColumns = document.querySelectorAll('.ltfc-column');
+
+                if (isNewConstruction) {
+                    // For New Construction - Check if Rehab Budget > Purchase Price
+                    const rehabBudget = parseFloat(document.getElementById('rehab_budget').value) || 0;
+                    const purchasePrice = parseFloat(document.getElementById('purchase_price').value) || 0;
+                    
+                    if (rehabBudget > purchasePrice) {
+                        // Show only LTFC, hide LTC
+                        ltcHeader.style.setProperty('display', 'none', 'important');
+                        ltfcHeader.style.setProperty('display', 'table-cell', 'important');
+                        ltcColumns.forEach(col => col.style.setProperty('display', 'none', 'important'));
+                        ltfcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
+                    } else {
+                        // Show both LTC and LTFC
+                        ltcHeader.style.setProperty('display', 'table-cell', 'important');
+                        ltfcHeader.style.setProperty('display', 'table-cell', 'important');
+                        ltcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
+                        ltfcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
+                    }
+                } else {
+                    // For Fix & Flip - Show only LTV and LTC, hide LTFC
+                    ltcHeader.style.setProperty('display', 'table-cell', 'important');
+                    ltfcHeader.style.setProperty('display', 'none', 'important');
+                    ltcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
+                    ltfcColumns.forEach(col => col.style.setProperty('display', 'none', 'important'));
+                }
+            }
+
             function populateCompactResults(loans) {
                 const fullAppraisalRow = document.getElementById('fullAppraisalRow');
                 const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
                 
                 // Check if this is New Construction loan type
                 const isNewConstruction = loans.length > 0 && loans[0].loan_type === 'New Construction';
+                
+                // Set column visibility based on loan type and business logic
+                setColumnVisibility(isNewConstruction);
                 
                 if (isNewConstruction) {
                     // For New Construction, separate by EXPERIENCED BUILDER and NEW BUILDER
@@ -572,8 +623,8 @@
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
                     `;
                     
                     // Update Experienced Builder card
@@ -594,8 +645,8 @@
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
                     `;
                     
                     // Update New Builder card
@@ -627,8 +678,8 @@
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
                     `;
                     
                     // Update Full Appraisal card
@@ -647,8 +698,8 @@
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
                     `;
                     
                     // Update Desktop Appraisal card
@@ -661,6 +712,18 @@
             function resetToDefaults() {
                 const fullAppraisalRow = document.getElementById('fullAppraisalRow');
                 const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
+                
+                // Reset column visibility to default (Fix & Flip style - show LTC, hide LTFC)
+                const ltcHeader = document.getElementById('maxLtcHeader');
+                const ltfcHeader = document.getElementById('maxLtfcHeader');
+                const ltcColumns = document.querySelectorAll('.ltc-column');
+                const ltfcColumns = document.querySelectorAll('.ltfc-column');
+                
+                // Remove any inline styles to let CSS defaults take over
+                ltcHeader.style.removeProperty('display');
+                ltfcHeader.style.removeProperty('display');
+                ltcColumns.forEach(col => col.style.removeProperty('display'));
+                ltfcColumns.forEach(col => col.style.removeProperty('display'));
                 
                 // Reset labels back to default
                 document.getElementById('fullAppraisalCard').querySelector('h3').textContent = 'For Full Appraisal';
@@ -676,8 +739,8 @@
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                    <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">0.00%</td>
+                    <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">0.00%</td>
                 `;
                 
                 // Reset Desktop Appraisal table row to defaults
@@ -688,8 +751,8 @@
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
                     <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
+                    <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">0.00%</td>
+                    <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">0.00%</td>
                 `;
                 
                 // Reset card values to defaults
