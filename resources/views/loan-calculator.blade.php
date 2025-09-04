@@ -738,14 +738,32 @@
 
                                         <!-- Action Buttons -->
                                         <div class="p-4 bg-gray-50 border-t">
-                                            <div class="flex gap-3 justify-center">
-                                                <button type="button" onclick="javascript:;"
-                                                    class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md">
-                                                    Download PDF
+                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                                <!-- Download PDF Button -->
+                                                <button type="button" onclick="javascript:;" 
+                                                    class="px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                                                    <i class="fas fa-file-pdf"></i>
+                                                    <span>Download PDF</span>
                                                 </button>
-                                                <button type="button" onclick="javascript:;"
-                                                    class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-md">
-                                                    Email Statement
+                                                
+                                                <!-- Save Term Sheet Button -->
+                                                <button type="button" onclick="javascript:;" 
+                                                    class="px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex flex-col items-center justify-center">
+                                                    <div class="flex items-center gap-2">
+                                                        <i class="fas fa-save"></i>
+                                                        <span class="font-bold">Save Term Sheet</span>
+                                                    </div>
+                                                    <span class="text-xs text-blue-100 mt-1">(Save & Return Later)</span>
+                                                </button>
+                                                
+                                                <!-- Submit Term Sheet Button -->
+                                                <button type="button" onclick="javascript:;" 
+                                                    class="px-4 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex flex-col items-center justify-center">
+                                                    <div class="flex items-center gap-2">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                        <span class="font-bold">Submit Term Sheet</span>
+                                                    </div>
+                                                    <span class="text-xs text-green-100 mt-1">(Start Loan Application)</span>
                                                 </button>
                                             </div>
                                         </div>
