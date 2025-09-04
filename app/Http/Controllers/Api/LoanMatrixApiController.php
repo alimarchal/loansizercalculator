@@ -36,6 +36,9 @@ class LoanMatrixApiController extends Controller
             'purchase_price' => 'nullable|numeric|min:10000|max:10000000',
             'arv' => 'nullable|numeric|min:10000|max:10000000',
             'rehab_budget' => 'nullable|numeric|min:0|max:5000000',
+            'broker_points' => 'nullable|numeric|min:0|max:100',
+            'pay_off' => 'nullable|numeric|min:0|max:10000000',
+            'rehab_completed' => 'nullable|numeric|min:0|max:10000000',
         ]);
 
         if ($validator->fails()) {
@@ -51,6 +54,9 @@ class LoanMatrixApiController extends Controller
         $experience = $request->experience;
         $loanType = $request->loan_type;
         $transactionType = $request->transaction_type;
+        $brokerPoints = $request->broker_points;
+        $payOff = $request->pay_off;
+        $rehabCompleted = $request->rehab_completed;
 
         try {
             // Convert loan_type name to IDs if needed
@@ -265,7 +271,34 @@ class LoanMatrixApiController extends Controller
 
 
                     'estimated_closing_statement' => [
-                        'loan_amount_section' => 0.00,
+                        'loan_amount_section' => [
+                            'purchase_loan_amount' => $request->purchase_price ? (float) number_format((float) $request->purchase_price, 2, '.', '') : 0.00,
+                            'rehab_loan_amount' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
+                            'total_loan_amount' => (float) ($request->purchase_price + $request->rehab_budget),
+                        ],
+                        'buyer_related_charges' => [
+                            ($transactionType === 'Refinance' ? 'payoff' : 'purchase_price') => $transactionType === 'Refinance'
+                                ? ($request->pay_off ? (float) number_format((float) $request->pay_off, 2, '.', '') : 0.00)
+                                : ($request->purchase_price ? (float) number_format((float) $request->purchase_price, 2, '.', '') : 0.00),
+                            'rehab_budget' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
+                            'sub_total_buyer_charges' => $transactionType === 'Refinance'
+                                ? (($request->pay_off ? (float) $request->pay_off : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))
+                                : (($request->purchase_price ? (float) $request->purchase_price : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00)),
+                        ],
+                        'lender_related_charges' => [
+                            'lender_origination_fee' => 0.00,
+                            'broker_fee' => 0.00,
+                            'underwriting_processing_fee' => 0.00,
+                            'interest_reserves' => 0.00,
+                        ],
+                        'title_other_charges' => [
+                            'title_charges' => 0.00,
+                            'property_insurance' => 0.00,
+                            'legal_doc_prep_fee' => 0.00,
+                            'subtotal_closing_costs' => 0.00,
+                        ],
+
+                        'cash_due_to_buyer' => 0.00,
                     ],
 
 
