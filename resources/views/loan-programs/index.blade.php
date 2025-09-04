@@ -50,9 +50,9 @@
             style="display: none">
             <div class="p-6">
                 <form method="GET" action="{{ route('loan-programs.index') }}">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Credit Score Input -->
-                        <div class="form-group">
+                        <div>
                             <label for="credit_score"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Credit Score (FICO)
@@ -65,7 +65,7 @@
                         </div>
 
                         <!-- Experience Years Input -->
-                        <div class="form-group">
+                        <div>
                             <label for="experience_years"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Years of Experience
@@ -78,7 +78,7 @@
                         </div>
 
                         <!-- Filter by Loan Program -->
-                        <div class="form-group">
+                        <div>
                             <label for="loan_program"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Loan Program
@@ -104,19 +104,20 @@
                                 </option>
                             </select>
                         </div>
-
-                        <!-- Filter by Loan Type -->
-                        <x-loan-type-select :loanTypes="$loanTypes" />
-
+                        <div>
+                            <!-- Filter by Loan Type -->
+                            <x-loan-type-select :loanTypes="$loanTypes" />
+                        </div>
                         <!-- Filter by FICO Band -->
-                        <x-fico-band-select :ficoBands="$ficoBands" />
-
+                        <div>
+                            <x-fico-band-select :ficoBands="$ficoBands" />
+                        </div>
                         <!-- Filter by Transaction Type -->
                         <x-transaction-type-select :transactionTypes="$transactionTypes" />
                     </div>
 
                     <!-- Submit Button -->
-                    <x-filter-buttons />
+                    <x-submit-button />
                 </form>
             </div>
         </div>
