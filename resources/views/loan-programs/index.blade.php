@@ -183,11 +183,15 @@
 
                         <tr class="bg-green-800 text-white uppercase text-xs">
                             <!-- Basic Info (removed Loan Type column) -->
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Experience</th>
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">FICO</th>
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Transaction Type</th>
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Max Total Loan</th>
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Max Budget</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">EXP</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">FICO</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">Trans
+                                <br>Type
+                            </th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">Max <br>Total Loan
+                            </th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">Max <br>Budget
+                            </th>
 
                             <!-- Rehab Headers -->
                             <th class="py-2 px-1 text-center border border-white" colspan="2">LIGHT REHAB</th>
@@ -203,38 +207,52 @@
                         </tr>
                         <tr class="bg-green-700 text-white text-xs">
                             <!-- Rehab Sub-headers -->
-                            <th class="py-1 px-1 text-center border border-white">Max LTC<br>Light Rehab (0-25%)</th>
-                            <th class="py-1 px-1 text-center border border-white">Max LTV<br>Light Rehab (0-25%)</th>
-
-                            <th class="py-1 px-1 text-center border border-white">Max LTC<br>Moderate Rehab (25%-50%)
+                            <th class="py-1 px-1 text-center border border-white">Max LTC<br>(0-25%)
                             </th>
-                            <th class="py-1 px-1 text-center border border-white">Max LTV<br>Moderate Rehab (25%-50%)
+                            <th class="py-1 px-1 text-center border border-white">Max LTV<br>(0-25%)
                             </th>
 
-                            <th class="py-1 px-1 text-center border border-white">Max LTC<br>Heavy Rehab (50%-100%)</th>
-                            <th class="py-1 px-1 text-center border border-white">Max LTV<br>Heavy Rehab (50%-100%)</th>
+                            <th class="py-1 px-1 text-center border border-white">Max LTC
+                                <br> (25%-50%)
+                            </th>
+                            <th class="py-1 px-1 text-center border border-white">Max LTV<br> (25%-50%)
+                            </th>
 
-                            <th class="py-1 px-1 text-center border border-white">Max LTC<br>Extensive Rehab (>100%)
+                            <th class="py-1 px-1 text-center border border-white">Max LTC<br> (50%-100%)
                             </th>
-                            <th class="py-1 px-1 text-center border border-white">Max LTV<br>Extensive Rehab (>100%)
+                            <th class="py-1 px-1 text-center border border-white">Max LTV<br> (50%-100%)
                             </th>
-                            <th class="py-1 px-1 text-center border border-white">Max LTFC<br>Extensive Rehab (>100%)
+
+                            <th class="py-1 px-1 text-center border border-white">Max LTC<br>(>100%)
+                            </th>
+                            <th class="py-1 px-1 text-center border border-white">Max LTV<br>(>100%)
+                            </th>
+                            <th class="py-1 px-1 text-center border border-white">Max LTFC<br>
+                                (>100%)
                             </th>
 
                             <!-- Pricing Sub-headers -->
-                            <th class="py-1 px-1 text-center border border-white">Interest Rate<br>Loan Size <
-                                    $250K</th>
-                            <th class="py-1 px-1 text-center border border-white">Lender Points<br>Loan Size <
-                                    $250K</th>
+                            <th class="py-1 px-1 text-center border border-white"><abbr
+                                    title="Interest Rate">IR</abbr><br>Loan Size <br>
+                                < $250K</th>
+                            <th class="py-1 px-1 text-center border border-white"><abbr
+                                    title="Lender Points">LP</abbr><br>Loan Size <br>
+                                < $250K</th>
 
-                            <th class="py-1 px-1 text-center border border-white">Interest Rate<br>Loan Size $250K-$500K
+                            <th class="py-1 px-1 text-center border border-white"><abbr
+                                    title="Interest Rate">IR</abbr><br>Loan Size
+                                <br>$250K-$500K
                             </th>
-                            <th class="py-1 px-1 text-center border border-white">Lender Points<br>Loan Size $250K-$500K
+                            <th class="py-1 px-1 text-center border border-white"><abbr
+                                    title="Lender Points">LP</abbr><br>Loan Size
+                                <br>$250K-$500K
                             </th>
 
-                            <th class="py-1 px-1 text-center border border-white">Interest Rate<br>Loan Size ≥ $500K
+                            <th class="py-1 px-1 text-center border border-white"><abbr
+                                    title="Interest Rate">IR</abbr><br>Loan Size <br>≥ $500K
                             </th>
-                            <th class="py-1 px-1 text-center border border-white">Lender Points<br>Loan Size ≥ $500K
+                            <th class="py-1 px-1 text-center border border-white"><abbr
+                                    title="Lender Points">LP</abbr><br>Loan Size <br>≥ $500K
                             </th>
                         </tr>
                     </thead>
