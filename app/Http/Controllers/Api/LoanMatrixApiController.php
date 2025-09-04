@@ -316,15 +316,21 @@ class LoanMatrixApiController extends Controller
                                 : (($request->purchase_price ? (float) $request->purchase_price : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00)),
                         ],
                         'lender_related_charges' => [
-                            'lender_origination_fee' => 0.00,
-                            'broker_fee' => 0.00,
-                            'underwriting_processing_fee' => 0.00,
-                            'interest_reserves' => 0.00,
+                            'lender_origination_fee' => (float) ($request->purchase_price + $request->rehab_budget) * ($pricingInfo['lender_points'] / 100),
+                            'broker_fee' => (float) ($request->purchase_price + $request->rehab_budget) * ($request->broker_points / 100),
+                            'underwriting_processing_fee' => 1495.00,
+                            'interest_reserves' =>
+                                $rule->experience->loanType->loan_program === 'FULL APPRAISAL'
+                                ? (float) number_format((float) (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12), 2, '.', '')
+                                : 0.00,
                         ],
                         'title_other_charges' => [
                             'title_charges' => 0.00,
                             'property_insurance' => 0.00,
-                            'legal_doc_prep_fee' => 0.00,
+                            'legal_doc_prep_fee' =>
+                                $rule->experience->loanType->loan_program === 'FULL APPRAISAL'
+                                ? 995.00
+                                : 0.00,
                             'subtotal_closing_costs' => 0.00,
                         ],
 
