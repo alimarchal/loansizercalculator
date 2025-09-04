@@ -19,44 +19,69 @@ class LoanTypePropertyTypeSeeder extends Seeder
         $newBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first();
         $dscrRental = \App\Models\LoanType::where('name', 'DSCR Rental')->first();
 
-        // Get all property types for Full Appraisal
-        $allPropertyTypes = \App\Models\PropertyType::all();
+        // Full Appraisal property types: Single Family, Condo, 2-4 Unit, Townhome
+        $fullAppraisalPropertyTypes = \App\Models\PropertyType::whereIn('name', [
+            'Single Family',
+            'Condo',
+            '2-4 Unit',
+            'Townhome'
+        ])->get();
 
-        // Desktop Appraisal and EXPERIENCED BUILDER property types (limited set)
-        $limitedPropertyTypes = \App\Models\PropertyType::whereIn('name', [
+        // Desktop Appraisal property types: Single Family, condo, Townhome, 2-4 Unit
+        $desktopAppraisalPropertyTypes = \App\Models\PropertyType::whereIn('name', [
             'Single Family',
             'Condo',
             'Townhome',
             '2-4 Unit'
         ])->get();
 
-        // Full Appraisal Fix & Flip - all property types
+        // Experienced Builder property types: Single Family, Condo, 2-4 Unit, Townhome
+        $experiencedBuilderPropertyTypes = \App\Models\PropertyType::whereIn('name', [
+            'Single Family',
+            'Condo',
+            '2-4 Unit',
+            'Townhome'
+        ])->get();
+
+        // New Builder property types: Single Family, Condo, 2-4 Unit, Townhome
+        $newBuilderPropertyTypes = \App\Models\PropertyType::whereIn('name', [
+            'Single Family',
+            'Condo',
+            '2-4 Unit',
+            'Townhome'
+        ])->get();
+
+        // DSCR property types: all property types that exist in database
+        $dscrPropertyTypes = \App\Models\PropertyType::all();
+
+        // Full Appraisal Fix & Flip - Single Family, Condo, 2-4 Unit, Townhome
         if ($fixFlipFull) {
-            $propertyTypeIds = $allPropertyTypes->pluck('id')->toArray();
-            $fixFlipFull->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
+            $propertyTypeIds = $fullAppraisalPropertyTypes->pluck('id')->toArray();
+            $fixFlipFull->propertyTypes()->sync($propertyTypeIds);
         }
 
-        // Desktop Appraisal Fix & Flip - limited property types
+        // Desktop Appraisal Fix & Flip - Single Family, condo, Townhome, 2-4 Unit
         if ($fixFlipDesktop) {
-            $propertyTypeIds = $limitedPropertyTypes->pluck('id')->toArray();
-            $fixFlipDesktop->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
+            $propertyTypeIds = $desktopAppraisalPropertyTypes->pluck('id')->toArray();
+            $fixFlipDesktop->propertyTypes()->sync($propertyTypeIds);
         }
 
-        // EXPERIENCED BUILDER New Construction - limited property types
+        // EXPERIENCED BUILDER New Construction - Single Family, Condo, 2-4 Unit, Townhome
         if ($experiencedBuilder) {
-            $propertyTypeIds = $limitedPropertyTypes->pluck('id')->toArray();
-            $experiencedBuilder->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
+            $propertyTypeIds = $experiencedBuilderPropertyTypes->pluck('id')->toArray();
+            $experiencedBuilder->propertyTypes()->sync($propertyTypeIds);
         }
 
-        // NEW BUILDER New Construction - limited property types (same as EXPERIENCED BUILDER)
+        // NEW BUILDER New Construction - Single Family, Condo, 2-4 Unit, Townhome
         if ($newBuilder) {
-            $propertyTypeIds = $limitedPropertyTypes->pluck('id')->toArray();
+            $propertyTypeIds = $newBuilderPropertyTypes->pluck('id')->toArray();
             $newBuilder->propertyTypes()->sync($propertyTypeIds);
         }
 
+        // DSCR Rental - all property types that exist in database
         if ($dscrRental) {
-            $propertyTypeIds = $allPropertyTypes->pluck('id')->toArray();
-            $dscrRental->propertyTypes()->syncWithoutDetaching($propertyTypeIds);
+            $propertyTypeIds = $dscrPropertyTypes->pluck('id')->toArray();
+            $dscrRental->propertyTypes()->sync($propertyTypeIds);
         }
     }
 }

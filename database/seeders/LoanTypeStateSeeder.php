@@ -14,8 +14,8 @@ class LoanTypeStateSeeder extends Seeder
     {
         $fullAppraisalStates = [
             'AL',
+            'AK',
             'AZ',
-            'AR',
             'CA',
             'CO',
             'CT',
@@ -23,86 +23,172 @@ class LoanTypeStateSeeder extends Seeder
             'DC',
             'FL',
             'GA',
-            'ID',
             'IL',
             'IN',
-            'IA',
-            'KS',
             'KY',
             'LA',
             'ME',
-            'MD',
-            'MA',
-            'MI',
-            'MN',
-            'MS',
-            'MO',
-            'MT',
-            'NE',
-            'NV',
             'NH',
             'NJ',
             'NM',
             'NY',
             'NC',
-            'ND',
             'OH',
             'OK',
-            'OR',
+            'MD',
+            'MA',
+            'MI',
+            'MS',
+            'MO',
             'PA',
             'RI',
             'SC',
-            'SD',
             'TN',
             'TX',
             'UT',
-            'VT',
             'VA',
             'WA',
             'WV',
             'WI',
+            'IA',
+            'ID',
+            'KS',
+            'MN',
+            'MT',
+            'NE',
+            'OR',
             'WY'
         ];
 
         $desktopAppraisalStates = [
             'AL',
-            'AZ',
             'AR',
             'CO',
+            'CT',
+            'DC',
             'FL',
             'GA',
-            'ID',
             'IL',
             'IN',
-            'IA',
             'KS',
             'KY',
-            'LA',
+            'MA',
+            'MD',
             'MI',
-            'MN',
-            'MS',
             'MO',
-            'MT',
-            'NE',
-            'NV',
-            'NM',
             'NC',
-            'ND',
             'OH',
             'OK',
             'OR',
+            'PA',
             'SC',
-            'SD',
+            'TN',
+            'TX',
+            'VA',
+            'WA',
+            'WI',
+            'WV'
+        ];
+
+        $experiencedBuilderStates = [
+            'AL',
+            'AK',
+            'AZ',
+            'CA',
+            'CO',
+            'CT',
+            'DE',
+            'DC',
+            'FL',
+            'GA',
+            'IL',
+            'IN',
+            'KY',
+            'LA',
+            'ME',
+            'NH',
+            'NJ',
+            'NM',
+            'NY',
+            'NC',
+            'OH',
+            'OK',
+            'MD',
+            'MA',
+            'MI',
+            'MS',
+            'MO',
+            'PA',
+            'RI',
+            'SC',
             'TN',
             'TX',
             'UT',
             'VA',
+            'WA',
             'WV',
             'WI',
+            'IA',
+            'ID',
+            'KS',
+            'MN',
+            'MT',
+            'NE',
+            'OR',
             'WY'
         ];
 
-        $experiencedBuilderStates = [
+        // NEW BUILDER uses the same states as EXPERIENCED BUILDER
+        $newBuilderStates = [
+            'AL',
+            'AK',
+            'AZ',
+            'CA',
+            'CO',
+            'CT',
+            'DE',
+            'DC',
+            'FL',
+            'GA',
+            'IL',
+            'IN',
+            'KY',
+            'LA',
+            'ME',
+            'NH',
+            'NJ',
+            'NM',
+            'NY',
+            'NC',
+            'OH',
+            'OK',
+            'MD',
+            'MA',
+            'MI',
+            'MS',
+            'MO',
+            'PA',
+            'RI',
+            'SC',
+            'TN',
+            'TX',
+            'UT',
+            'VA',
+            'WA',
+            'WV',
+            'WI',
+            'IA',
+            'ID',
+            'KS',
+            'MN',
+            'MT',
+            'NE',
+            'OR',
+            'WY'
+        ];
+
+        // DSCR Rental states
+        $dscrRentalStates = [
             'AL',
             'AK',
             'AZ',
@@ -166,7 +252,7 @@ class LoanTypeStateSeeder extends Seeder
                     $stateIds[] = $state->id;
                 }
             }
-            $fixFlipFull->states()->syncWithoutDetaching($stateIds);
+            $fixFlipFull->states()->sync($stateIds);
         }
 
         // Attach states to Desktop Appraisal Fix & Flip
@@ -178,7 +264,7 @@ class LoanTypeStateSeeder extends Seeder
                     $stateIds[] = $state->id;
                 }
             }
-            $fixFlipDesktop->states()->syncWithoutDetaching($stateIds);
+            $fixFlipDesktop->states()->sync($stateIds);
         }
 
         // Attach states to EXPERIENCED BUILDER New Construction
@@ -190,13 +276,13 @@ class LoanTypeStateSeeder extends Seeder
                     $stateIds[] = $state->id;
                 }
             }
-            $experiencedBuilder->states()->syncWithoutDetaching($stateIds);
+            $experiencedBuilder->states()->sync($stateIds);
         }
 
         // NEW BUILDER can use same as EXPERIENCED BUILDER states
         if ($newBuilder) {
             $stateIds = [];
-            foreach ($experiencedBuilderStates as $stateCode) {
+            foreach ($newBuilderStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
                     $stateIds[] = $state->id;
@@ -207,13 +293,13 @@ class LoanTypeStateSeeder extends Seeder
 
         if ($dscrRental) {
             $stateIds = [];
-            foreach ($fullAppraisalStates as $stateCode) {
+            foreach ($dscrRentalStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
                     $stateIds[] = $state->id;
                 }
             }
-            $dscrRental->states()->syncWithoutDetaching($stateIds);
+            $dscrRental->states()->sync($stateIds);
         }
     }
 }

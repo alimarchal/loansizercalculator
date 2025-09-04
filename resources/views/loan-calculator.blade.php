@@ -195,12 +195,12 @@
                             <!-- Broker Points -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="broker_points">
-                                    Broker Points (%)
+                                    Broker Points (%) <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
                                     type="number" name="broker_points" id="broker_points" min="0" max="10" step="0.1"
-                                    value="" placeholder="Enter points percentage">
+                                    value="" placeholder="Enter points percentage" required>
                             </div>
 
                             <!-- Loan Type -->
@@ -209,7 +209,7 @@
                                     Loan Type <span class="text-red-500">*</span>
                                 </label>
                                 <select name="loan_type" id="loan_type"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
                                     <option value="">-- Select Loan Type --</option>
                                     @foreach($loanTypes as $loanType)
@@ -224,7 +224,7 @@
                                     Transaction Type <span class="text-red-500">*</span>
                                 </label>
                                 <select name="transaction_type" id="transaction_type"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
                                     <option value="">-- Select Transaction Type --</option>
                                     @foreach($transactionTypes as $transactionType)
@@ -239,7 +239,7 @@
                                     Loan Term <span class="text-red-500">*</span>
                                 </label>
                                 <select name="loan_term" id="loan_term"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
                                     <option value="">-- Select Loan Term --</option>
                                     <option value="12">12 Months</option>
@@ -253,7 +253,7 @@
                                     Property Type <span class="text-red-500">*</span>
                                 </label>
                                 <select name="property_type" id="property_type"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
                                     <option value="">-- Select Property Type --</option>
                                     @foreach($propertyTypes as $propertyType)
@@ -265,10 +265,11 @@
                             <!-- State -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="state">
-                                    State
+                                    State <span class="text-red-500">*</span>
                                 </label>
                                 <select name="state" id="state"
-                                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    required>
                                     <option value="">-- Select State --</option>
                                     @foreach($states as $state)
                                     <option value="{{ $state->code }}">{{ $state->code }}</option>
@@ -512,13 +513,26 @@
                         loan_term: formData.get('loan_term'),
                         purchase_price: formData.get('purchase_price'),
                         arv: formData.get('arv'),
-                        rehab_budget: formData.get('rehab_budget')
+                        rehab_budget: formData.get('rehab_budget'),
+                        broker_points: formData.get('broker_points'),
+                        state: formData.get('state')
                     });
                     
                     const apiUrl = `/api/loan-matrix?${apiParams.toString()}`;
                     
                     // Make API call
                     const response = await fetch(apiUrl);
+                    
+                    // Check if response is ok (status 200-299)
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        loadingSpinner.classList.add('hidden');
+                        const errorMsg = errorData.message || `HTTP Error: ${response.status}`;
+                        showError(errorMsg);
+                        resetToDefaults();
+                        return;
+                    }
+                    
                     const data = await response.json();
                     
                     // Hide loading spinner
@@ -527,7 +541,9 @@
                     if (data.success && data.data && data.data.length > 0) {
                         populateCompactResults(data.data);
                     } else {
-                        showError('No loan programs found for the given criteria.');
+                        // Show specific API error message if available, otherwise show generic message
+                        const errorMsg = data.message || 'No loan programs found for the given criteria.';
+                        showError(errorMsg);
                         resetToDefaults();
                     }
                     

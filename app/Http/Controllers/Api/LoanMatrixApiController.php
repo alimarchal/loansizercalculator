@@ -36,9 +36,10 @@ class LoanMatrixApiController extends Controller
             'purchase_price' => 'nullable|numeric|min:10000|max:10000000',
             'arv' => 'nullable|numeric|min:10000|max:10000000',
             'rehab_budget' => 'nullable|numeric|min:0|max:5000000',
-            'broker_points' => 'nullable|numeric|min:0|max:100',
+            'broker_points' => 'required|numeric|min:0|max:100',
             'pay_off' => 'nullable|numeric|min:0|max:10000000',
             'rehab_completed' => 'nullable|numeric|min:0|max:10000000',
+            'state' => 'required|string|max:2', // State code (e.g., 'CA', 'TX', 'NY')
         ]);
 
         if ($validator->fails()) {
@@ -57,6 +58,7 @@ class LoanMatrixApiController extends Controller
         $brokerPoints = $request->broker_points;
         $payOff = $request->pay_off;
         $rehabCompleted = $request->rehab_completed;
+        $state = $request->state;
 
         try {
             // Convert loan_type name to IDs if needed
@@ -72,6 +74,33 @@ class LoanMatrixApiController extends Controller
             } else {
                 // Default to Fix and Flip if no loan_type specified
                 $loanTypeIds = \App\Models\LoanType::where('name', 'Fix and Flip')->pluck('id')->toArray();
+            }
+
+            // Validate state for the selected loan type(s)
+            if (!empty($loanTypeIds) && $state) {
+                $isStateAllowed = false;
+
+                foreach ($loanTypeIds as $loanTypeId) {
+                    // Check if the state is allowed for this loan type
+                    $allowedStates = \App\Models\LoanType::find($loanTypeId)
+                        ->states()
+                        ->where('code', strtoupper($state))
+                        ->where('is_allowed', true)
+                        ->exists();
+
+                    if ($allowedStates) {
+                        $isStateAllowed = true;
+                        break;
+                    }
+                }
+
+                if (!$isStateAllowed) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'We do not lend in this selected state',
+                        'error' => 'State not allowed for the selected loan type'
+                    ], 400);
+                }
             }
 
             // Convert transaction_type name to ID if needed
@@ -149,7 +178,7 @@ class LoanMatrixApiController extends Controller
             $loanRules = $matrixQuery->get();
 
             // Transform the data to match the matrix format (same as LoanProgramController)
-            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType) {
+            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType, $state) {
                 // Get rehab limits grouped by rehab level
                 $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
 
@@ -252,6 +281,7 @@ class LoanMatrixApiController extends Controller
                         'purchase_price' => $request->purchase_price ? (float) number_format((float) $request->purchase_price, 2, '.', '') : 0.00,
                         'arv' => $request->arv ? (float) number_format((float) $request->arv, 2, '.', '') : 0.00,
                         'rehab_budget' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
+                        'state' => $state,
                     ],
 
                     // Additional loan type and loan program table data
