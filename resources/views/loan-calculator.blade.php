@@ -74,6 +74,33 @@
         .ltc-column {
             display: table-cell !important;
         }
+
+        /* Closing Statement Styles */
+        #closingStatementSection .bg-blue-600 {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        }
+
+        #closingStatementSection table td {
+            vertical-align: middle;
+        }
+
+        #closingStatementSection .font-bold {
+            font-weight: 700;
+        }
+
+        /* Highlight important rows */
+        #closingStatementSection tr.bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        #closingStatementSection tr.bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        /* Hover effect for table rows */
+        #closingStatementSection tbody tr:hover {
+            background-color: #f3f4f6;
+        }
     </style>
 
     <!-- Scripts -->
@@ -475,6 +502,161 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Estimated Closing Statement Section -->
+                    <div id="closingStatementSection" class="mt-8 hidden">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Estimated Closing Statement</h2>
+
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                            <!-- Header -->
+                            <div class="bg-blue-600 text-white p-4">
+                                <h3 class="text-lg font-bold text-center">Estimated Closing Statement</h3>
+                            </div>
+
+                            <!-- Closing Statement Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full border-collapse" style="border: 2px solid #000;">
+                                    <!-- Loan Amount Section -->
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                style="border: 1px solid #000;">
+                                                Loan Amount
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Purchase
+                                                Loan Amount</td>
+                                            <td id="closingPurchaseLoan"
+                                                class="px-4 py-2 text-right font-semibold text-blue-600"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Rehab Loan
+                                                Amount</td>
+                                            <td id="closingRehabLoan"
+                                                class="px-4 py-2 text-right font-semibold text-green-600"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td class="px-4 py-2 text-right font-bold" style="border: 2px solid #000;">
+                                                Total Loan Amount</td>
+                                            <td id="closingTotalLoan"
+                                                class="px-4 py-2 text-right font-bold text-lg text-purple-600"
+                                                style="border: 2px solid #000;">$0.00</td>
+                                        </tr>
+                                    </tbody>
+
+                                    <!-- Buyer Related Charges -->
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                style="border: 1px solid #000;">
+                                                Buyer Related Charges:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Purchase
+                                                Price</td>
+                                            <td id="closingPurchasePrice" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Rehab
+                                                Budget</td>
+                                            <td id="closingRehabBudget" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td class="px-4 py-2 text-right font-semibold"
+                                                style="border: 2px solid #000;">Subtotal Buyer Charges</td>
+                                            <td id="closingSubtotalBuyer" class="px-4 py-2 text-right font-semibold"
+                                                style="border: 2px solid #000;">$0.00</td>
+                                        </tr>
+                                    </tbody>
+
+                                    <!-- Lender Related Charges -->
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                style="border: 1px solid #000;">
+                                                Lender Related Charges:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Lender
+                                                Origination Fee</td>
+                                            <td id="closingOriginationFee" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Broker Fee
+                                            </td>
+                                            <td id="closingBrokerFee" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
+                                                Underwriting & Processing Fee</td>
+                                            <td id="closingUnderwritingFee" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Interest
+                                                Reserves</td>
+                                            <td id="closingInterestReserves" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                    </tbody>
+
+                                    <!-- Title & Other Charges -->
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                style="border: 1px solid #000;">
+                                                Title & Other Charges:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Title
+                                                Charges</td>
+                                            <td id="closingTitleCharges" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Property
+                                                Insurance</td>
+                                            <td id="closingPropertyInsurance" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 text-right" style="border: 1px solid #000;">Legal & Doc
+                                                Prep Fee</td>
+                                            <td id="closingLegalDocFee" class="px-4 py-2 text-right"
+                                                style="border: 1px solid #000;">$0.00</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td class="px-4 py-2 text-right font-semibold"
+                                                style="border: 2px solid #000;">Subtotal Closing Costs</td>
+                                            <td id="closingSubtotalCosts" class="px-4 py-2 text-right font-semibold"
+                                                style="border: 2px solid #000;">$0.00</td>
+                                        </tr>
+                                    </tbody>
+
+                                    <!-- Cash Due to Buyer -->
+                                    <tbody>
+                                        <tr class="bg-gray-200">
+                                            <td class="px-4 py-3 text-right font-bold text-lg"
+                                                style="border: 2px solid #000;">Cash Due to Buyer</td>
+                                            <td id="closingCashDue"
+                                                class="px-4 py-3 text-right font-bold text-xl text-red-600"
+                                                style="border: 2px solid #000;">$0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -616,6 +798,12 @@
                     
                     // Populate with regular loan data
                     populateRegularResults(fullAppraisalLoans, desktopAppraisalLoans);
+                }
+                
+                // Show and populate the closing statement with data from the first loan
+                if (loans.length > 0 && loans[0].estimated_closing_statement) {
+                    populateClosingStatement(loans[0].estimated_closing_statement);
+                    document.getElementById('closingStatementSection').classList.remove('hidden');
                 }
             }
             
@@ -772,6 +960,44 @@
                 document.getElementById('desktopAppraisalPurchase').textContent = '$0.00';
                 document.getElementById('desktopAppraisalRehab').textContent = '$0.00';
                 document.getElementById('desktopAppraisalTotal').textContent = '$0.00';
+                
+                // Hide closing statement section
+                document.getElementById('closingStatementSection').classList.add('hidden');
+            }
+            
+            function populateClosingStatement(closingData) {
+                // Loan Amount Section
+                if (closingData.loan_amount_section) {
+                    document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0);
+                    document.getElementById('closingRehabLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0);
+                    document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0);
+                }
+                
+                // Buyer Related Charges
+                if (closingData.buyer_related_charges) {
+                    document.getElementById('closingPurchasePrice').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0);
+                    document.getElementById('closingRehabBudget').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0);
+                    document.getElementById('closingSubtotalBuyer').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0);
+                }
+                
+                // Lender Related Charges
+                if (closingData.lender_related_charges) {
+                    document.getElementById('closingOriginationFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.lender_origination_fee || 0);
+                    document.getElementById('closingBrokerFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.broker_fee || 0);
+                    document.getElementById('closingUnderwritingFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.underwriting_processing_fee || 0);
+                    document.getElementById('closingInterestReserves').textContent = '$' + numberWithCommas(closingData.lender_related_charges.interest_reserves || 0);
+                }
+                
+                // Title & Other Charges
+                if (closingData.title_other_charges) {
+                    document.getElementById('closingTitleCharges').textContent = '$' + numberWithCommas(closingData.title_other_charges.title_charges || 0);
+                    document.getElementById('closingPropertyInsurance').textContent = '$' + numberWithCommas(closingData.title_other_charges.property_insurance || 0);
+                    document.getElementById('closingLegalDocFee').textContent = '$' + numberWithCommas(closingData.title_other_charges.legal_doc_prep_fee || 0);
+                    document.getElementById('closingSubtotalCosts').textContent = '$' + numberWithCommas(closingData.title_other_charges.subtotal_closing_costs || 0);
+                }
+                
+                // Cash Due to Buyer
+                document.getElementById('closingCashDue').textContent = '$' + numberWithCommas(closingData.cash_due_to_buyer || 0);
             }
             
             function showError(message) {
