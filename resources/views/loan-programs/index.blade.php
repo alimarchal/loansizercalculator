@@ -45,7 +45,7 @@
     </x-slot>
 
     <!-- FILTER SECTION -->
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
+    <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 mt-2">
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg" id="filters"
             style="display: none">
             <div class="p-6">
@@ -182,6 +182,8 @@
                         @endif
 
                         <tr class="bg-green-800 text-white uppercase text-xs">
+                            <!-- Sr# as first column -->
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">Sr#</th>
                             <!-- Basic Info (removed Loan Type column) -->
                             <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">EXP</th>
                             <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">FICO</th>
@@ -201,9 +203,6 @@
 
                             <!-- Interest Rate Pricing -->
                             <th class="py-2 px-1 text-center border border-white" colspan="6">INTEREST RATE PRICING</th>
-
-                            <!-- Actions -->
-                            <th class="py-2 px-1 text-center border border-white" rowspan="2">Actions</th>
                         </tr>
                         <tr class="bg-green-700 text-white text-xs">
                             <!-- Rehab Sub-headers -->
@@ -257,10 +256,19 @@
                         </tr>
                     </thead>
                     <tbody class="text-black text-xs leading-normal">
+                        @php $srNumber = 1; @endphp
                         @foreach ($matrixData as $loanType => $rows)
                         @foreach ($rows as $row)
                         <tr
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
+                            <!-- Sr# as first column -->
+                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">
+                                <a class="hover:underline text-blue-600"
+                                    href="{{ route('loan-programs.edit', $row->loan_rule_id ?? 0) }}">
+                                    {{ $srNumber++ }}
+                                </a>
+
+                            </td>
                             <!-- Basic Info (removed Loan Type column) -->
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->experience
                                 ?? 0 }}</td>
@@ -316,14 +324,6 @@
                                 number_format($row->ir_gte_500k, 2) . '%' : '0.00%' }}</td>
                             <td class="py-1 px-1 text-center border border-gray-300">{{ $row->lp_gte_500k ?
                                 number_format($row->lp_gte_500k, 2) : '0.00' }}</td>
-
-                            <!-- Actions -->
-                            <td class="py-1 px-1 text-center border border-gray-300">
-                                <a href="{{ route('loan-programs.edit', $row->loan_rule_id ?? 0) }}"
-                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
-                                    Edit
-                                </a>
-                            </td>
                         </tr>
                         @endforeach
                         @endforeach
