@@ -143,17 +143,15 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="p-6 lg:p-8 bg-white border-b border-gray-200">
                     <!-- Header -->
-                    <div class="mb-6">
-                        <h1 class="text-2xl font-bold text-gray-900">Loan Calculator</h1>
-                        <p class="text-gray-600 mt-2">Calculate loan options based on your requirements</p>
+                    <div class="mb-6 mx-auto text-center">
+                        <h1 class="text-2xl font-bold text-gray-900 mx-auto">Structure My Loan Calculator</h1>
+                        <p class="text-gray-600 mt-2">Input your loan summary and request a Pre Approval!</p>
                     </div>
 
                     <!-- Main Form -->
                     <form id="loanCalculatorForm" method="POST" action="/calculate-loan">
                         @csrf
-
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
                             <!-- Credit Score -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="credit_score">
@@ -435,7 +433,7 @@
                                 <div id="resultsSection" class="">
                                     <h2 class="text-xl font-bold text-gray-900 mb-4">Loan Program Results</h2>
                                     <!-- Results Table -->
-                                    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                                    <div class="bg-white  shadow overflow-hidden mb-6">
                                         <table class="w-full border-collapse" style="border: 1px solid #000;">
                                             <thead>
                                                 <tr class="bg-gray-50">
@@ -498,7 +496,7 @@
                                     </div>
 
                                     <!-- Loan Amount Cards -->
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
                                         <!-- Full Appraisal Card -->
                                         <div id="fullAppraisalCard"
                                             class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
@@ -740,30 +738,32 @@
                                         <div class="p-4 bg-gray-50 border-t">
                                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                                 <!-- Download PDF Button -->
-                                                <button type="button" onclick="javascript:;" 
+                                                <button type="button" onclick="javascript:;"
                                                     class="px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                                                     <i class="fas fa-file-pdf"></i>
                                                     <span>Download PDF</span>
                                                 </button>
-                                                
+
                                                 <!-- Save Term Sheet Button -->
-                                                <button type="button" onclick="javascript:;" 
+                                                <button type="button" onclick="javascript:;"
                                                     class="px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex flex-col items-center justify-center">
                                                     <div class="flex items-center gap-2">
                                                         <i class="fas fa-save"></i>
                                                         <span class="font-bold">Save Term Sheet</span>
                                                     </div>
-                                                    <span class="text-xs text-blue-100 mt-1">(Save & Return Later)</span>
+                                                    <span class="text-xs text-blue-100 mt-1">(Save & Return
+                                                        Later)</span>
                                                 </button>
-                                                
+
                                                 <!-- Submit Term Sheet Button -->
-                                                <button type="button" onclick="javascript:;" 
+                                                <button type="button" onclick="javascript:;"
                                                     class="px-4 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex flex-col items-center justify-center">
                                                     <div class="flex items-center gap-2">
                                                         <i class="fas fa-paper-plane"></i>
                                                         <span class="font-bold">Submit Term Sheet</span>
                                                     </div>
-                                                    <span class="text-xs text-green-100 mt-1">(Start Loan Application)</span>
+                                                    <span class="text-xs text-green-100 mt-1">(Start Loan
+                                                        Application)</span>
                                                 </button>
                                             </div>
                                         </div>
