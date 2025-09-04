@@ -94,6 +94,10 @@
                                     ? 'selected' : '' }}>
                                     NEW BUILDER
                                 </option>
+                                <option value="Loan # 1" {{ request('filter.loan_program')=='Loan # 1' ? 'selected' : ''
+                                    }}>
+                                    DSCR Rental (Loan # 1)
+                                </option>
                             </select>
                         </div>
                         <div>
@@ -142,6 +146,7 @@
                                 'DESKTOP APPRAISAL' => 'Fix and Flip - DESKTOP APPRAISAL',
                                 'EXPERIENCED BUILDER' => 'New Construction - EXPERIENCED BUILDER',
                                 'NEW BUILDER' => 'New Construction - NEW BUILDER',
+                                'Loan # 1' => 'DSCR Rental - Loan # 1',
                                 default => 'Fix and Flip - FULL APPRAISAL'
                                 };
                                 @endphp

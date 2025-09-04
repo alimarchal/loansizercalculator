@@ -243,13 +243,6 @@ class LoanTypeStateSeeder extends Seeder
         $newBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first();
         $dscrRental = \App\Models\LoanType::where('name', 'DSCR Rental')->first();
 
-        // Get loan types - Refinance
-        $fixFlipFullRefinance = \App\Models\LoanType::where('name', 'Fix and Flip Refinance')->where('loan_program', 'FULL APPRAISAL')->first();
-        $fixFlipDesktopRefinance = \App\Models\LoanType::where('name', 'Fix and Flip Refinance')->where('loan_program', 'DESKTOP APPRAISAL')->first();
-        $experiencedBuilderRefinance = \App\Models\LoanType::where('name', 'New Construction Refinance')->where('loan_program', 'EXPERIENCED BUILDER')->first();
-        $newBuilderRefinance = \App\Models\LoanType::where('name', 'New Construction Refinance')->where('loan_program', 'NEW BUILDER')->first();
-        $dscrRentalRefinance = \App\Models\LoanType::where('name', 'DSCR Rental Refinance')->first();
-
         // Attach states to Full Appraisal Fix & Flip
         if ($fixFlipFull) {
             $stateIds = [];
@@ -309,66 +302,5 @@ class LoanTypeStateSeeder extends Seeder
             $dscrRental->states()->sync($stateIds);
         }
 
-        // Attach states to Refinance loan types (same states as purchase versions)
-
-        // Fix & Flip Refinance - Full Appraisal
-        if ($fixFlipFullRefinance) {
-            $stateIds = [];
-            foreach ($fullAppraisalStates as $stateCode) {
-                $state = \App\Models\State::where('code', $stateCode)->first();
-                if ($state) {
-                    $stateIds[] = $state->id;
-                }
-            }
-            $fixFlipFullRefinance->states()->sync($stateIds);
-        }
-
-        // Fix & Flip Refinance - Desktop Appraisal
-        if ($fixFlipDesktopRefinance) {
-            $stateIds = [];
-            foreach ($desktopAppraisalStates as $stateCode) {
-                $state = \App\Models\State::where('code', $stateCode)->first();
-                if ($state) {
-                    $stateIds[] = $state->id;
-                }
-            }
-            $fixFlipDesktopRefinance->states()->sync($stateIds);
-        }
-
-        // New Construction Refinance - Experienced Builder
-        if ($experiencedBuilderRefinance) {
-            $stateIds = [];
-            foreach ($experiencedBuilderStates as $stateCode) {
-                $state = \App\Models\State::where('code', $stateCode)->first();
-                if ($state) {
-                    $stateIds[] = $state->id;
-                }
-            }
-            $experiencedBuilderRefinance->states()->sync($stateIds);
-        }
-
-        // New Construction Refinance - New Builder
-        if ($newBuilderRefinance) {
-            $stateIds = [];
-            foreach ($newBuilderStates as $stateCode) {
-                $state = \App\Models\State::where('code', $stateCode)->first();
-                if ($state) {
-                    $stateIds[] = $state->id;
-                }
-            }
-            $newBuilderRefinance->states()->sync($stateIds);
-        }
-
-        // DSCR Rental Refinance
-        if ($dscrRentalRefinance) {
-            $stateIds = [];
-            foreach ($dscrRentalStates as $stateCode) {
-                $state = \App\Models\State::where('code', $stateCode)->first();
-                if ($state) {
-                    $stateIds[] = $state->id;
-                }
-            }
-            $dscrRentalRefinance->states()->sync($stateIds);
-        }
     }
 }
