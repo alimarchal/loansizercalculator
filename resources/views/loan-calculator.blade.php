@@ -427,303 +427,336 @@
                             </div>
                         </div>
 
-                        <!-- Two Column Layout for Results and Closing Statement -->
-                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        <!-- Two Column Layout for Results and Closing Statement (Hidden until calculation) -->
+                        <div id="resultsAndClosingSection" class="hidden">
+                            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
-                            <!-- Left Column: Loan Program Results -->
-                            <div id="resultsSection" class="">
-                                <h2 class="text-xl font-bold text-gray-900 mb-4">Loan Program Results</h2>
-                                <!-- Results Table -->
-                                <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
-                                    <table class="w-full border-collapse" style="border: 1px solid #000;">
-                                        <thead>
-                                            <tr class="bg-gray-50">
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-3 py-2 text-left font-semibold text-gray-900 text-sm">
-                                                    Program</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Rate</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Points</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Max LTV</th>
-                                                <th id="maxLtcHeader" style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Max LTC</th>
-                                                <th id="maxLtfcHeader" style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Max LTFC</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="compactResultsTable">
-                                            <!-- Default rows showing 0.00 values -->
-                                            <tr id="fullAppraisalRow">
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-3 py-2 font-medium text-blue-700 text-sm">
-                                                    <i class="fas fa-file-alt mr-2"></i>Full Appraisal
-                                                </td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="ltc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="ltfc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                            </tr>
-                                            <tr id="desktopAppraisalRow">
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-3 py-2 font-medium text-green-700 text-sm">
-                                                    <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
-                                                </td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="ltc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                                <td style="border: 1px solid #000;"
-                                                    class="ltfc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <!-- Loan Amount Cards -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Full Appraisal Card -->
-                                    <div id="fullAppraisalCard"
-                                        class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-                                        <div class="flex items-center mb-4">
-                                            <div class="bg-blue-100 p-2 rounded-full mr-3">
-                                                <i class="fas fa-file-alt text-blue-600"></i>
-                                            </div>
-                                            <h3 class="text-lg font-semibold text-blue-700">For Full Appraisal</h3>
-                                        </div>
-                                        <div class="space-y-2">
-                                            <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to:
-                                                <span id="fullAppraisalPurchase" class="text-blue-600">$0.00</span>
-                                            </p>
-                                            <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to:
-                                                <span id="fullAppraisalRehab" class="text-green-600">$0.00</span>
-                                            </p>
-                                            <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
-                                                <span id="fullAppraisalTotal" class="text-purple-600">$0.00</span>
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Desktop Appraisal Card -->
-                                    <div id="desktopAppraisalCard"
-                                        class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-                                        <div class="flex items-center mb-4">
-                                            <div class="bg-green-100 p-2 rounded-full mr-3">
-                                                <i class="fas fa-desktop text-green-600"></i>
-                                            </div>
-                                            <h3 class="text-lg font-semibold text-green-700">For Desktop Appraisal</h3>
-                                        </div>
-                                        <div class="space-y-2">
-                                            <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to:
-                                                <span id="desktopAppraisalPurchase" class="text-blue-600">$0.00</span>
-                                            </p>
-                                            <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to:
-                                                <span id="desktopAppraisalRehab" class="text-green-600">$0.00</span>
-                                            </p>
-                                            <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
-                                                <span id="desktopAppraisalTotal" class="text-purple-600">$0.00</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> <!-- End Left Column: Loan Program Results -->
-
-                            <!-- Right Column: Estimated Closing Statement -->
-                            <div id="closingStatementSection" class="hidden">
-                                <h2 class="text-xl font-bold text-gray-900 mb-4">Estimated Closing Statement</h2>
-
-                                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                                    <!-- Header -->
-                                    <div class="bg-blue-600 text-white p-3">
-                                        <h3 class="text-lg font-bold text-center">Estimated Closing Statement</h3>
-                                    </div>
-
-                                    <!-- Closing Statement Table -->
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full border-collapse" style="border: 2px solid #000;">
-                                            <!-- Loan Amount Section -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Loan Amount
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Purchase
-                                                        Loan Amount</td>
-                                                    <td id="closingPurchaseLoan"
-                                                        class="px-4 py-2 text-right font-semibold text-blue-600"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Rehab
-                                                        Loan
-                                                        Amount</td>
-                                                    <td id="closingRehabLoan"
-                                                        class="px-4 py-2 text-right font-semibold text-green-600"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
+                                <!-- Left Column: Loan Program Results -->
+                                <div id="resultsSection" class="">
+                                    <h2 class="text-xl font-bold text-gray-900 mb-4">Loan Program Results</h2>
+                                    <!-- Results Table -->
+                                    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                                        <table class="w-full border-collapse" style="border: 1px solid #000;">
+                                            <thead>
                                                 <tr class="bg-gray-50">
-                                                    <td class="px-4 py-2 text-right font-bold"
-                                                        style="border: 2px solid #000;">
-                                                        Total Loan Amount</td>
-                                                    <td id="closingTotalLoan"
-                                                        class="px-4 py-2 text-right font-bold text-lg text-purple-600"
-                                                        style="border: 2px solid #000;">$0.00</td>
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-3 py-2 text-left font-semibold text-gray-900 text-sm">
+                                                        Program</th>
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Rate</th>
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Points</th>
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Max LTV</th>
+                                                    <th id="maxLtcHeader" style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Max LTC</th>
+                                                    <th id="maxLtfcHeader" style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Max LTFC</th>
                                                 </tr>
-                                            </tbody>
-
-                                            <!-- Buyer Related Charges -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Buyer Related Charges:
+                                            </thead>
+                                            <tbody id="compactResultsTable">
+                                                <!-- Default rows showing 0.00 values -->
+                                                <tr id="fullAppraisalRow">
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-3 py-2 font-medium text-blue-700 text-sm">
+                                                        <i class="fas fa-file-alt mr-2"></i>Full Appraisal
                                                     </td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="ltc-column px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="ltfc-column px-2 py-2 text-center text-sm">0.00%</td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Purchase
-                                                        Price</td>
-                                                    <td id="closingPurchasePrice" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Rehab
-                                                        Budget</td>
-                                                    <td id="closingRehabBudget" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr class="bg-gray-50">
-                                                    <td class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">Subtotal Buyer Charges</td>
-                                                    <td id="closingSubtotalBuyer"
-                                                        class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-
-                                            <!-- Lender Related Charges -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Lender Related Charges:
+                                                <tr id="desktopAppraisalRow">
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-3 py-2 font-medium text-green-700 text-sm">
+                                                        <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
                                                     </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Lender
-                                                        Origination Fee</td>
-                                                    <td id="closingOriginationFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Broker
-                                                        Fee
-                                                    </td>
-                                                    <td id="closingBrokerFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Underwriting & Processing Fee</td>
-                                                    <td id="closingUnderwritingFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Interest
-                                                        Reserves</td>
-                                                    <td id="closingInterestReserves" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-
-                                            <!-- Title & Other Charges -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Title & Other Charges:
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Title
-                                                        Charges</td>
-                                                    <td id="closingTitleCharges" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Property
-                                                        Insurance</td>
-                                                    <td id="closingPropertyInsurance" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Legal &
-                                                        Doc
-                                                        Prep Fee</td>
-                                                    <td id="closingLegalDocFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr class="bg-gray-50">
-                                                    <td class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">Subtotal Closing Costs</td>
-                                                    <td id="closingSubtotalCosts"
-                                                        class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-
-                                            <!-- Cash Due to Buyer -->
-                                            <tbody>
-                                                <tr class="bg-gray-200">
-                                                    <td class="px-4 py-3 text-right font-bold text-lg"
-                                                        style="border: 2px solid #000;">Cash Due to Buyer</td>
-                                                    <td id="closingCashDue"
-                                                        class="px-4 py-3 text-right font-bold text-xl text-red-600"
-                                                        style="border: 2px solid #000;">$0.00</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="ltc-column px-2 py-2 text-center text-sm">0.00%</td>
+                                                    <td style="border: 1px solid #000;"
+                                                        class="ltfc-column px-2 py-2 text-center text-sm">0.00%</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
-                            </div> <!-- End Right Column: Estimated Closing Statement -->
 
-                        </div> <!-- End Two Column Layout -->
-                    </div> <!-- End Results Section -->
+                                    <!-- Loan Amount Cards -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Full Appraisal Card -->
+                                        <div id="fullAppraisalCard"
+                                            class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                                            <div class="flex items-center mb-4">
+                                                <div class="bg-blue-100 p-2 rounded-full mr-3">
+                                                    <i class="fas fa-file-alt text-blue-600"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-blue-700">For Full Appraisal</h3>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up
+                                                    to:
+                                                    <span id="fullAppraisalPurchase" class="text-blue-600">$0.00</span>
+                                                </p>
+                                                <p class="text-green-700 font-medium">You qualify for a Rehab Loan up
+                                                    to:
+                                                    <span id="fullAppraisalRehab" class="text-green-600">$0.00</span>
+                                                </p>
+                                                <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
+                                                    <span id="fullAppraisalTotal" class="text-purple-600">$0.00</span>
+                                                </p>
+                                            </div>
+                                        </div>
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
+                                        <!-- Desktop Appraisal Card -->
+                                        <div id="desktopAppraisalCard"
+                                            class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                                            <div class="flex items-center mb-4">
+                                                <div class="bg-green-100 p-2 rounded-full mr-3">
+                                                    <i class="fas fa-desktop text-green-600"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-green-700">For Desktop Appraisal
+                                                </h3>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up
+                                                    to:
+                                                    <span id="desktopAppraisalPurchase"
+                                                        class="text-blue-600">$0.00</span>
+                                                </p>
+                                                <p class="text-green-700 font-medium">You qualify for a Rehab Loan up
+                                                    to:
+                                                    <span id="desktopAppraisalRehab" class="text-green-600">$0.00</span>
+                                                </p>
+                                                <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
+                                                    <span id="desktopAppraisalTotal"
+                                                        class="text-purple-600">$0.00</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> <!-- End Left Column: Loan Program Results -->
+
+                                <!-- Right Column: Estimated Closing Statement -->
+                                <div id="closingStatementSection" class="">
+                                    <h2 class="text-xl font-bold text-gray-900 mb-4">Estimated Closing Statement</h2>
+
+                                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                                        <!-- Header -->
+                                        <div class="bg-blue-600 text-white p-3">
+                                            <h3 class="text-lg font-bold text-center">Estimated Closing Statement</h3>
+                                        </div>
+
+                                        <!-- Closing Statement Table -->
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full border-collapse" style="border: 2px solid #000;">
+                                                <!-- Loan Amount Section -->
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2"
+                                                            class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                            style="border: 1px solid #000;">
+                                                            Loan Amount
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Purchase
+                                                            Loan Amount</td>
+                                                        <td id="closingPurchaseLoan"
+                                                            class="px-4 py-2 text-right font-semibold text-blue-600"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Rehab
+                                                            Loan
+                                                            Amount</td>
+                                                        <td id="closingRehabLoan"
+                                                            class="px-4 py-2 text-right font-semibold text-green-600"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr class="bg-gray-50">
+                                                        <td class="px-4 py-2 text-right font-bold"
+                                                            style="border: 2px solid #000;">
+                                                            Total Loan Amount</td>
+                                                        <td id="closingTotalLoan"
+                                                            class="px-4 py-2 text-right font-bold text-lg text-purple-600"
+                                                            style="border: 2px solid #000;">$0.00</td>
+                                                    </tr>
+                                                </tbody>
+
+                                                <!-- Buyer Related Charges -->
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2"
+                                                            class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                            style="border: 1px solid #000;">
+                                                            Buyer Related Charges:
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Purchase
+                                                            Price</td>
+                                                        <td id="closingPurchasePrice" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Rehab
+                                                            Budget</td>
+                                                        <td id="closingRehabBudget" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr class="bg-gray-50">
+                                                        <td class="px-4 py-2 text-right font-semibold"
+                                                            style="border: 2px solid #000;">Subtotal Buyer Charges</td>
+                                                        <td id="closingSubtotalBuyer"
+                                                            class="px-4 py-2 text-right font-semibold"
+                                                            style="border: 2px solid #000;">$0.00</td>
+                                                    </tr>
+                                                </tbody>
+
+                                                <!-- Lender Related Charges -->
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2"
+                                                            class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                            style="border: 1px solid #000;">
+                                                            Lender Related Charges:
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Lender
+                                                            Origination Fee</td>
+                                                        <td id="closingOriginationFee" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Broker
+                                                            Fee
+                                                        </td>
+                                                        <td id="closingBrokerFee" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Underwriting & Processing Fee</td>
+                                                        <td id="closingUnderwritingFee" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Interest
+                                                            Reserves</td>
+                                                        <td id="closingInterestReserves" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                </tbody>
+
+                                                <!-- Title & Other Charges -->
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2"
+                                                            class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
+                                                            style="border: 1px solid #000;">
+                                                            Title & Other Charges:
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Title
+                                                            Charges</td>
+                                                        <td id="closingTitleCharges" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Property
+                                                            Insurance</td>
+                                                        <td id="closingPropertyInsurance" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">
+                                                            Legal &
+                                                            Doc
+                                                            Prep Fee</td>
+                                                        <td id="closingLegalDocFee" class="px-4 py-2 text-right"
+                                                            style="border: 1px solid #000;">$0.00</td>
+                                                    </tr>
+                                                    <tr class="bg-gray-50">
+                                                        <td class="px-4 py-2 text-right font-semibold"
+                                                            style="border: 2px solid #000;">Subtotal Closing Costs</td>
+                                                        <td id="closingSubtotalCosts"
+                                                            class="px-4 py-2 text-right font-semibold"
+                                                            style="border: 2px solid #000;">$0.00</td>
+                                                    </tr>
+                                                </tbody>
+
+                                                <!-- Cash Due to Buyer -->
+                                                <tbody>
+                                                    <tr class="bg-gray-200">
+                                                        <td class="px-4 py-3 text-right font-bold text-lg"
+                                                            style="border: 2px solid #000;">Cash Due to Buyer</td>
+                                                        <td id="closingCashDue"
+                                                            class="px-4 py-3 text-right font-bold text-xl text-red-600"
+                                                            style="border: 2px solid #000;">$0.00</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="p-4 bg-gray-50 border-t">
+                                            <div class="flex gap-3 justify-center">
+                                                <button type="button" onclick="javascript:;"
+                                                    class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md">
+                                                    Download PDF
+                                                </button>
+                                                <button type="button" onclick="javascript:;"
+                                                    class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-md">
+                                                    Email Statement
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> <!-- End Right Column: Estimated Closing Statement -->
+
+                            </div> <!-- End Grid Layout -->
+                        </div> <!-- End Results and Closing Section -->
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loanCalculatorForm');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const errorMessage = document.getElementById('errorMessage');
@@ -864,7 +897,7 @@
                 // Show and populate the closing statement with data from the first loan
                 if (loans.length > 0 && loans[0].estimated_closing_statement) {
                     populateClosingStatement(loans[0].estimated_closing_statement);
-                    document.getElementById('closingStatementSection').classList.remove('hidden');
+                    document.getElementById('resultsAndClosingSection').classList.remove('hidden');
                 }
             }
             
@@ -1022,8 +1055,8 @@
                 document.getElementById('desktopAppraisalRehab').textContent = '$0.00';
                 document.getElementById('desktopAppraisalTotal').textContent = '$0.00';
                 
-                // Hide closing statement section
-                document.getElementById('closingStatementSection').classList.add('hidden');
+                // Hide entire results and closing section
+                document.getElementById('resultsAndClosingSection').classList.add('hidden');
             }
             
             function populateClosingStatement(closingData) {
@@ -1072,12 +1105,12 @@
 
             // Tab functionality
         });
-                    </script>
+                        </script>
 
-                    <script src="{{ url('select2/jquery-3.5.1.js') }}"></script>
-                    <script src="{{ url('select2/select2.min.js') }}" defer></script>
-                    <script>
-                        $(document).ready(function () {
+                        <script src="{{ url('select2/jquery-3.5.1.js') }}"></script>
+                        <script src="{{ url('select2/select2.min.js') }}" defer></script>
+                        <script>
+                            $(document).ready(function () {
                 $('.select2').select2();
                 
                 // Add the loan type change event listener after Select2 initialization
@@ -1147,12 +1180,13 @@
                 // If x-button does not render as a traditional submit button, target it directly by ID or class
                 $('#submit-btn').attr('disabled', 'disabled');
             });
-                    </script>
-                    @stack('modals')
+                        </script>
+                        @stack('modals')
 
-                    {{-- Allow views to push inline scripts -- e.g. @push('scripts') -- so they are rendered here --}}
-                    @stack('scripts')
-                    @livewireScripts
+                        {{-- Allow views to push inline scripts -- e.g. @push('scripts') -- so they are rendered here
+                        --}}
+                        @stack('scripts')
+                        @livewireScripts
 </body>
 
 </html>
