@@ -255,10 +255,7 @@
                                 <select name="property_type" id="property_type"
                                     class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="">-- Select Property Type --</option>
-                                    @foreach($propertyTypes as $propertyType)
-                                    <option value="{{ $propertyType->name }}">{{ $propertyType->name }}</option>
-                                    @endforeach
+                                    <option value="">-- Select Loan Type First --</option>
                                 </select>
                             </div>
 
@@ -270,10 +267,7 @@
                                 <select name="state" id="state"
                                     class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     required>
-                                    <option value="">-- Select State --</option>
-                                    @foreach($states as $state)
-                                    <option value="{{ $state->code }}">{{ $state->code }}</option>
-                                    @endforeach
+                                    <option value="">-- Select Loan Type First --</option>
                                 </select>
                             </div>
 
@@ -798,6 +792,68 @@
         <script>
             $(document).ready(function () {
                 $('.select2').select2();
+                
+                // Add the loan type change event listener after Select2 initialization
+                $('#loan_type').on('change', async function() {
+                    const selectedLoanType = this.value;
+                    const propertyTypeSelect = $('#property_type');
+                    const stateSelect = $('#state');
+                    
+                    if (!selectedLoanType) {
+                        // Reset property type and state if no loan type selected
+                        propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                        stateSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                        propertyTypeSelect.trigger('change');
+                        stateSelect.trigger('change');
+                        return;
+                    }
+                    
+                    try {
+                        // Fetch available property types and states for selected loan type
+                        const response = await fetch(`/api/loan-type-options?loan_type=${encodeURIComponent(selectedLoanType)}`);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                // Update property types
+                                propertyTypeSelect.empty().append('<option value="">-- Select Property Type --</option>');
+                                data.data.property_types.forEach(propertyType => {
+                                    propertyTypeSelect.append(`<option value="${propertyType.name}">${propertyType.name}</option>`);
+                                });
+                                propertyTypeSelect.trigger('change');
+                                
+                                // Update states
+                                stateSelect.empty().append('<option value="">-- Select State --</option>');
+                                data.data.states.forEach(state => {
+                                    stateSelect.append(`<option value="${state.code}">${state.code}</option>`);
+                                });
+                                stateSelect.trigger('change');
+                            } else {
+                                console.error('Failed to load loan type options:', data.message);
+                                // Reset to default state
+                                propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                                stateSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                                propertyTypeSelect.trigger('change');
+                                stateSelect.trigger('change');
+                            }
+                        } else {
+                            console.error('Failed to fetch loan type options');
+                            // Reset to default state
+                            propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                            stateSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                            propertyTypeSelect.trigger('change');
+                            stateSelect.trigger('change');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching loan type options:', error);
+                        // Reset to default state
+                        propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                        stateSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
+                        propertyTypeSelect.trigger('change');
+                        stateSelect.trigger('change');
+                    }
+                });
             });
 
             $('form').submit(function(){

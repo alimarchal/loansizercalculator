@@ -10,3 +10,6 @@ Route::get('/user', function (Request $request) {
 
 // API endpoint for loan matrix calculations
 Route::get('/loan-matrix', [LoanMatrixApiController::class, 'getLoanMatrix']);
+
+// API endpoint for getting loan type options (property types and states)
+Route::get('/loan-type-options', [LoanMatrixApiController::class, 'getLoanTypeOptions']);

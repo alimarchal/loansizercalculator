@@ -706,4 +706,85 @@ class LoanMatrixApiController extends Controller
 
         return $pricingData;
     }
+
+    /**
+     * Get available property types and states for a specific loan type
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLoanTypeOptions(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'loan_type' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        $loanTypeName = $request->input('loan_type');
+
+        try {
+            // Get all loan programs for the selected loan type
+            $loanTypes = LoanType::where('name', $loanTypeName)->get();
+
+            if ($loanTypes->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Loan type not found'
+                ], 404);
+            }
+
+            // Collect all unique property types and states across all loan programs
+            $propertyTypes = collect();
+            $states = collect();
+
+            foreach ($loanTypes as $loanType) {
+                // Get property types for this loan type
+                $loanTypePropertyTypes = $loanType->propertyTypes;
+                $propertyTypes = $propertyTypes->merge($loanTypePropertyTypes);
+
+                // Get states for this loan type
+                $loanTypeStates = $loanType->states;
+                $states = $states->merge($loanTypeStates);
+            }
+
+            // Remove duplicates and format the response
+            $uniquePropertyTypes = $propertyTypes->unique('id')->values()->map(function ($propertyType) {
+                return [
+                    'id' => $propertyType->id,
+                    'name' => $propertyType->name,
+                ];
+            });
+
+            $uniqueStates = $states->unique('id')->values()->map(function ($state) {
+                return [
+                    'id' => $state->id,
+                    'code' => $state->code,
+                    'name' => $state->name,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Loan type options retrieved successfully',
+                'data' => [
+                    'property_types' => $uniquePropertyTypes,
+                    'states' => $uniqueStates,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving loan type options',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
