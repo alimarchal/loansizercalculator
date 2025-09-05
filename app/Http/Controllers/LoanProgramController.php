@@ -155,16 +155,16 @@ class LoanProgramController extends Controller
                 ->get(['id', 'name', 'loan_program']);
             $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
             $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
-            
+
             // Get unique loan programs for the filter dropdown
             $loanPrograms = LoanType::select('loan_program', 'name')
                 ->distinct()
                 ->orderBy('loan_program')
                 ->get()
-                ->filter(function($item) {
+                ->filter(function ($item) {
                     return !empty($item->loan_program);
                 })
-                ->mapWithKeys(function($item) {
+                ->mapWithKeys(function ($item) {
                     // Create a more descriptive display name
                     $displayName = $item->loan_program;
                     if ($item->loan_program === '#1') {

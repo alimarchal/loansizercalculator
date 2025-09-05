@@ -79,9 +79,10 @@
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
                                 <option value="">All Programs</option>
                                 @foreach($loanPrograms as $programValue => $programDisplay)
-                                    <option value="{{ $programValue }}" {{ request('filter.loan_program') == $programValue ? 'selected' : '' }}>
-                                        {{ $programDisplay }}
-                                    </option>
+                                <option value="{{ $programValue }}" {{ request('filter.loan_program')==$programValue
+                                    ? 'selected' : '' }}>
+                                    {{ $programDisplay }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
