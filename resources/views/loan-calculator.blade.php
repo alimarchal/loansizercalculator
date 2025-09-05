@@ -148,7 +148,7 @@
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="credit_score" id="credit_score" min="300" max="850" value=""
+                                    type="number" name="credit_score" id="credit_score" min="300" max="850" value="700"
                                     placeholder="Enter credit score" required>
                             </div>
 
@@ -159,7 +159,7 @@
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="experience" id="experience" min="0" max="50" value=""
+                                    type="number" name="experience" id="experience" min="0" max="50" value="4"
                                     placeholder="Enter years of experience" required>
                             </div>
 
@@ -336,7 +336,7 @@
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="purchase_price" id="purchase_price" min="0" value=""
+                                    type="number" name="purchase_price" id="purchase_price" min="0" value="90000"
                                     placeholder="Enter purchase price" required>
                             </div>
 
@@ -347,7 +347,7 @@
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="rehab_budget" id="rehab_budget" min="0" value=""
+                                    type="number" name="rehab_budget" id="rehab_budget" min="0" value="40000"
                                     placeholder="Enter rehab budget" required>
                             </div>
 
@@ -358,8 +358,8 @@
                                 </label>
                                 <input
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="arv" id="arv" min="0" value="" placeholder="Enter ARV amount"
-                                    required>
+                                    type="number" name="arv" id="arv" min="0" value="250000"
+                                    placeholder="Enter ARV amount" required>
                             </div>
 
                         </div>
@@ -425,6 +425,21 @@
                                     <div class="bg-white shadow overflow-hidden mb-6">
                                         <table class="w-full border-collapse" style="border: 1px solid #000;">
                                             <thead>
+
+                                                <tr class="bg-green-800 text-white uppercase">
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-3 py-2 text-left font-semibold text-gray-900 text-sm"
+                                                        colspan="6">
+                                                        Loan Program Results
+                                                    </th>
+
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-3 py-2 text-left font-semibold text-gray-900 text-sm"
+                                                        colspan="3">
+                                                        You Qualify
+                                                    </th>
+                                                </tr>
+
                                                 <tr class="bg-gray-50">
                                                     <th style="border: 1px solid #000;"
                                                         class="px-3 py-2 text-left font-semibold text-gray-900 text-sm">
@@ -444,17 +459,21 @@
                                                     <th style="border: 1px solid #000;"
                                                         class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
                                                         Max LTFC</th>
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Purchase Loan Up To</th>
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Rehab Loan Up To</th>
+                                                    <th style="border: 1px solid #000;"
+                                                        class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                        Total Loan Up To</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="loanResultsTable">
                                                 <!-- Dynamic rows will be populated here after calculation -->
                                             </tbody>
                                         </table>
-                                    </div>
-
-                                    <!-- Loan Amount Cards -->
-                                    <div id="loanCardsContainer" class="grid grid-cols-1 md:grid-cols-1 gap-4">
-                                        <!-- Dynamic loan cards will be populated here after calculation -->
                                     </div>
                                 </div> <!-- End Left Column: Loan Program Results -->
 
@@ -756,11 +775,9 @@
             
             function populateResults(loans) {
                 const tableBody = document.getElementById('loanResultsTable');
-                const cardsContainer = document.getElementById('loanCardsContainer');
                 
                 // Clear existing content
                 tableBody.innerHTML = '';
-                cardsContainer.innerHTML = '';
                 
                 if (!loans || loans.length === 0) {
                     return;
@@ -822,32 +839,11 @@
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.rehab_loan_up_to ? numberWithCommas(loanData.rehab_loan_up_to) : 'N/A'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</td>
                     `;
                     tableBody.appendChild(row);
-                    
-                    // Create loan card
-                    const card = document.createElement('div');
-                    card.className = 'bg-white rounded-lg shadow-md border border-gray-200 p-6';
-                    card.innerHTML = `
-                        <div class="flex items-center mb-4">
-                            <div class="bg-${colorClass}-100 p-2 rounded-full mr-3">
-                                <i class="${iconClass} text-${colorClass}-600"></i>
-                            </div>
-                            <h3 class="text-lg font-semibold text-${colorClass}-700">For ${displayName}</h3>
-                        </div>
-                        <div class="space-y-2">
-                            <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to:
-                                <span class="text-blue-600">$${numberWithCommas(loanData?.purchase_loan_up_to || 0)}</span>
-                            </p>
-                            <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to:
-                                <span class="text-green-600">$${numberWithCommas(loanData?.rehab_loan_up_to || 0)}</span>
-                            </p>
-                            <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
-                                <span class="text-purple-600">$${numberWithCommas(loanData?.total_loan_up_to || 0)}</span>
-                            </p>
-                        </div>
-                    `;
-                    cardsContainer.appendChild(card);
                 });
                 
                 // Show and populate the closing statement with data from the first loan
