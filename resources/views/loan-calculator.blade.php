@@ -418,50 +418,95 @@
                         <div id="resultsAndClosingSection" class="hidden">
                             <!-- Loan Program Results - Full Width -->
                             <div id="resultsSection" class="mb-8">
-                                <h2 class="text-xl font-bold text-gray-900 mb-4 mx-auto">Loan Program Results</h2>
-                                <!-- Results Table -->
-                                <div class="bg-white shadow overflow-hidden mb-6">
-                                    <table class="w-full border-collapse" style="border: 1px solid #000;">
-                                        <thead>
-                                            <tr class="bg-gray-50">
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-3 py-2 text-left font-semibold text-gray-900 text-sm">
-                                                    Program</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Loan Term</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Interest Rate </th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Lender
-                                                    Points
-                                                </th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Max LTV</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Max LTC</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Max LTFC</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Purchase Loan<br> Up To</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Rehab Loan<br> Up To</th>
-                                                <th style="border: 1px solid #000;"
-                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Total Loan<br> Up To</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="loanResultsTable">
-                                            <!-- Dynamic rows will be populated here after calculation -->
-                                        </tbody>
-                                    </table>
+                                <div class="text-center mb-6">
+                                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Loan Program Results</h2>
+                                    <p class="text-gray-600">Compare loan programs and select the best option for your
+                                        needs</p>
+                                </div>
+
+                                <!-- Enhanced Results Table -->
+                                <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full">
+                                            <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                                                <tr>
+                                                    <th
+                                                        class="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center">
+                                                            <i class="fas fa-building mr-2"></i>
+                                                            Program
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-calendar-alt mr-2"></i>
+                                                            Term
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-percentage mr-2"></i>
+                                                            Rate
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-chart-line mr-2"></i>
+                                                            Points
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-home mr-1"></i>
+                                                            LTV
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-calculator mr-1"></i>
+                                                            LTC
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-tools mr-1"></i>
+                                                            LTFC
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-dollar-sign mr-1"></i>
+                                                            Purchase
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-hammer mr-1"></i>
+                                                            Rehab
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider">
+                                                        <div class="flex items-center justify-center">
+                                                            <i class="fas fa-coins mr-1"></i>
+                                                            Total
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="loanResultsTable" class="divide-y divide-gray-200">
+                                                <!-- Dynamic rows will be populated here after calculation -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div> <!-- End Loan Program Results -->
 
@@ -778,21 +823,67 @@
                         }
                     }
                     
-                    // Create table row
+                    // Create enhanced table row
                     const row = document.createElement('tr');
+                    row.className = `hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`;
                     row.innerHTML = `
-                        <td style="border: 1px solid #000;" class="px-3 py-2 font-medium text-${colorClass}-700 text-sm">
-                            <i class="${iconClass} mr-2"></i>${displayName}
+                        <td class="px-6 py-4 border-r border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-${colorClass}-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="${iconClass} text-${colorClass}-600"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-gray-900">${displayName}</div>
+                                    <div class="text-sm text-gray-500">Loan Program</div>
+                                </div>
+                            </div>
                         </td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.loan_term ? loanData.loan_term : 'N/A'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : '0.00'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.rehab_loan_up_to ? numberWithCommas(loanData.rehab_loan_up_to) : '0.00'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : '0.00'}</td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                ${loanData?.loan_term || 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="text-lg font-bold text-green-600">
+                                ${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="text-lg font-bold text-orange-600">
+                                ${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                ${loanData?.max_ltv ? loanData.max_ltv + '%' : '0%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                ${loanData?.max_ltc ? loanData.max_ltc + '%' : '0%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                ${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="text-lg font-bold text-blue-600">
+                                $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="text-lg font-bold text-green-600">
+                                $${loanData?.rehab_loan_up_to ? numberWithCommas(loanData.rehab_loan_up_to) : 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center">
+                            <span class="text-xl font-bold text-purple-600">
+                                $${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}
+                            </span>
+                        </td>
                     `;
                     tableBody.appendChild(row);
                 });
@@ -802,6 +893,14 @@
                 
                 // Show results section but keep closing statement hidden initially
                 document.getElementById('resultsAndClosingSection').classList.remove('hidden');
+                
+                // Smooth scroll to results section after calculation
+                setTimeout(() => {
+                    document.getElementById('resultsSection').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 300);
             }
 
             function createLoanProgramCards(loansByProgram) {
