@@ -375,12 +375,22 @@ class LoanMatrixApiController extends Controller
                 ];
             });
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Loan matrix data retrieved successfully',
-                'data' => $matrixData,
-                'total_records' => $matrixData->count()
-            ], 200);
+            // Check if any loan data was found and return appropriate response
+            if ($matrixData->count() > 0) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Loan matrix data retrieved successfully',
+                    'data' => $matrixData,
+                    'total_records' => $matrixData->count()
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No loan programs found matching your criteria. Please adjust your search parameters and try again.',
+                    'data' => [],
+                    'total_records' => 0
+                ], 404);
+            }
 
         } catch (\Exception $e) {
             return response()->json([
