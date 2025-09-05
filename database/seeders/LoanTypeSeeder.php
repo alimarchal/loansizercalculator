@@ -18,7 +18,7 @@ class LoanTypeSeeder extends Seeder
             ['name' => 'Fix and Flip', 'loan_program' => 'DESKTOP APPRAISAL'],
             ['name' => 'New Construction', 'loan_program' => 'EXPERIENCED BUILDER'],
             ['name' => 'New Construction', 'loan_program' => 'NEW BUILDER'],
-            ['name' => 'DSCR Rental', 'loan_program' => null],
+            ['name' => 'DSCR Rental', 'loan_program' => '#1'],
 
         ];
 

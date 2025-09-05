@@ -58,7 +58,9 @@ class StateSeeder extends Seeder
             'MT',
             'NE',
             'OR',
-            'WY'
+            'WY',
+            'AL',
+            'AR',
         ];
 
 
