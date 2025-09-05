@@ -473,212 +473,176 @@
                                 </div>
                             </div>
 
-                            <!-- Estimated Closing Statement - Full Width -->
+                            <!-- Estimated Closing Statement - Beautiful Cards Layout -->
                             <div id="closingStatementSection" class="hidden">
-                                <h2 class="text-xl font-bold text-gray-900 mb-4">Estimated Closing Statement</h2>
+                                <h2 class="text-2xl font-bold text-gray-900 mb-6">Estimated Closing Statement</h2>
 
-                                <div class="bg-white rounded-lg shadow-lg overflow-hidden m-2">
-                                    <!-- Header -->
-                                    <div class="bg-blue-600 text-white p-3">
-                                        <h3 class="text-lg font-bold text-center">Estimated Closing Statement</h3>
-                                    </div>
+                                <!-- Cards Grid Layout -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
 
-                                    <!-- Closing Statement Table -->
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full border-collapse" style="border: 2px solid #000;">
-                                            <!-- Loan Amount Section -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Loan Amount
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Purchase
-                                                        Loan Amount</td>
-                                                    <td id="closingPurchaseLoan"
-                                                        class="px-4 py-2 text-right font-semibold text-blue-600"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Rehab
-                                                        Loan
-                                                        Amount</td>
-                                                    <td id="closingRehabLoan"
-                                                        class="px-4 py-2 text-right font-semibold text-green-600"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr class="bg-gray-50">
-                                                    <td class="px-4 py-2 text-right font-bold"
-                                                        style="border: 2px solid #000;">
-                                                        Total Loan Amount</td>
-                                                    <td id="closingTotalLoan"
-                                                        class="px-4 py-2 text-right font-bold text-lg text-purple-600"
-                                                        style="border: 2px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-
-                                            <!-- Buyer Related Charges -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Buyer Related Charges:
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Purchase
-                                                        Price</td>
-                                                    <td id="closingPurchasePrice" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Rehab
-                                                        Budget</td>
-                                                    <td id="closingRehabBudget" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr class="bg-gray-50">
-                                                    <td class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">Subtotal Buyer Charges</td>
-                                                    <td id="closingSubtotalBuyer"
-                                                        class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-
-                                            <!-- Lender Related Charges -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Lender Related Charges:
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Lender
-                                                        Origination Fee</td>
-                                                    <td id="closingOriginationFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Broker
-                                                        Fee
-                                                    </td>
-                                                    <td id="closingBrokerFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Underwriting & Processing Fee</td>
-                                                    <td id="closingUnderwritingFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Interest
-                                                        Reserves</td>
-                                                    <td id="closingInterestReserves" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-
-                                            <!-- Title & Other Charges -->
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2"
-                                                        class="bg-gray-100 px-4 py-2 font-bold text-gray-900"
-                                                        style="border: 1px solid #000;">
-                                                        Title & Other Charges:
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Title
-                                                        Charges</td>
-                                                    <td id="closingTitleCharges" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Property
-                                                        Insurance</td>
-                                                    <td id="closingPropertyInsurance" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="px-4 py-2 text-right" style="border: 1px solid #000;">
-                                                        Legal &
-                                                        Doc
-                                                        Prep Fee</td>
-                                                    <td id="closingLegalDocFee" class="px-4 py-2 text-right"
-                                                        style="border: 1px solid #000;">$0.00</td>
-                                                </tr>
-                                                <tr class="bg-gray-50">
-                                                    <td class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">Subtotal Closing Costs</td>
-                                                    <td id="closingSubtotalCosts"
-                                                        class="px-4 py-2 text-right font-semibold"
-                                                        style="border: 2px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-
-                                            <!-- Cash Due to Buyer -->
-                                            <tbody>
-                                                <tr class="bg-gray-200">
-                                                    <td class="px-4 py-3 text-right font-bold text-lg"
-                                                        style="border: 2px solid #000;">Cash Due to Buyer</td>
-                                                    <td id="closingCashDue"
-                                                        class="px-4 py-3 text-right font-bold text-xl text-red-600"
-                                                        style="border: 2px solid #000;">$0.00</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    <!-- Action Buttons -->
-                                    <div class="p-4 bg-gray-50 border-t">
-                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                            <!-- Download PDF Button -->
-                                            <button type="button" onclick="javascript:;"
-                                                class="px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                                                <i class="fas fa-file-pdf"></i>
-                                                <span>Download PDF</span>
-                                            </button>
-
-                                            <!-- Save Term Sheet Button -->
-                                            <button type="button" onclick="javascript:;"
-                                                class="px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex flex-col items-center justify-center">
-                                                <div class="flex items-center gap-2">
-                                                    <i class="fas fa-save"></i>
-                                                    <span class="font-bold">Save Term Sheet</span>
+                                    <!-- Loan Amount Card -->
+                                    <div
+                                        class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-lg border-l-4 border-blue-500 p-6 hover:shadow-xl transition-shadow duration-300">
+                                        <div class="flex items-center mb-4">
+                                            <div class="bg-blue-500 p-3 rounded-full mr-3">
+                                                <i class="fas fa-dollar-sign text-white text-lg"></i>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-blue-800">Loan Amounts</h3>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Purchase Loan:</span>
+                                                <span id="closingPurchaseLoan" class="font-bold text-blue-700">$0</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Rehab Loan:</span>
+                                                <span id="closingRehabLoan" class="font-bold text-green-700">$0</span>
+                                            </div>
+                                            <div class="border-t pt-3">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="font-semibold text-gray-700">Total Loan:</span>
+                                                    <span id="closingTotalLoan"
+                                                        class="font-bold text-lg text-purple-700">$0</span>
                                                 </div>
-                                                <span class="text-xs text-blue-100 mt-1">(Save & Return
-                                                    Later)</span>
-                                            </button>
-
-                                            <!-- Submit Term Sheet Button -->
-                                            <button type="button" onclick="javascript:;"
-                                                class="px-4 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex flex-col items-center justify-center">
-                                                <div class="flex items-center gap-2">
-                                                    <i class="fas fa-paper-plane"></i>
-                                                    <span class="font-bold">Submit Term Sheet</span>
-                                                </div>
-                                                <span class="text-xs text-green-100 mt-1">(Start Loan
-                                                    Application)</span>
-                                            </button>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <!-- Property Costs Card -->
+                                    <div
+                                        class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-lg border-l-4 border-green-500 p-6 hover:shadow-xl transition-shadow duration-300">
+                                        <div class="flex items-center mb-4">
+                                            <div class="bg-green-500 p-3 rounded-full mr-3">
+                                                <i class="fas fa-home text-white text-lg"></i>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-green-800">Property Costs</h3>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Purchase Price:</span>
+                                                <span id="closingPurchasePrice"
+                                                    class="font-bold text-green-700">$0</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Rehab Budget:</span>
+                                                <span id="closingRehabBudget" class="font-bold text-green-700">$0</span>
+                                            </div>
+                                            <div class="border-t pt-3">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="font-semibold text-gray-700">Subtotal:</span>
+                                                    <span id="closingSubtotalBuyer"
+                                                        class="font-bold text-lg text-green-700">$0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Lender Fees Card -->
+                                    <div
+                                        class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-lg border-l-4 border-orange-500 p-6 hover:shadow-xl transition-shadow duration-300">
+                                        <div class="flex items-center mb-4">
+                                            <div class="bg-orange-500 p-3 rounded-full mr-3">
+                                                <i class="fas fa-university text-white text-lg"></i>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-orange-800">Lender Fees</h3>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Origination Fee:</span>
+                                                <span id="closingOriginationFee"
+                                                    class="font-bold text-orange-700">$0</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Broker Fee:</span>
+                                                <span id="closingBrokerFee" class="font-bold text-orange-700">$0</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Underwriting:</span>
+                                                <span id="closingUnderwritingFee"
+                                                    class="font-bold text-orange-700">$0</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Interest Reserves:</span>
+                                                <span id="closingInterestReserves"
+                                                    class="font-bold text-orange-700">$0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Final Summary Card -->
+                                    <div
+                                        class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg border-l-4 border-purple-500 p-6 hover:shadow-xl transition-shadow duration-300">
+                                        <div class="flex items-center mb-4">
+                                            <div class="bg-purple-500 p-3 rounded-full mr-3">
+                                                <i class="fas fa-calculator text-white text-lg"></i>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-purple-800">Other Costs</h3>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Title Charges:</span>
+                                                <span id="closingTitleCharges"
+                                                    class="font-bold text-purple-700">$0</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Insurance:</span>
+                                                <span id="closingPropertyInsurance"
+                                                    class="font-bold text-purple-700">$0</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-sm text-gray-600">Legal/Doc Fee:</span>
+                                                <span id="closingLegalDocFee"
+                                                    class="font-bold text-purple-700">$0</span>
+                                            </div>
+                                            <div class="border-t pt-3">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="font-semibold text-gray-700">Closing Costs:</span>
+                                                    <span id="closingSubtotalCosts"
+                                                        class="font-bold text-lg text-purple-700">$0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Cash Due Summary Card -->
+                                <div
+                                    class="bg-gradient-to-r from-red-600 to-red-700 rounded-xl shadow-xl p-6 text-white mb-8">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="bg-white bg-opacity-20 p-3 rounded-full mr-4">
+                                                <i class="fas fa-money-bill-wave text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-xl font-bold">Cash Due to Complete</h3>
+                                                <p class="text-red-100 text-sm">Total amount you need to bring to
+                                                    closing</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span id="closingCashDue" class="text-3xl font-bold">$0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <button
+                                        class="bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
+                                        <i class="fas fa-file-pdf mr-2"></i>
+                                        Download PDF
+                                    </button>
+                                    <button
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
+                                        <i class="fas fa-save mr-2"></i>
+                                        Save Term Sheet
+                                    </button>
+                                    <button
+                                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
+                                        <i class="fas fa-paper-plane mr-2"></i>
+                                        Start Application
+                                    </button>
                                 </div>
                             </div> <!-- End Estimated Closing Statement -->
 
@@ -758,6 +722,8 @@
             });
             
             function populateResults(loans) {
+                console.log('All loans data:', loans); // Debug log
+                
                 const tableBody = document.getElementById('loanResultsTable');
                 
                 // Clear existing content
@@ -834,16 +800,16 @@
                 // Create loan program selection cards
                 createLoanProgramCards(loansByProgram);
                 
-                // Show and populate the closing statement with data from the first loan
-                if (loans.length > 0 && loans[0].estimated_closing_statement) {
-                    populateClosingStatement(loans[0].estimated_closing_statement);
-                    document.getElementById('resultsAndClosingSection').classList.remove('hidden');
-                }
+                // Show results section but keep closing statement hidden initially
+                document.getElementById('resultsAndClosingSection').classList.remove('hidden');
             }
 
             function createLoanProgramCards(loansByProgram) {
                 const cardsContainer = document.getElementById('loanProgramCardsContainer');
                 cardsContainer.innerHTML = '';
+
+                // Store loans data globally for later use
+                window.allLoansData = loansByProgram;
 
                 // Check if this is New Construction loan type
                 const firstLoan = Object.values(loansByProgram)[0][0];
@@ -905,7 +871,7 @@
                                 </div>
                             </div>
                             <div class="mt-6">
-                                <button onclick="selectLoanProgram('${programName}', ${JSON.stringify(loan).replace(/"/g, '&quot;')})" 
+                                <button onclick="selectLoanProgram('${programName}')" 
                                         class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 hover:shadow-lg">
                                     <i class="fas fa-check-circle mr-2"></i>
                                     Check Summary for This Program
@@ -916,87 +882,98 @@
                     cardsContainer.appendChild(card);
                 });
             }
-
-            // Global variable to store selected loan
-            let selectedLoanData = null;
-
-            function selectLoanProgram(programName, loanData) {
-                selectedLoanData = loanData;
-                
-                // Show closing statement section
-                document.getElementById('closingStatementSection').classList.remove('hidden');
-                
-                // Populate closing statement with selected loan data
-                if (loanData.estimated_closing_statement) {
-                    populateClosingStatement(loanData.estimated_closing_statement);
-                }
-                
-                // Scroll to closing statement
-                document.getElementById('closingStatementSection').scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                
-                // Update button states to show which program is selected
-                const allButtons = document.querySelectorAll('#loanProgramCardsContainer button');
-                allButtons.forEach(button => {
-                    if (button.onclick.toString().includes(programName)) {
-                        button.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Selected - View Summary Below';
-                        button.classList.add('ring-4', 'ring-offset-2');
-                        button.classList.add(button.classList.contains('bg-blue-600') ? 'ring-blue-300' : 'ring-green-300');
-                    } else {
-                        button.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Check Summary for This Program';
-                        button.classList.remove('ring-4', 'ring-offset-2', 'ring-blue-300', 'ring-green-300');
-                    }
-                });
-            }
-            
-            function populateClosingStatement(closingData) {
-                // Loan Amount Section
-                if (closingData.loan_amount_section) {
-                    document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0);
-                    document.getElementById('closingRehabLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0);
-                    document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0);
-                }
-                
-                // Buyer Related Charges
-                if (closingData.buyer_related_charges) {
-                    document.getElementById('closingPurchasePrice').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0);
-                    document.getElementById('closingRehabBudget').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0);
-                    document.getElementById('closingSubtotalBuyer').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0);
-                }
-                
-                // Lender Related Charges
-                if (closingData.lender_related_charges) {
-                    document.getElementById('closingOriginationFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.lender_origination_fee || 0);
-                    document.getElementById('closingBrokerFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.broker_fee || 0);
-                    document.getElementById('closingUnderwritingFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.underwriting_processing_fee || 0);
-                    document.getElementById('closingInterestReserves').textContent = '$' + numberWithCommas(closingData.lender_related_charges.interest_reserves || 0);
-                }
-                
-                // Title & Other Charges
-                if (closingData.title_other_charges) {
-                    document.getElementById('closingTitleCharges').textContent = '$' + numberWithCommas(closingData.title_other_charges.title_charges || 0);
-                    document.getElementById('closingPropertyInsurance').textContent = '$' + numberWithCommas(closingData.title_other_charges.property_insurance || 0);
-                    document.getElementById('closingLegalDocFee').textContent = '$' + numberWithCommas(closingData.title_other_charges.legal_doc_prep_fee || 0);
-                    document.getElementById('closingSubtotalCosts').textContent = '$' + numberWithCommas(closingData.title_other_charges.subtotal_closing_costs || 0);
-                }
-                
-                // Cash Due to Buyer
-                document.getElementById('closingCashDue').textContent = '$' + numberWithCommas(closingData.cash_due_to_buyer || 0);
-            }
             
             function showError(message) {
                 document.getElementById('errorText').textContent = message;
                 errorMessage.classList.remove('hidden');
             }
-            
-            function numberWithCommas(x) {
-                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }
 
             // Tab functionality
         });
+
+        // Global variables and functions (outside DOMContentLoaded)
+        let allLoansData = null;
+
+        function selectLoanProgram(programName) {
+            if (!window.allLoansData || !window.allLoansData[programName]) {
+                console.error('Loan data not found for program:', programName);
+                return;
+            }
+
+            const selectedLoan = window.allLoansData[programName][0];
+            console.log('Selected loan data:', selectedLoan);
+            
+            // Show closing statement section
+            document.getElementById('closingStatementSection').classList.remove('hidden');
+            
+            // Populate closing statement with selected loan data
+            if (selectedLoan.estimated_closing_statement) {
+                console.log('Populating closing statement with:', selectedLoan.estimated_closing_statement);
+                populateClosingStatement(selectedLoan.estimated_closing_statement);
+            } else {
+                console.log('No estimated_closing_statement found in loan data');
+            }
+            
+            // Scroll to closing statement
+            setTimeout(() => {
+                document.getElementById('closingStatementSection').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+            
+            // Update button states to show which program is selected
+            const allButtons = document.querySelectorAll('#loanProgramCardsContainer button');
+            allButtons.forEach(button => {
+                if (button.getAttribute('onclick').includes(programName)) {
+                    button.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Selected - View Summary Below';
+                    button.classList.add('ring-4', 'ring-offset-2');
+                    button.classList.add(button.classList.contains('bg-blue-600') ? 'ring-blue-300' : 'ring-green-300');
+                } else {
+                    button.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Check Summary for This Program';
+                    button.classList.remove('ring-4', 'ring-offset-2', 'ring-blue-300', 'ring-green-300');
+                }
+            });
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function populateClosingStatement(closingData) {
+            // Loan Amount Section
+            if (closingData.loan_amount_section) {
+                document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0);
+                document.getElementById('closingRehabLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0);
+                document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0);
+            }
+            
+            // Buyer Related Charges
+            if (closingData.buyer_related_charges) {
+                document.getElementById('closingPurchasePrice').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0);
+                document.getElementById('closingRehabBudget').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0);
+                document.getElementById('closingSubtotalBuyer').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0);
+            }
+            
+            // Lender Related Charges
+            if (closingData.lender_related_charges) {
+                document.getElementById('closingOriginationFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.lender_origination_fee || 0);
+                document.getElementById('closingBrokerFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.broker_fee || 0);
+                document.getElementById('closingUnderwritingFee').textContent = '$' + numberWithCommas(closingData.lender_related_charges.underwriting_processing_fee || 0);
+                document.getElementById('closingInterestReserves').textContent = '$' + numberWithCommas(closingData.lender_related_charges.interest_reserves || 0);
+            }
+            
+            // Title & Other Charges
+            if (closingData.title_other_charges) {
+                document.getElementById('closingTitleCharges').textContent = '$' + numberWithCommas(closingData.title_other_charges.title_charges || 0);
+                document.getElementById('closingPropertyInsurance').textContent = '$' + numberWithCommas(closingData.title_other_charges.property_insurance || 0);
+                document.getElementById('closingLegalDocFee').textContent = '$' + numberWithCommas(closingData.title_other_charges.legal_doc_prep_fee || 0);
+                document.getElementById('closingSubtotalCosts').textContent = '$' + numberWithCommas(closingData.title_other_charges.subtotal_closing_costs || 0);
+            }
+            
+            // Cash Due to Buyer
+            document.getElementById('closingCashDue').textContent = '$' + numberWithCommas(closingData.cash_due_to_buyer || 0);
+        }
                         </script>
 
                         <script src="{{ url('select2/jquery-3.5.1.js') }}"></script>
