@@ -64,17 +64,6 @@
             right: 10px !important;
         }
 
-        /* Default column visibility - hide LTFC by default, show LTC */
-        #maxLtfcHeader,
-        .ltfc-column {
-            display: none !important;
-        }
-
-        #maxLtcHeader,
-        .ltc-column {
-            display: table-cell !important;
-        }
-
         /* Closing Statement Styles */
         #closingStatementSection .bg-blue-600 {
             background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
@@ -433,7 +422,7 @@
                                 <div id="resultsSection" class="">
                                     <h2 class="text-xl font-bold text-gray-900 mb-4">Loan Program Results</h2>
                                     <!-- Results Table -->
-                                    <div class="bg-white  shadow overflow-hidden mb-6">
+                                    <div class="bg-white shadow overflow-hidden mb-6">
                                         <table class="w-full border-collapse" style="border: 1px solid #000;">
                                             <thead>
                                                 <tr class="bg-gray-50">
@@ -449,104 +438,23 @@
                                                     <th style="border: 1px solid #000;"
                                                         class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
                                                         Max LTV</th>
-                                                    <th id="maxLtcHeader" style="border: 1px solid #000;"
+                                                    <th style="border: 1px solid #000;"
                                                         class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
                                                         Max LTC</th>
-                                                    <th id="maxLtfcHeader" style="border: 1px solid #000;"
+                                                    <th style="border: 1px solid #000;"
                                                         class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
                                                         Max LTFC</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="compactResultsTable">
-                                                <!-- Default rows showing 0.00 values -->
-                                                <tr id="fullAppraisalRow">
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-3 py-2 font-medium text-blue-700 text-sm">
-                                                        <i class="fas fa-file-alt mr-2"></i>Full Appraisal
-                                                    </td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="ltc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="ltfc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                                </tr>
-                                                <tr id="desktopAppraisalRow">
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-3 py-2 font-medium text-green-700 text-sm">
-                                                        <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
-                                                    </td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="ltc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                                    <td style="border: 1px solid #000;"
-                                                        class="ltfc-column px-2 py-2 text-center text-sm">0.00%</td>
-                                                </tr>
+                                            <tbody id="loanResultsTable">
+                                                <!-- Dynamic rows will be populated here after calculation -->
                                             </tbody>
                                         </table>
                                     </div>
 
                                     <!-- Loan Amount Cards -->
-                                    <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
-                                        <!-- Full Appraisal Card -->
-                                        <div id="fullAppraisalCard"
-                                            class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-                                            <div class="flex items-center mb-4">
-                                                <div class="bg-blue-100 p-2 rounded-full mr-3">
-                                                    <i class="fas fa-file-alt text-blue-600"></i>
-                                                </div>
-                                                <h3 class="text-lg font-semibold text-blue-700">For Full Appraisal</h3>
-                                            </div>
-                                            <div class="space-y-2">
-                                                <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up
-                                                    to:
-                                                    <span id="fullAppraisalPurchase" class="text-blue-600">$0.00</span>
-                                                </p>
-                                                <p class="text-green-700 font-medium">You qualify for a Rehab Loan up
-                                                    to:
-                                                    <span id="fullAppraisalRehab" class="text-green-600">$0.00</span>
-                                                </p>
-                                                <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
-                                                    <span id="fullAppraisalTotal" class="text-purple-600">$0.00</span>
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <!-- Desktop Appraisal Card -->
-                                        <div id="desktopAppraisalCard"
-                                            class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-                                            <div class="flex items-center mb-4">
-                                                <div class="bg-green-100 p-2 rounded-full mr-3">
-                                                    <i class="fas fa-desktop text-green-600"></i>
-                                                </div>
-                                                <h3 class="text-lg font-semibold text-green-700">For Desktop Appraisal
-                                                </h3>
-                                            </div>
-                                            <div class="space-y-2">
-                                                <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up
-                                                    to:
-                                                    <span id="desktopAppraisalPurchase"
-                                                        class="text-blue-600">$0.00</span>
-                                                </p>
-                                                <p class="text-green-700 font-medium">You qualify for a Rehab Loan up
-                                                    to:
-                                                    <span id="desktopAppraisalRehab" class="text-green-600">$0.00</span>
-                                                </p>
-                                                <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
-                                                    <span id="desktopAppraisalTotal"
-                                                        class="text-purple-600">$0.00</span>
-                                                </p>
-                                            </div>
-                                        </div>
+                                    <div id="loanCardsContainer" class="grid grid-cols-1 md:grid-cols-1 gap-4">
+                                        <!-- Dynamic loan cards will be populated here after calculation -->
                                     </div>
                                 </div> <!-- End Left Column: Loan Program Results -->
 
@@ -817,7 +725,8 @@
                         loadingSpinner.classList.add('hidden');
                         const errorMsg = errorData.message || `HTTP Error: ${response.status}`;
                         showError(errorMsg);
-                        resetToDefaults();
+                        // Hide entire results and closing section
+                        document.getElementById('resultsAndClosingSection').classList.add('hidden');
                         return;
                     }
                     
@@ -827,254 +736,125 @@
                     loadingSpinner.classList.add('hidden');
                     
                     if (data.success && data.data && data.data.length > 0) {
-                        populateCompactResults(data.data);
+                        populateResults(data.data);
                     } else {
                         // Show specific API error message if available, otherwise show generic message
                         const errorMsg = data.message || 'No loan programs found for the given criteria.';
                         showError(errorMsg);
-                        resetToDefaults();
+                        // Hide entire results and closing section
+                        document.getElementById('resultsAndClosingSection').classList.add('hidden');
                     }
                     
                 } catch (error) {
                     loadingSpinner.classList.add('hidden');
                     showError('An error occurred while calculating loan options. Please try again.');
-                    resetToDefaults();
+                    // Hide entire results and closing section
+                    document.getElementById('resultsAndClosingSection').classList.add('hidden');
                     console.error('API Error:', error);
                 }
             });
             
-            function setColumnVisibility(isNewConstruction) {
-                const ltcHeader = document.getElementById('maxLtcHeader');
-                const ltfcHeader = document.getElementById('maxLtfcHeader');
-                const ltcColumns = document.querySelectorAll('.ltc-column');
-                const ltfcColumns = document.querySelectorAll('.ltfc-column');
-
-                if (isNewConstruction) {
-                    // For New Construction - Check if Rehab Budget > Purchase Price
-                    const rehabBudget = parseFloat(document.getElementById('rehab_budget').value) || 0;
-                    const purchasePrice = parseFloat(document.getElementById('purchase_price').value) || 0;
-                    
-                    if (rehabBudget > purchasePrice) {
-                        // Show only LTFC, hide LTC
-                        ltcHeader.style.setProperty('display', 'none', 'important');
-                        ltfcHeader.style.setProperty('display', 'table-cell', 'important');
-                        ltcColumns.forEach(col => col.style.setProperty('display', 'none', 'important'));
-                        ltfcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
-                    } else {
-                        // Show both LTC and LTFC
-                        ltcHeader.style.setProperty('display', 'table-cell', 'important');
-                        ltfcHeader.style.setProperty('display', 'table-cell', 'important');
-                        ltcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
-                        ltfcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
-                    }
-                } else {
-                    // For Fix & Flip - Show only LTV and LTC, hide LTFC
-                    ltcHeader.style.setProperty('display', 'table-cell', 'important');
-                    ltfcHeader.style.setProperty('display', 'none', 'important');
-                    ltcColumns.forEach(col => col.style.setProperty('display', 'table-cell', 'important'));
-                    ltfcColumns.forEach(col => col.style.setProperty('display', 'none', 'important'));
+            function populateResults(loans) {
+                const tableBody = document.getElementById('loanResultsTable');
+                const cardsContainer = document.getElementById('loanCardsContainer');
+                
+                // Clear existing content
+                tableBody.innerHTML = '';
+                cardsContainer.innerHTML = '';
+                
+                if (!loans || loans.length === 0) {
+                    return;
                 }
-            }
-
-            function populateCompactResults(loans) {
-                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
-                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
                 
                 // Check if this is New Construction loan type
-                const isNewConstruction = loans.length > 0 && loans[0].loan_type === 'New Construction';
+                const isNewConstruction = loans[0].loan_type === 'New Construction';
                 
-                // Set column visibility based on loan type and business logic
-                setColumnVisibility(isNewConstruction);
+                // Group loans by loan program for display
+                const loansByProgram = {};
+                loans.forEach(loan => {
+                    const programKey = loan.loan_program || 'Unknown';
+                    if (!loansByProgram[programKey]) {
+                        loansByProgram[programKey] = [];
+                    }
+                    loansByProgram[programKey].push(loan);
+                });
                 
-                if (isNewConstruction) {
-                    // For New Construction, separate by EXPERIENCED BUILDER and NEW BUILDER
-                    const experiencedBuilderLoans = loans.filter(loan => 
-                        loan.loan_program === 'EXPERIENCED BUILDER'
-                    );
-                    const newBuilderLoans = loans.filter(loan => 
-                        loan.loan_program === 'NEW BUILDER'
-                    );
+                // Create table rows and cards for each loan program
+                Object.keys(loansByProgram).forEach((programName, index) => {
+                    const loan = loansByProgram[programName][0]; // Use first loan of each program
+                    const loanData = loan.loan_type_and_loan_program_table;
                     
-                    // Update labels and populate with New Construction data
-                    populateNewConstructionResults(experiencedBuilderLoans, newBuilderLoans);
-                } else {
-                    // Separate loans by program type (existing logic)
-                    const fullAppraisalLoans = loans.filter(loan => 
-                        loan.loan_program === 'FULL APPRAISAL' || 
-                        loan.display_name?.includes('FULL APPRAISAL')
-                    );
-                    const desktopAppraisalLoans = loans.filter(loan => 
-                        loan.loan_program === 'DESKTOP APPRAISAL' || 
-                        loan.display_name?.includes('DESKTOP APPRAISAL')
-                    );
+                    // Determine program display name and icon
+                    let displayName = programName;
+                    let iconClass = 'fas fa-calculator';
+                    let colorClass = index === 0 ? 'blue' : 'green';
                     
-                    // Populate with regular loan data
-                    populateRegularResults(fullAppraisalLoans, desktopAppraisalLoans);
-                }
+                    if (isNewConstruction) {
+                        if (programName === 'EXPERIENCED BUILDER') {
+                            displayName = 'Experienced Builder';
+                            iconClass = 'fas fa-hammer';
+                            colorClass = 'blue';
+                        } else if (programName === 'NEW BUILDER') {
+                            displayName = 'New Builder';
+                            iconClass = 'fas fa-tools';
+                            colorClass = 'green';
+                        }
+                    } else {
+                        if (programName === 'FULL APPRAISAL') {
+                            displayName = 'Full Appraisal';
+                            iconClass = 'fas fa-file-alt';
+                            colorClass = 'blue';
+                        } else if (programName === 'DESKTOP APPRAISAL') {
+                            displayName = 'Desktop Appraisal';
+                            iconClass = 'fas fa-desktop';
+                            colorClass = 'green';
+                        }
+                    }
+                    
+                    // Create table row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="border: 1px solid #000;" class="px-3 py-2 font-medium text-${colorClass}-700 text-sm">
+                            <i class="${iconClass} mr-2"></i>${displayName}
+                        </td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                    
+                    // Create loan card
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-lg shadow-md border border-gray-200 p-6';
+                    card.innerHTML = `
+                        <div class="flex items-center mb-4">
+                            <div class="bg-${colorClass}-100 p-2 rounded-full mr-3">
+                                <i class="${iconClass} text-${colorClass}-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-${colorClass}-700">For ${displayName}</h3>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-blue-700 font-medium">You qualify for a Purchase Loan up to:
+                                <span class="text-blue-600">$${numberWithCommas(loanData?.purchase_loan_up_to || 0)}</span>
+                            </p>
+                            <p class="text-green-700 font-medium">You qualify for a Rehab Loan up to:
+                                <span class="text-green-600">$${numberWithCommas(loanData?.rehab_loan_up_to || 0)}</span>
+                            </p>
+                            <p class="text-purple-700 font-medium">You qualify for Total Loan up to:
+                                <span class="text-purple-600">$${numberWithCommas(loanData?.total_loan_up_to || 0)}</span>
+                            </p>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                });
                 
                 // Show and populate the closing statement with data from the first loan
                 if (loans.length > 0 && loans[0].estimated_closing_statement) {
                     populateClosingStatement(loans[0].estimated_closing_statement);
                     document.getElementById('resultsAndClosingSection').classList.remove('hidden');
                 }
-            }
-            
-            function populateNewConstructionResults(experiencedBuilderLoans, newBuilderLoans) {
-                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
-                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
-                
-                // Update Experienced Builder row
-                if (experiencedBuilderLoans.length > 0) {
-                    const loanData = experiencedBuilderLoans[0].loan_type_and_loan_program_table;
-                    fullAppraisalRow.innerHTML = `
-                        <td style="border: 1px solid #000;" class="px-3 py-2 font-medium text-blue-700 text-sm">
-                            <i class="fas fa-hammer mr-2"></i>Experienced Builder
-                        </td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltc-column px-2 py-2 text-center text-sm">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltfc-column px-2 py-2 text-center text-sm">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
-                    `;
-                    
-                    // Update Experienced Builder card
-                    document.getElementById('fullAppraisalCard').querySelector('h3').textContent = 'For Experienced Builder';
-                    document.getElementById('fullAppraisalCard').querySelector('i').className = 'fas fa-hammer text-blue-600';
-                    document.getElementById('fullAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
-                    document.getElementById('fullAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
-                    document.getElementById('fullAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
-                }
-                
-                // Update New Builder row
-                if (newBuilderLoans.length > 0) {
-                    const loanData = newBuilderLoans[0].loan_type_and_loan_program_table;
-                    desktopAppraisalRow.innerHTML = `
-                        <td style="border: 1px solid #000;" class="px-3 py-2 font-medium text-green-700 text-sm">
-                            <i class="fas fa-tools mr-2"></i>New Builder
-                        </td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
-                    `;
-                    
-                    // Update New Builder card
-                    document.getElementById('desktopAppraisalCard').querySelector('h3').textContent = 'For New Builder';
-                    document.getElementById('desktopAppraisalCard').querySelector('i').className = 'fas fa-tools text-green-600';
-                    document.getElementById('desktopAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
-                    document.getElementById('desktopAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
-                    document.getElementById('desktopAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
-                }
-            }
-            
-            function populateRegularResults(fullAppraisalLoans, desktopAppraisalLoans) {
-                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
-                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
-                
-                // Reset labels back to regular loan types
-                document.getElementById('fullAppraisalCard').querySelector('h3').textContent = 'For Full Appraisal';
-                document.getElementById('fullAppraisalCard').querySelector('i').className = 'fas fa-file-alt text-blue-600';
-                document.getElementById('desktopAppraisalCard').querySelector('h3').textContent = 'For Desktop Appraisal';
-                document.getElementById('desktopAppraisalCard').querySelector('i').className = 'fas fa-desktop text-green-600';
-                
-                // Update Full Appraisal table row
-                if (fullAppraisalLoans.length > 0) {
-                    const loanData = fullAppraisalLoans[0].loan_type_and_loan_program_table;
-                    fullAppraisalRow.innerHTML = `
-                        <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-blue-700">
-                            <i class="fas fa-file-alt mr-2"></i>Full Appraisal
-                        </td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
-                    `;
-                    
-                    // Update Full Appraisal card
-                    document.getElementById('fullAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
-                    document.getElementById('fullAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
-                    document.getElementById('fullAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
-                }
-                
-                // Update Desktop Appraisal table row
-                if (desktopAppraisalLoans.length > 0) {
-                    const loanData = desktopAppraisalLoans[0].loan_type_and_loan_program_table;
-                    desktopAppraisalRow.innerHTML = `
-                        <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-green-700">
-                            <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
-                        </td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-4 py-3 text-center">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
-                    `;
-                    
-                    // Update Desktop Appraisal card
-                    document.getElementById('desktopAppraisalPurchase').textContent = '$' + numberWithCommas(loanData?.purchase_loan_up_to || 0);
-                    document.getElementById('desktopAppraisalRehab').textContent = '$' + numberWithCommas(loanData?.rehab_loan_up_to || 0);
-                    document.getElementById('desktopAppraisalTotal').textContent = '$' + numberWithCommas(loanData?.total_loan_up_to || 0);
-                }
-            }
-            
-            function resetToDefaults() {
-                const fullAppraisalRow = document.getElementById('fullAppraisalRow');
-                const desktopAppraisalRow = document.getElementById('desktopAppraisalRow');
-                
-                // Reset column visibility to default (Fix & Flip style - show LTC, hide LTFC)
-                const ltcHeader = document.getElementById('maxLtcHeader');
-                const ltfcHeader = document.getElementById('maxLtfcHeader');
-                const ltcColumns = document.querySelectorAll('.ltc-column');
-                const ltfcColumns = document.querySelectorAll('.ltfc-column');
-                
-                // Remove any inline styles to let CSS defaults take over
-                ltcHeader.style.removeProperty('display');
-                ltfcHeader.style.removeProperty('display');
-                ltcColumns.forEach(col => col.style.removeProperty('display'));
-                ltfcColumns.forEach(col => col.style.removeProperty('display'));
-                
-                // Reset labels back to default
-                document.getElementById('fullAppraisalCard').querySelector('h3').textContent = 'For Full Appraisal';
-                document.getElementById('fullAppraisalCard').querySelector('i').className = 'fas fa-file-alt text-blue-600';
-                document.getElementById('desktopAppraisalCard').querySelector('h3').textContent = 'For Desktop Appraisal';
-                document.getElementById('desktopAppraisalCard').querySelector('i').className = 'fas fa-desktop text-green-600';
-                
-                // Reset Full Appraisal table row to defaults
-                fullAppraisalRow.innerHTML = `
-                    <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-blue-700">
-                        <i class="fas fa-file-alt mr-2"></i>Full Appraisal
-                    </td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">0.00%</td>
-                `;
-                
-                // Reset Desktop Appraisal table row to defaults
-                desktopAppraisalRow.innerHTML = `
-                    <td style="border: 1px solid #000;" class="px-4 py-3 font-medium text-green-700">
-                        <i class="fas fa-desktop mr-2"></i>Desktop Appraisal
-                    </td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="ltc-column px-4 py-3 text-center">0.00%</td>
-                    <td style="border: 1px solid #000;" class="ltfc-column px-4 py-3 text-center">0.00%</td>
-                `;
-                
-                // Reset card values to defaults
-                document.getElementById('fullAppraisalPurchase').textContent = '$0.00';
-                document.getElementById('fullAppraisalRehab').textContent = '$0.00';
-                document.getElementById('fullAppraisalTotal').textContent = '$0.00';
-                document.getElementById('desktopAppraisalPurchase').textContent = '$0.00';
-                document.getElementById('desktopAppraisalRehab').textContent = '$0.00';
-                document.getElementById('desktopAppraisalTotal').textContent = '$0.00';
-                
-                // Hide entire results and closing section
-                document.getElementById('resultsAndClosingSection').classList.add('hidden');
             }
             
             function populateClosingStatement(closingData) {
