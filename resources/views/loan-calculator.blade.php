@@ -428,79 +428,9 @@
                                 <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
                                     <div class="overflow-x-auto">
                                         <table class="w-full">
-                                            <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                                                <tr>
-                                                    <th
-                                                        class="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center">
-                                                            <i class="fas fa-building mr-2"></i>
-                                                            Program
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-calendar-alt mr-2"></i>
-                                                            Term
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-percentage mr-2"></i>
-                                                            Rate
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-chart-line mr-2"></i>
-                                                            Points
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-home mr-1"></i>
-                                                            LTV
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-calculator mr-1"></i>
-                                                            LTC
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-tools mr-1"></i>
-                                                            LTFC
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-dollar-sign mr-1"></i>
-                                                            Purchase
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider border-r border-blue-500">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-hammer mr-1"></i>
-                                                            Rehab
-                                                        </div>
-                                                    </th>
-                                                    <th
-                                                        class="px-4 py-4 text-center font-bold text-sm uppercase tracking-wider">
-                                                        <div class="flex items-center justify-center">
-                                                            <i class="fas fa-coins mr-1"></i>
-                                                            Total
-                                                        </div>
-                                                    </th>
-                                                </tr>
+                                            <thead id="tableHeader"
+                                                class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                                                <!-- Dynamic header will be populated here -->
                                             </thead>
                                             <tbody id="loanResultsTable" class="divide-y divide-gray-200">
                                                 <!-- Dynamic rows will be populated here after calculation -->
@@ -766,6 +696,71 @@
                 }
             });
             
+            function generateTableHeader(loanType) {
+                const tableHeader = document.getElementById('tableHeader');
+                
+                // Define base columns that always appear
+                let headerHTML = `
+                    <th class="px-6 py-4 text-left font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border-r border-blue-500">
+                        <i class="fas fa-clipboard-list mr-2"></i>Loan Program
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-green-600 to-green-700 border-r border-green-500">
+                        <i class="fas fa-calendar-alt mr-2"></i>Term
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-purple-600 to-purple-700 border-r border-purple-500">
+                        <i class="fas fa-percentage mr-2"></i>Rate
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-orange-600 to-orange-700 border-r border-orange-500">
+                        <i class="fas fa-chart-line mr-2"></i>Points
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 border-r border-indigo-500">
+                        <i class="fas fa-home mr-2"></i>Max LTV
+                    </th>
+                `;
+                
+                // Add conditional columns based on loan type
+                if (loanType === 'Fix and Flip') {
+                    // For Fix and Flip: show only Max LTC
+                    headerHTML += `
+                        <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border-r border-blue-500">
+                            <i class="fas fa-hammer mr-2"></i>Max LTC
+                        </th>
+                    `;
+                } else if (loanType === 'New Construction' || loanType === 'DSCR Rental') {
+                    // For New Construction and DSCR Rental: show only Max LTFC
+                    headerHTML += `
+                        <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-pink-600 to-pink-700 border-r border-pink-500">
+                            <i class="fas fa-tools mr-2"></i>Max LTFC
+                        </th>
+                    `;
+                } else {
+                    // For other loan types: show both columns (fallback)
+                    headerHTML += `
+                        <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border-r border-blue-500">
+                            <i class="fas fa-hammer mr-2"></i>Max LTC
+                        </th>
+                        <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-pink-600 to-pink-700 border-r border-pink-500">
+                            <i class="fas fa-tools mr-2"></i>Max LTFC
+                        </th>
+                    `;
+                }
+                
+                // Add remaining columns
+                headerHTML += `
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 border-r border-cyan-500">
+                        <i class="fas fa-dollar-sign mr-2"></i>Purchase Loan Up To
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 border-r border-emerald-500">
+                        <i class="fas fa-wrench mr-2"></i>Rehab Loan Up To
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-violet-600 to-violet-700">
+                        <i class="fas fa-coins mr-2"></i>Total Loan Up To
+                    </th>
+                `;
+                
+                tableHeader.innerHTML = headerHTML;
+            }
+            
             function populateResults(loans) {
                 console.log('All loans data:', loans); // Debug log
                 
@@ -777,6 +772,10 @@
                 if (!loans || loans.length === 0) {
                     return;
                 }
+                
+                // Generate dynamic table header based on loan type
+                const loanType = loans[0].loan_type;
+                generateTableHeader(loanType);
                 
                 // Check if this is New Construction loan type
                 const isNewConstruction = loans[0].loan_type === 'New Construction';
@@ -823,10 +822,12 @@
                         }
                     }
                     
-                    // Create enhanced table row
+                    // Create enhanced table row with conditional columns
                     const row = document.createElement('tr');
                     row.className = `hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`;
-                    row.innerHTML = `
+                    
+                    // Base columns that always appear
+                    let rowHTML = `
                         <td class="px-6 py-4 border-r border-gray-200">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 w-10 h-10 bg-${colorClass}-100 rounded-full flex items-center justify-center mr-3">
@@ -859,16 +860,45 @@
                                 ${loanData?.max_ltv ? loanData.max_ltv + '%' : '0%'}
                             </span>
                         </td>
-                        <td class="px-4 py-4 text-center border-r border-gray-200">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                ${loanData?.max_ltc ? loanData.max_ltc + '%' : '0%'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-center border-r border-gray-200">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
-                                ${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0%'}
-                            </span>
-                        </td>
+                    `;
+                    
+                    // Add conditional columns based on loan type
+                    if (loan.loan_type === 'Fix and Flip') {
+                        // For Fix and Flip: show only Max LTC
+                        rowHTML += `
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                    ${loanData?.max_ltc ? loanData.max_ltc + '%' : '0%'}
+                                </span>
+                            </td>
+                        `;
+                    } else if (loan.loan_type === 'New Construction' || loan.loan_type === 'DSCR Rental') {
+                        // For New Construction and DSCR Rental: show only Max LTFC
+                        rowHTML += `
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                    ${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0%'}
+                                </span>
+                            </td>
+                        `;
+                    } else {
+                        // For other loan types: show both columns (fallback)
+                        rowHTML += `
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                    ${loanData?.max_ltc ? loanData.max_ltc + '%' : '0%'}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                    ${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0%'}
+                                </span>
+                            </td>
+                        `;
+                    }
+                    
+                    // Add remaining columns
+                    rowHTML += `
                         <td class="px-4 py-4 text-center border-r border-gray-200">
                             <span class="text-lg font-bold text-blue-600">
                                 $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}
@@ -885,6 +915,8 @@
                             </span>
                         </td>
                     `;
+                    
+                    row.innerHTML = rowHTML;
                     tableBody.appendChild(row);
                 });
 
