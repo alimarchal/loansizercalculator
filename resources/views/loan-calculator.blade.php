@@ -554,7 +554,7 @@
                                 <div id="closingStatementSection" class="">
                                     <h2 class="text-xl font-bold text-gray-900 mb-4">Estimated Closing Statement</h2>
 
-                                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                                    <div class="bg-white rounded-lg shadow-lg overflow-hidden m-2">
                                         <!-- Header -->
                                         <div class="bg-blue-600 text-white p-3">
                                             <h3 class="text-lg font-bold text-center">Estimated Closing Statement</h3>
