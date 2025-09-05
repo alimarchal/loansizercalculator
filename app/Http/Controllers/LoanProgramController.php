@@ -155,6 +155,23 @@ class LoanProgramController extends Controller
                 ->get(['id', 'name', 'loan_program']);
             $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
             $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
+            
+            // Get unique loan programs for the filter dropdown
+            $loanPrograms = LoanType::select('loan_program', 'name')
+                ->distinct()
+                ->orderBy('loan_program')
+                ->get()
+                ->filter(function($item) {
+                    return !empty($item->loan_program);
+                })
+                ->mapWithKeys(function($item) {
+                    // Create a more descriptive display name
+                    $displayName = $item->loan_program;
+                    if ($item->loan_program === '#1') {
+                        $displayName = 'DSCR Rental - Program #1';
+                    }
+                    return [$item->loan_program => $displayName];
+                });
 
             // Determine current loan program for header
             $currentLoanProgram = $request->get('filter.loan_program', 'FULL APPRAISAL');
@@ -171,7 +188,7 @@ class LoanProgramController extends Controller
                 }
             }
 
-            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'ficoBands', 'transactionTypes', 'currentLoanProgram', 'isQuickSearch', 'searchInfo'));
+            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'loanPrograms', 'ficoBands', 'transactionTypes', 'currentLoanProgram', 'isQuickSearch', 'searchInfo'));
 
         } catch (\Exception $e) {
             // If there's an error, return to dashboard with error message

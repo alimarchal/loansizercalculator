@@ -18,14 +18,19 @@ class DscrRentalLoanRuleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get DSCR Rental experiences (IDs: 11-15)
-        $experiences = [
-            11 => '0',      // Experience ID 11 = "0"
-            12 => '1-2',    // Experience ID 12 = "1-2" 
-            13 => '3-4',    // Experience ID 13 = "3-4"
-            14 => '5-9',    // Experience ID 14 = "5-9"
-            15 => '10+'     // Experience ID 15 = "10+"
-        ];
+        // Get DSCR Rental loan type
+        $dscrLoanType = \App\Models\LoanType::where('name', 'DSCR Rental')->where('loan_program', '#1')->first();
+        if (!$dscrLoanType) {
+            echo "DSCR Rental loan type not found!\n";
+            return;
+        }
+
+        // Get DSCR Rental experiences dynamically
+        $dscrExperiences = \App\Models\Experience::where('loan_type_id', $dscrLoanType->id)->get();
+        $experiences = [];
+        foreach ($dscrExperiences as $exp) {
+            $experiences[$exp->id] = $exp->experiences_range;
+        }
 
         // Get FICO bands
         $ficoBands = [
@@ -55,12 +60,26 @@ class DscrRentalLoanRuleSeeder extends Seeder
         ];
 
         // DSCR Rental matrix data
+        $dscrRules = [];
+
+        // Get experience IDs by range
+        $exp0 = $dscrExperiences->where('experiences_range', '0')->first()?->id;
+        $exp12 = $dscrExperiences->where('experiences_range', '1-2')->first()?->id;
+        $exp34 = $dscrExperiences->where('experiences_range', '3-4')->first()?->id;
+        $exp59 = $dscrExperiences->where('experiences_range', '5-9')->first()?->id;
+        $exp10plus = $dscrExperiences->where('experiences_range', '10+')->first()?->id;
+
+        if (!$exp0 || !$exp12 || !$exp34 || !$exp59 || !$exp10plus) {
+            echo "Missing experience ranges for DSCR Rental!\n";
+            return;
+        }
+
         $dscrRules = [
             // Experience "0"
-            ['exp_id' => 11, 'fico_id' => 1, 'max_loan' => 0, 'max_budget' => 0, 'has_rehab' => false, 'pricing' => []],
-            ['exp_id' => 11, 'fico_id' => 2, 'max_loan' => 0, 'max_budget' => 0, 'has_rehab' => false, 'pricing' => []],
+            ['exp_id' => $exp0, 'fico_id' => 1, 'max_loan' => 0, 'max_budget' => 0, 'has_rehab' => false, 'pricing' => []],
+            ['exp_id' => $exp0, 'fico_id' => 2, 'max_loan' => 0, 'max_budget' => 0, 'has_rehab' => false, 'pricing' => []],
             [
-                'exp_id' => 11,
+                'exp_id' => $exp0,
                 'fico_id' => 3,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -72,7 +91,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 11,
+                'exp_id' => $exp0,
                 'fico_id' => 4,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -84,7 +103,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 11,
+                'exp_id' => $exp0,
                 'fico_id' => 5,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -98,7 +117,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
 
             // Experience "1-2" 
             [
-                'exp_id' => 12,
+                'exp_id' => $exp12,
                 'fico_id' => 1,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -110,7 +129,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 12,
+                'exp_id' => $exp12,
                 'fico_id' => 2,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -122,7 +141,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 12,
+                'exp_id' => $exp12,
                 'fico_id' => 3,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -134,7 +153,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 12,
+                'exp_id' => $exp12,
                 'fico_id' => 4,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -146,7 +165,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 12,
+                'exp_id' => $exp12,
                 'fico_id' => 5,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -160,7 +179,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
 
             // Experience "3-4"
             [
-                'exp_id' => 13,
+                'exp_id' => $exp34,
                 'fico_id' => 1,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -172,7 +191,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 13,
+                'exp_id' => $exp34,
                 'fico_id' => 2,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -184,7 +203,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 13,
+                'exp_id' => $exp34,
                 'fico_id' => 3,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -196,7 +215,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 13,
+                'exp_id' => $exp34,
                 'fico_id' => 4,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -208,7 +227,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 13,
+                'exp_id' => $exp34,
                 'fico_id' => 5,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -222,7 +241,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
 
             // Experience "5-9"
             [
-                'exp_id' => 14,
+                'exp_id' => $exp59,
                 'fico_id' => 1,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -234,7 +253,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 14,
+                'exp_id' => $exp59,
                 'fico_id' => 2,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -246,7 +265,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 14,
+                'exp_id' => $exp59,
                 'fico_id' => 3,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -258,7 +277,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 14,
+                'exp_id' => $exp59,
                 'fico_id' => 4,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -270,7 +289,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 14,
+                'exp_id' => $exp59,
                 'fico_id' => 5,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -284,7 +303,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
 
             // Experience "10+"
             [
-                'exp_id' => 15,
+                'exp_id' => $exp10plus,
                 'fico_id' => 1,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -296,7 +315,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 15,
+                'exp_id' => $exp10plus,
                 'fico_id' => 2,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -308,7 +327,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 15,
+                'exp_id' => $exp10plus,
                 'fico_id' => 3,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -320,7 +339,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 15,
+                'exp_id' => $exp10plus,
                 'fico_id' => 4,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
@@ -332,7 +351,7 @@ class DscrRentalLoanRuleSeeder extends Seeder
                 ]
             ],
             [
-                'exp_id' => 15,
+                'exp_id' => $exp10plus,
                 'fico_id' => 5,
                 'max_loan' => 2000000,
                 'max_budget' => 350000,
