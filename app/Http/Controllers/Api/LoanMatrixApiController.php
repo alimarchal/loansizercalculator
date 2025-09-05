@@ -598,7 +598,7 @@ class LoanMatrixApiController extends Controller
 
         // Apply loan term adjustment: +0.50% if loan term is 18 months
         if ($loanTerm == 18) {
-            $interestRate += 0.50;
+            $interestRate += 0.00;
             $lenderPoints += 0.50;
         }
 
