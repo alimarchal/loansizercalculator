@@ -40,6 +40,8 @@ class LoanMatrixApiController extends Controller
             'pay_off' => 'nullable|numeric|min:0|max:10000000',
             'rehab_completed' => 'nullable|numeric|min:0|max:10000000',
             'state' => 'required|string|max:2', // State code (e.g., 'CA', 'TX', 'NY')
+            'title_charges' => 'nullable|numeric|min:0|max:10000000',
+            'property_insurance' => 'nullable|numeric|min:0|max:10000000',
         ]);
 
         if ($validator->fails()) {
@@ -59,6 +61,8 @@ class LoanMatrixApiController extends Controller
         $payOff = $request->pay_off;
         $rehabCompleted = $request->rehab_completed;
         $state = $request->state;
+        $titleCharges = $request->title_charges;
+        $propertyInsurance = $request->property_insurance;
 
         try {
             // Convert loan_type name to IDs if needed
@@ -178,7 +182,7 @@ class LoanMatrixApiController extends Controller
             $loanRules = $matrixQuery->get();
 
             // Transform the data to match the matrix format (same as LoanProgramController)
-            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType, $state) {
+            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType, $brokerPoints, $state, $titleCharges, $propertyInsurance) {
                 // Get rehab limits grouped by rehab level
                 $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
 
@@ -223,7 +227,7 @@ class LoanMatrixApiController extends Controller
                     $request->purchase_price ?: 0,
                     $request->rehab_budget ?: 0,
                     $request->arv ?: 0,
-                    $rule->experience->loanType->name ?? null
+                    loanType: $rule->experience->loanType->name ?? null
                 );
 
                 // Determine pricing tier based on total loan amount and get rates
@@ -281,6 +285,7 @@ class LoanMatrixApiController extends Controller
                         'purchase_price' => $request->purchase_price ? (float) number_format((float) $request->purchase_price, 2, '.', '') : 0.00,
                         'arv' => $request->arv ? (float) number_format((float) $request->arv, 2, '.', '') : 0.00,
                         'rehab_budget' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
+                        'broker_points' => $brokerPoints ? (float) number_format((float) $brokerPoints, 2, '.', '') : 0.00,
                         'state' => $state,
                     ],
 
@@ -318,23 +323,50 @@ class LoanMatrixApiController extends Controller
                         'lender_related_charges' => [
                             'lender_origination_fee' => (float) ($request->purchase_price + $request->rehab_budget) * ($pricingInfo['lender_points'] / 100),
                             'broker_fee' => (float) ($request->purchase_price + $request->rehab_budget) * ($request->broker_points / 100),
-                            'underwriting_processing_fee' => 1495.00,
+                            'underwriting_processing_fee' => $rule->experience->loanType->underwritting_fee ? (float) number_format((float) $rule->experience->loanType->underwritting_fee, 2, '.', '') : 0.00,
                             'interest_reserves' =>
                                 $rule->experience->loanType->loan_program === 'FULL APPRAISAL'
                                 ? (float) number_format((float) (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12), 2, '.', '')
                                 : 0.00,
                         ],
                         'title_other_charges' => [
-                            'title_charges' => 0.00,
-                            'property_insurance' => 0.00,
-                            'legal_doc_prep_fee' =>
-                                $rule->experience->loanType->loan_program === 'FULL APPRAISAL'
-                                ? 995.00
-                                : 0.00,
-                            'subtotal_closing_costs' => 0.00,
+                            'title_charges' => (float) $titleCharges,
+                            'property_insurance' => (float) $propertyInsurance,
+                            'legal_doc_prep_fee' => $rule->experience->loanType->legal_doc_prep_fee ? (float) number_format((float) $rule->experience->loanType->legal_doc_prep_fee, 2, '.', '') : 0.00,
+                            'subtotal_closing_costs' => (float) number_format(
+                                (float) $titleCharges +
+                                (float) $propertyInsurance +
+                                ($rule->experience->loanType->legal_doc_prep_fee ? (float) $rule->experience->loanType->legal_doc_prep_fee : 0.00) +
+                                (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['lender_points'] / 100)) +
+                                (($request->purchase_price + $request->rehab_budget) * ($request->broker_points / 100)) +
+                                ($rule->experience->loanType->underwritting_fee ? (float) $rule->experience->loanType->underwritting_fee : 0.00) +
+                                ($rule->experience->loanType->loan_program === 'FULL APPRAISAL'
+                                    ? (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12)
+                                    : 0.00),
+                                2,
+                                '.',
+                                ''
+                            ),
                         ],
 
-                        'cash_due_to_buyer' => 0.00,
+                        'cash_due_to_buyer' => (float) number_format(
+                            (($request->purchase_price + $request->rehab_budget) +
+                                ((float) $titleCharges +
+                                    (float) $propertyInsurance +
+                                    ($rule->experience->loanType->legal_doc_prep_fee ? (float) $rule->experience->loanType->legal_doc_prep_fee : 0.00) +
+                                    (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['lender_points'] / 100)) +
+                                    (($request->purchase_price + $request->rehab_budget) * ($request->broker_points / 100)) +
+                                    ($rule->experience->loanType->underwritting_fee ? (float) $rule->experience->loanType->underwritting_fee : 0.00) +
+                                    ($rule->experience->loanType->loan_program === 'FULL APPRAISAL'
+                                        ? (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12)
+                                        : 0.00))) -
+                            ($transactionType === 'Refinance'
+                                ? (($request->pay_off ? (float) $request->pay_off : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))
+                                : (($request->purchase_price ? (float) $request->purchase_price : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))),
+                            2,
+                            '.',
+                            ''
+                        ),
                     ],
 
 
