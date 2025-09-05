@@ -423,31 +423,21 @@
                                 <div class="bg-white shadow overflow-hidden mb-6">
                                     <table class="w-full border-collapse" style="border: 1px solid #000;">
                                         <thead>
-
-                                            <tr class="bg-green-800 text-white uppercase">
-                                                <th style="border: 1px solid #000;"
-                                                    class="py-3 px-4 text-center font-bold text-lg border border-white"
-                                                    colspan="6">
-                                                    Loan Summary
-                                                </th>
-
-                                                <th style="border: 1px solid #000;"
-                                                    class="py-3 px-4 text-center font-bold text-lg border border-white"
-                                                    colspan="3">
-                                                    You Qualify
-                                                </th>
-                                            </tr>
-
                                             <tr class="bg-gray-50">
                                                 <th style="border: 1px solid #000;"
                                                     class="px-3 py-2 text-left font-semibold text-gray-900 text-sm">
                                                     Program</th>
                                                 <th style="border: 1px solid #000;"
                                                     class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Rate</th>
+                                                    Loan Term</th>
                                                 <th style="border: 1px solid #000;"
                                                     class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Points</th>
+                                                    Interest Rate </th>
+                                                <th style="border: 1px solid #000;"
+                                                    class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
+                                                    Lender
+                                                    Points
+                                                </th>
                                                 <th style="border: 1px solid #000;"
                                                     class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
                                                     Max LTV</th>
@@ -459,13 +449,13 @@
                                                     Max LTFC</th>
                                                 <th style="border: 1px solid #000;"
                                                     class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Purchase Loan Up To</th>
+                                                    Purchase Loan<br> Up To</th>
                                                 <th style="border: 1px solid #000;"
                                                     class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Rehab Loan Up To</th>
+                                                    Rehab Loan<br> Up To</th>
                                                 <th style="border: 1px solid #000;"
                                                     class="px-2 py-2 text-center font-semibold text-gray-900 text-sm">
-                                                    Total Loan Up To</th>
+                                                    Total Loan<br> Up To</th>
                                             </tr>
                                         </thead>
                                         <tbody id="loanResultsTable">
@@ -475,8 +465,16 @@
                                 </div>
                             </div> <!-- End Loan Program Results -->
 
+                            <!-- Loan Program Selection Cards -->
+                            <div id="loanProgramCards" class="mb-8">
+                                <h2 class="text-xl font-bold text-gray-900 mb-4">Select Your Loan Program</h2>
+                                <div id="loanProgramCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Dynamic loan program cards will be populated here -->
+                                </div>
+                            </div>
+
                             <!-- Estimated Closing Statement - Full Width -->
-                            <div id="closingStatementSection" class="">
+                            <div id="closingStatementSection" class="hidden">
                                 <h2 class="text-xl font-bold text-gray-900 mb-4">Estimated Closing Statement</h2>
 
                                 <div class="bg-white rounded-lg shadow-lg overflow-hidden m-2">
@@ -820,23 +818,137 @@
                         <td style="border: 1px solid #000;" class="px-3 py-2 font-medium text-${colorClass}-700 text-sm">
                             <i class="${iconClass} mr-2"></i>${displayName}
                         </td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.loan_term ? loanData.loan_term : 'N/A'}</td>
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.intrest_rate ? loanData.intrest_rate + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltc ? loanData.max_ltc + '%' : '0.00%'}</td>
                         <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">${loanData?.max_ltfc ? loanData.max_ltfc + '%' : '0.00%'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.rehab_loan_up_to ? numberWithCommas(loanData.rehab_loan_up_to) : 'N/A'}</td>
-                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : '0.00'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.rehab_loan_up_to ? numberWithCommas(loanData.rehab_loan_up_to) : '0.00'}</td>
+                        <td style="border: 1px solid #000;" class="px-2 py-2 text-center text-sm">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : '0.00'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
+
+                // Create loan program selection cards
+                createLoanProgramCards(loansByProgram);
                 
                 // Show and populate the closing statement with data from the first loan
                 if (loans.length > 0 && loans[0].estimated_closing_statement) {
                     populateClosingStatement(loans[0].estimated_closing_statement);
                     document.getElementById('resultsAndClosingSection').classList.remove('hidden');
                 }
+            }
+
+            function createLoanProgramCards(loansByProgram) {
+                const cardsContainer = document.getElementById('loanProgramCardsContainer');
+                cardsContainer.innerHTML = '';
+
+                // Check if this is New Construction loan type
+                const firstLoan = Object.values(loansByProgram)[0][0];
+                const isNewConstruction = firstLoan.loan_type === 'New Construction';
+
+                Object.keys(loansByProgram).forEach((programName, index) => {
+                    const loan = loansByProgram[programName][0];
+                    const loanData = loan.loan_type_and_loan_program_table;
+                    
+                    // Determine program display name and styling
+                    let displayName = programName;
+                    let iconClass = 'fas fa-calculator';
+                    let cardColorClass = index === 0 ? 'border-blue-500 bg-blue-50' : 'border-green-500 bg-green-50';
+                    let headerColorClass = index === 0 ? 'bg-blue-600' : 'bg-green-600';
+                    let buttonColorClass = index === 0 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700';
+                    
+                    if (isNewConstruction) {
+                        if (programName === 'EXPERIENCED BUILDER') {
+                            displayName = 'Experienced Builder';
+                            iconClass = 'fas fa-hammer';
+                        } else if (programName === 'NEW BUILDER') {
+                            displayName = 'New Builder';
+                            iconClass = 'fas fa-tools';
+                        }
+                    } else {
+                        if (programName === 'FULL APPRAISAL') {
+                            displayName = 'Full Appraisal';
+                            iconClass = 'fas fa-file-alt';
+                        } else if (programName === 'DESKTOP APPRAISAL') {
+                            displayName = 'Desktop Appraisal';
+                            iconClass = 'fas fa-desktop';
+                        }
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-lg shadow-lg border-2 ${cardColorClass} overflow-hidden`;
+                    card.innerHTML = `
+                        <div class="${headerColorClass} text-white p-4">
+                            <div class="flex items-center">
+                                <i class="${iconClass} text-2xl mr-3"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">Loan Program: ${displayName}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b pb-2">
+                                    <span class="font-medium text-gray-700">You qualify for a Purchase Loan up to:</span>
+                                    <span class="font-bold text-blue-600">$${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-2">
+                                    <span class="font-medium text-gray-700">You qualify for a Rehab Loan up to:</span>
+                                    <span class="font-bold text-green-600">$${loanData?.rehab_loan_up_to ? numberWithCommas(loanData.rehab_loan_up_to) : 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-2">
+                                    <span class="font-medium text-gray-700">You qualify for Total Loan up to:</span>
+                                    <span class="font-bold text-purple-600">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</span>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <button onclick="selectLoanProgram('${programName}', ${JSON.stringify(loan).replace(/"/g, '&quot;')})" 
+                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 hover:shadow-lg">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    Check Summary for This Program
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                });
+            }
+
+            // Global variable to store selected loan
+            let selectedLoanData = null;
+
+            function selectLoanProgram(programName, loanData) {
+                selectedLoanData = loanData;
+                
+                // Show closing statement section
+                document.getElementById('closingStatementSection').classList.remove('hidden');
+                
+                // Populate closing statement with selected loan data
+                if (loanData.estimated_closing_statement) {
+                    populateClosingStatement(loanData.estimated_closing_statement);
+                }
+                
+                // Scroll to closing statement
+                document.getElementById('closingStatementSection').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Update button states to show which program is selected
+                const allButtons = document.querySelectorAll('#loanProgramCardsContainer button');
+                allButtons.forEach(button => {
+                    if (button.onclick.toString().includes(programName)) {
+                        button.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Selected - View Summary Below';
+                        button.classList.add('ring-4', 'ring-offset-2');
+                        button.classList.add(button.classList.contains('bg-blue-600') ? 'ring-blue-300' : 'ring-green-300');
+                    } else {
+                        button.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Check Summary for This Program';
+                        button.classList.remove('ring-4', 'ring-offset-2', 'ring-blue-300', 'ring-green-300');
+                    }
+                });
             }
             
             function populateClosingStatement(closingData) {
