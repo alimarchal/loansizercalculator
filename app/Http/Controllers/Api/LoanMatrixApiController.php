@@ -181,6 +181,9 @@ class LoanMatrixApiController extends Controller
 
             $loanRules = $matrixQuery->get();
 
+            // Get maximum loan amount from the database for validation
+            $maxLoanAmountFromDb = $loanRules->max('max_total_loan') ?: 0;
+
             // Validate business rules before processing loan rules
             $businessValidation = $this->validateBusinessRules(
                 $creditScore,
@@ -191,7 +194,8 @@ class LoanMatrixApiController extends Controller
                 $loanType,
                 null, // loan program - we'll check this per rule
                 null, // dscr - not provided in this endpoint
-                null  // property type - not provided in this endpoint
+                null, // property type - not provided in this endpoint
+                $maxLoanAmountFromDb // Pass the dynamic max loan amount from database
             );
 
             // If business rules fail, return notifications
@@ -331,9 +335,9 @@ class LoanMatrixApiController extends Controller
 
                     'estimated_closing_statement' => [
                         'loan_amount_section' => [
-                            'purchase_loan_amount' => $request->purchase_price ? (float) number_format((float) $request->purchase_price, 2, '.', '') : 0.00,
-                            'rehab_loan_amount' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
-                            'total_loan_amount' => (float) ($request->purchase_price + $request->rehab_budget),
+                            'purchase_loan_amount' => $loanCalculations['purchase_loan_up_to'],
+                            'rehab_loan_amount' => $loanCalculations['rehab_loan_up_to'],
+                            'total_loan_amount' => (float) ($loanCalculations['purchase_loan_up_to'] + $loanCalculations['rehab_loan_up_to']),
                         ],
                         'buyer_related_charges' => [
                             ($transactionType === 'Refinance' ? 'payoff' : 'purchase_price') => $transactionType === 'Refinance'
@@ -437,9 +441,10 @@ class LoanMatrixApiController extends Controller
      * @param string $loanProgram
      * @param float $dscr
      * @param string $propertyType
+     * @param float $maxLoanAmountFromDb
      * @return array
      */
-    private function validateBusinessRules($creditScore, $experience, $rehabBudget, $purchasePrice, $totalLoanAmount = 0, $loanType = null, $loanProgram = null, $dscr = null, $propertyType = null)
+    private function validateBusinessRules($creditScore, $experience, $rehabBudget, $purchasePrice, $totalLoanAmount = 0, $loanType = null, $loanProgram = null, $dscr = null, $propertyType = null, $maxLoanAmountFromDb = 0)
     {
         $notifications = [];
         $valid = true;
@@ -453,8 +458,8 @@ class LoanMatrixApiController extends Controller
                     $valid = false;
                 }
 
-                if ($totalLoanAmount > 1000000) {
-                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,000,000';
+                if ($maxLoanAmountFromDb > 0 && $totalLoanAmount > $maxLoanAmountFromDb) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $' . number_format($maxLoanAmountFromDb, 0);
                     $valid = false;
                 } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 50000) {
                     $notifications[] = 'Loan Size: Minimum Loan Size allowed is $50,000';
@@ -490,8 +495,8 @@ class LoanMatrixApiController extends Controller
                     $valid = false;
                 }
 
-                if ($totalLoanAmount > 1500000) {
-                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,500,000. Contact Loan officer for Pricing';
+                if ($maxLoanAmountFromDb > 0 && $totalLoanAmount > $maxLoanAmountFromDb) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $' . number_format($maxLoanAmountFromDb, 0) . '. Contact Loan officer for Pricing';
                     $valid = false;
                 } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 200000) {
                     $notifications[] = 'Loan Size: Minimum Loan size allowed $200,000 for New Construction. Contact Loan officer for Pricing';
@@ -524,8 +529,8 @@ class LoanMatrixApiController extends Controller
                     $valid = false;
                 }
 
-                if ($totalLoanAmount > 1500000) {
-                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,500,000. Contact Loan officer for Pricing';
+                if ($maxLoanAmountFromDb > 0 && $totalLoanAmount > $maxLoanAmountFromDb) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $' . number_format($maxLoanAmountFromDb, 0) . '. Contact Loan officer for Pricing';
                     $valid = false;
                 } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 200000) {
                     $notifications[] = 'Loan Size: Minimum Loan size allowed $200,000 for DSCR Loan. Contact Loan officer for Pricing';
@@ -552,8 +557,8 @@ class LoanMatrixApiController extends Controller
                     $valid = false;
                 }
 
-                if ($totalLoanAmount > 1000000) {
-                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,000,000';
+                if ($maxLoanAmountFromDb > 0 && $totalLoanAmount > $maxLoanAmountFromDb) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $' . number_format($maxLoanAmountFromDb, 0);
                     $valid = false;
                 } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 50000) {
                     $notifications[] = 'Loan Size: Minimum Loan Size allowed is $50,000';
