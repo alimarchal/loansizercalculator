@@ -181,6 +181,30 @@ class LoanMatrixApiController extends Controller
 
             $loanRules = $matrixQuery->get();
 
+            // Validate business rules before processing loan rules
+            $businessValidation = $this->validateBusinessRules(
+                $creditScore,
+                is_numeric($originalExperience) ? (int) $originalExperience : 0,
+                $request->rehab_budget ?: 0,
+                $request->purchase_price ?: 0,
+                ($request->purchase_price ?: 0) + ($request->rehab_budget ?: 0), // Total loan amount estimation
+                $loanType,
+                null, // loan program - we'll check this per rule
+                null, // dscr - not provided in this endpoint
+                null  // property type - not provided in this endpoint
+            );
+
+            // If business rules fail, return notifications
+            if (!$businessValidation['valid']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Loan application does not meet qualification criteria. ' . implode(' ', $businessValidation['notifications']),
+                    'disqualifier_notifications' => $businessValidation['notifications'],
+                    'data' => [],
+                    'total_records' => 0
+                ], 400);
+            }
+
             // Transform the data to match the matrix format (same as LoanProgramController)
             $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType, $brokerPoints, $state, $titleCharges, $propertyInsurance) {
                 // Get rehab limits grouped by rehab level
@@ -402,30 +426,140 @@ class LoanMatrixApiController extends Controller
     }
 
     /**
-     * Validate business rules
+     * Validate business rules and return disqualifier notifications
      * 
      * @param float $creditScore
      * @param int $experience
      * @param float $rehabBudget
      * @param float $purchasePrice
+     * @param float $totalLoanAmount
+     * @param string $loanType
+     * @param string $loanProgram
+     * @param float $dscr
+     * @param string $propertyType
      * @return array
      */
-    private function validateBusinessRules($creditScore, $experience, $rehabBudget, $purchasePrice)
+    private function validateBusinessRules($creditScore, $experience, $rehabBudget, $purchasePrice, $totalLoanAmount = 0, $loanType = null, $loanProgram = null, $dscr = null, $propertyType = null)
     {
         $notifications = [];
         $valid = true;
 
-        // Rule 1: Minimum credit score allowed 660+
-        if ($creditScore < 660) {
-            $notifications[] = 'Minimum credit score allowed is 660+';
-            $valid = false;
-        }
+        // Loan type specific validations
+        switch ($loanType) {
+            case 'Fix and Flip':
+                // Fix and Flip specific rules
+                if ($creditScore < 660) {
+                    $notifications[] = 'Credit: Minimum credit score allowed 660+';
+                    $valid = false;
+                }
 
-        // Rule 3: 3+ Borrower Experience required for Heavy Rehab projects
-        $rehabPercentage = ($rehabBudget / $purchasePrice) * 100;
-        if ($rehabPercentage > 50 && $rehabPercentage <= 100 && $experience < 3) {
-            $notifications[] = '3+ Borrower Experience required for Heavy Rehab projects';
-            $valid = false;
+                if ($totalLoanAmount > 1000000) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,000,000';
+                    $valid = false;
+                } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 50000) {
+                    $notifications[] = 'Loan Size: Minimum Loan Size allowed is $50,000';
+                    $valid = false;
+                }
+
+                // Calculate rehab percentage for experience validation
+                $rehabPercentage = $purchasePrice > 0 ? ($rehabBudget / $purchasePrice) * 100 : 0;
+
+                // 3+ Borrower Experience required for Heavy Rehab projects (50-100%)
+                if ($rehabPercentage > 50 && $rehabPercentage <= 100 && $experience < 3) {
+                    $notifications[] = 'Experience: 3+ Borrower Experience required for Heavy Rehab projects';
+                    $valid = false;
+                }
+
+                // 3+ Borrower Experience required for Extensive Rehab projects (>100%)
+                if ($rehabPercentage > 100 && $experience < 3) {
+                    $notifications[] = 'Experience: 3+ Borrower Experience required for Extensive Rehab Project';
+                    $valid = false;
+                }
+
+                // Property Type validation for Fix and Flip
+                if ($propertyType && !in_array($propertyType, ['Single Family', 'Townhomes', 'Condos', 'Multi-Family', 'Commercial'])) {
+                    $notifications[] = 'Property Type: Property Type not eligible for Fix and Flip';
+                    $valid = false;
+                }
+                break;
+
+            case 'New Construction':
+                // New Construction specific rules
+                if ($creditScore < 680) {
+                    $notifications[] = 'Credit: Minimum credit score allowed 680+ for New Construction';
+                    $valid = false;
+                }
+
+                if ($totalLoanAmount > 1500000) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,500,000. Contact Loan officer for Pricing';
+                    $valid = false;
+                } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 200000) {
+                    $notifications[] = 'Loan Size: Minimum Loan size allowed $200,000 for New Construction. Contact Loan officer for Pricing';
+                    $valid = false;
+                }
+
+                // Experience and FICO validation for Experienced Builder Program
+                if ($loanProgram === 'EXPERIENCED BUILDER' && ($experience < 3 || $creditScore < 680)) {
+                    $notifications[] = 'Experience: 3+ Borrower Experience & 680+ FICO required for Experienced Builder Program';
+                    $valid = false;
+                }
+
+                // Property Type validation for New Construction
+                if ($propertyType && !in_array($propertyType, ['Single Family', 'Townhomes', 'Condos'])) {
+                    $notifications[] = 'Property Type: Eligible property type for New Construction is Single Family, Townhomes, Condos';
+                    $valid = false;
+                }
+
+                // Additional FICO check for New Construction
+                if ($creditScore < 680) {
+                    $notifications[] = 'FICO: Minimum FICO eligible for New Construction 680+';
+                    $valid = false;
+                }
+                break;
+
+            case 'DSCR Rental':
+                // DSCR Rental specific rules
+                if ($creditScore < 660) {
+                    $notifications[] = 'Credit: Minimum credit score allowed 660+ for DSCR Loan';
+                    $valid = false;
+                }
+
+                if ($totalLoanAmount > 1500000) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,500,000. Contact Loan officer for Pricing';
+                    $valid = false;
+                } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 200000) {
+                    $notifications[] = 'Loan Size: Minimum Loan size allowed $200,000 for DSCR Loan. Contact Loan officer for Pricing';
+                    $valid = false;
+                }
+
+                // DSCR validation
+                if ($dscr !== null && $dscr < 0.80) {
+                    $notifications[] = 'DSCR: Minimum DSCR allowed for DSCR loan is 0.80x';
+                    $valid = false;
+                }
+
+                // Property Type validation for DSCR
+                if ($propertyType && !in_array($propertyType, ['Single Family', 'Townhomes', 'Condos'])) {
+                    $notifications[] = 'Property Type: Eligible property type for DSCR is Single Family, Townhomes, Condos';
+                    $valid = false;
+                }
+                break;
+
+            default:
+                // Default validation (fallback to Fix and Flip rules)
+                if ($creditScore < 660) {
+                    $notifications[] = 'Credit: Minimum credit score allowed 660+';
+                    $valid = false;
+                }
+
+                if ($totalLoanAmount > 1000000) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,000,000';
+                    $valid = false;
+                } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 50000) {
+                    $notifications[] = 'Loan Size: Minimum Loan Size allowed is $50,000';
+                    $valid = false;
+                }
+                break;
         }
 
         return [
