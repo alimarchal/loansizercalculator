@@ -15,7 +15,8 @@ class TransactionTypeSeeder extends Seeder
     {
         $types = [
             ['name' => 'Purchase'],
-            ['name' => 'Refinance'],
+            ['name' => 'Refinance No Cash Out'],
+            ['name' => 'Refinance Cash Out'],
         ];
 
         TransactionType::upsert($types, ['name']);
