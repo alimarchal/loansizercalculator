@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,6 +12,10 @@ return new class extends Migration
     {
         Schema::create('dscr_ranges', function (Blueprint $table) {
             $table->id();
+            $table->string('range_name', 20)->unique();
+            $table->decimal('min_dscr', 4, 2)->nullable();
+            $table->decimal('max_dscr', 4, 2)->nullable();
+            $table->integer('display_order')->nullable();
             $table->timestamps();
         });
     }
