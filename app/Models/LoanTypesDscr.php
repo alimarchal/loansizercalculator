@@ -9,4 +9,14 @@ class LoanTypesDscr extends Model
 {
     /** @use HasFactory<\Database\Factories\LoanTypesDscrFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'loan_type',
+        'display_order'
+    ];
+
+    public function dscrRateMatrices()
+    {
+        return $this->hasMany(DscrRateMatrix::class);
+    }
 }

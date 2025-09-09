@@ -38,10 +38,17 @@ class DatabaseSeeder extends Seeder
             NewBuilderLoanRuleSeeder::class, // New Builder specific rules
             DscrRentalLoanRuleSeeder::class, // DSCR Rental specific rules
 
+                // New DSCR matrix seeders
+            LtvRatioSeeder::class,
+            LoanAmountSeeder::class,
+            OccupancyTypesSeeder::class,
+            DscrRangesSeeder::class,
+            PrepayPeriodsSeeder::class,
+            LoanTypesDscrSeeder::class,
+
                 // Relationship seeders (run after the base data)
             LoanTypeStateSeeder::class,
             LoanTypePropertyTypeSeeder::class,
-            // LtvRatioSeeder::class,
 
             //RateMatrixSeeder::class,
         ]);

@@ -2,16 +2,23 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\OccupancyTypes;
 use Illuminate\Database\Seeder;
 
 class OccupancyTypesSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        $occupancyTypes = [
+            ['name' => 'Vacant', 'display_order' => 1],
+            ['name' => 'Occupied', 'display_order' => 2],
+        ];
+
+        foreach ($occupancyTypes as $type) {
+            OccupancyTypes::firstOrCreate(
+                ['name' => $type['name']],
+                $type
+            );
+        }
     }
 }
