@@ -18,7 +18,9 @@ class LoanTypeSeeder extends Seeder
             ['name' => 'Fix and Flip', 'loan_program' => 'DESKTOP APPRAISAL', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0],
             ['name' => 'New Construction', 'loan_program' => 'EXPERIENCED BUILDER', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0],
             ['name' => 'New Construction', 'loan_program' => 'NEW BUILDER', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0],
-            ['name' => 'DSCR Rental', 'loan_program' => '#1', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0],
+            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #1', 'underwritting_fee' => 1595, 'legal_doc_prep_fee' => 995],
+            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #2', 'underwritting_fee' => 1999, 'legal_doc_prep_fee' => 0],
+            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #3', 'underwritting_fee' => 1595, 'legal_doc_prep_fee' => 0],
 
         ];
 
