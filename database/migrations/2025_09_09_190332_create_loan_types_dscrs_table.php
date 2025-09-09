@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('loan_types_dscrs', function (Blueprint $table) {
             $table->id();
-            $table->string('loan_type', 30)->unique();
+            $table->string('loan_type_dscr_name', 30)->unique();
             $table->integer('display_order')->nullable();
             $table->timestamps();
         });

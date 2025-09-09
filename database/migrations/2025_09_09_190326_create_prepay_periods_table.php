@@ -12,8 +12,7 @@ return new class extends Migration {
     {
         Schema::create('prepay_periods', function (Blueprint $table) {
             $table->id();
-            $table->string('period_name', 20)->unique();
-            $table->integer('years')->nullable();
+            $table->string('prepay_name', 20)->unique();
             $table->integer('display_order')->nullable();
             $table->timestamps();
         });

@@ -41,6 +41,7 @@ class DatabaseSeeder extends Seeder
                 // Relationship seeders (run after the base data)
             LoanTypeStateSeeder::class,
             LoanTypePropertyTypeSeeder::class,
+            // LtvRatioSeeder::class,
 
             //RateMatrixSeeder::class,
         ]);

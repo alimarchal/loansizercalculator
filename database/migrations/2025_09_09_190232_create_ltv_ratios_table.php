@@ -12,8 +12,9 @@ return new class extends Migration {
     {
         Schema::create('ltv_ratios', function (Blueprint $table) {
             $table->id();
-            $table->string('ltv_name', 20)->unique();
-            $table->decimal('ltv_percentage', 5, 2)->nullable();
+            $table->string('ratio_range', 20)->nullable();
+            $table->integer('ltv_min')->nullable();
+            $table->integer('ltv_max')->nullable();
             $table->integer('display_order')->nullable();
             $table->timestamps();
         });

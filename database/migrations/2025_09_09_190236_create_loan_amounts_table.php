@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('loan_amounts', function (Blueprint $table) {
             $table->id();
-            $table->string('range_name', 30)->unique();
+            $table->string('amount_range', 30)->unique();
             $table->decimal('min_amount', 12, 2)->nullable();
             $table->decimal('max_amount', 12, 2)->nullable();
             $table->integer('display_order')->nullable();

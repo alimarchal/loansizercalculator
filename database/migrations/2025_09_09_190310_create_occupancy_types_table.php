@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('occupancy_types', function (Blueprint $table) {
             $table->id();
-            $table->string('occupancy_type', 20)->unique();
+            $table->string('name', 20)->unique();
             $table->integer('display_order')->nullable();
             $table->timestamps();
         });
