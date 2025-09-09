@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId(column: 'ltv_ratio_id')->nullable()->constrained()->cascadeOnUpdate();
             $table->decimal(column: 'adjustment_pct', total: 6, places: 4)->default(0.0000);
             $table->timestamps();
-            $table->unique(['fico_band_id', 'ltv_range_id']);
+            $table->unique(['fico_band_id', 'ltv_ratio_id'], 'fico_ltv_adj_unique');
 
         });
     }

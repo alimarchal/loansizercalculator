@@ -12,11 +12,11 @@ return new class extends Migration {
     {
         Schema::create('dscr_ltv_adjustments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId(column: 'dscr_id')->nullable()->constrained()->cascadeOnUpdate();
+            $table->foreignId(column: 'dscr_range_id')->nullable()->constrained()->cascadeOnUpdate();
             $table->foreignId(column: 'ltv_ratio_id')->nullable()->constrained()->cascadeOnUpdate();
             $table->decimal(column: 'adjustment_pct', total: 6, places: 4)->default(0.0000);
             $table->timestamps();
-            $table->unique(['dscr_id', 'ltv_ratio_id']);
+            $table->unique(['dscr_range_id', 'ltv_ratio_id'], 'dscr_ltv_adj_unique');
 
         });
     }
