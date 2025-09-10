@@ -314,6 +314,8 @@ class LoanProgramController extends Controller
             $dscrRange = $filters['dscr_range'] ?? null;
             $prepayPeriod = $filters['prepay_period'] ?? null;
             $categoryFilter = $filters['category'] ?? null;
+            $dscrInput = $request->get('dscr_input');
+            $loanTypeDscrId = $filters['loan_type_dscr_id'] ?? null;
 
             // Build the enhanced SQL query with dynamic WHERE conditions
             $whereConditions = [];
@@ -331,6 +333,8 @@ class LoanProgramController extends Controller
                 'fico_band_id' => $ficoBandId,
                 'transaction_type_id' => $transactionTypeId,
                 'prepay_period' => $prepayPeriod,
+                'dscr_input' => $dscrInput,
+                'loan_type_dscr_id' => $loanTypeDscrId,
                 'request_all' => $request->all(),
                 'filters_array' => $filters
             ]);
@@ -656,6 +660,40 @@ class LoanProgramController extends Controller
                 }
             }
 
+            // Apply DSCR Input filter if specified (only applies to DSCR rows)
+            if ($dscrInput) {
+                $filteredData = $filteredData->filter(function ($row) use ($dscrInput) {
+                    if ($row->row_group === 'DSCR') {
+                        // Extract DSCR range from row_label (e.g., "1.20 - 1.39")
+                        $label = $row->row_label;
+                        if (preg_match('/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/', $label, $matches)) {
+                            $minDscr = (float) $matches[1];
+                            $maxDscr = (float) $matches[2];
+                            return $dscrInput >= $minDscr && $dscrInput <= $maxDscr;
+                        } elseif (preg_match('/(\d+\.?\d*)\+/', $label, $matches)) {
+                            // Handle ranges like "1.50+"
+                            $minDscr = (float) $matches[1];
+                            return $dscrInput >= $minDscr;
+                        }
+                        return false;
+                    }
+                    return false;
+                });
+            }
+
+            // Apply Loan Type DSCR filter if specified (only applies to Loan Type rows)
+            if ($loanTypeDscrId) {
+                $loanTypeDscr = \App\Models\LoanTypesDscr::find($loanTypeDscrId);
+                if ($loanTypeDscr) {
+                    $filteredData = $filteredData->filter(function ($row) use ($loanTypeDscr) {
+                        if ($row->row_group === 'Loan Type') {
+                            return $row->row_label === $loanTypeDscr->loan_type_dscr_name;
+                        }
+                        return false;
+                    });
+                }
+            }
+
             // Convert back to array for grouping
             $matrixData = $filteredData->all();
 
@@ -670,6 +708,8 @@ class LoanProgramController extends Controller
                 'fico_band_id' => $ficoBandId,
                 'transaction_type_id' => $transactionTypeId,
                 'prepay_period' => $prepayPeriod,
+                'dscr_input' => $dscrInput,
+                'loan_type_dscr_id' => $loanTypeDscrId,
                 'filtered_results' => array_slice($matrixData, 0, 3)
             ]);
 
@@ -695,6 +735,7 @@ class LoanProgramController extends Controller
             $occupancyTypes = \App\Models\OccupancyTypes::orderBy('name')->get(['id', 'name']);
             $dscrRanges = \App\Models\DscrRanges::orderBy('dscr_range')->get(['id', 'dscr_range']);
             $prepayPeriods = \App\Models\PrepayPeriods::orderBy('prepay_name')->get(['id', 'prepay_name']);
+            $loanTypesDscr = \App\Models\LoanTypesDscr::orderBy('display_order')->get(['id', 'loan_type_dscr_name']);
 
             // Get DSCR loan programs
             $loanPrograms = LoanType::select('loan_program')
@@ -719,6 +760,7 @@ class LoanProgramController extends Controller
                 'occupancyTypes',
                 'dscrRanges',
                 'prepayPeriods',
+                'loanTypesDscr',
                 'loanProgram'
             ))->with([
                         'isDscrMatrix' => true,
@@ -774,6 +816,14 @@ class LoanProgramController extends Controller
                         return $query;
                     }),
                     AllowedFilter::callback('dscr_range', function ($query, $value) {
+                        // This filter is only used for DSCR matrix, so ignore it here
+                        return $query;
+                    }),
+                    AllowedFilter::callback('loan_type_dscr_id', function ($query, $value) {
+                        // This filter is only used for DSCR matrix, so ignore it here
+                        return $query;
+                    }),
+                    AllowedFilter::callback('prepay_period', function ($query, $value) {
                         // This filter is only used for DSCR matrix, so ignore it here
                         return $query;
                     }),

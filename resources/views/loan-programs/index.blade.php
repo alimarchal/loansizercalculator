@@ -193,6 +193,39 @@
                         </div>
                         @endif
 
+                        <!-- DSCR Input Filter -->
+                        <div>
+                            <label for="dscr_input"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                DSCR Value
+                            </label>
+                            <input type="number" name="dscr_input" id="dscr_input" value="{{ request('dscr_input') }}"
+                                min="0" step="0.01" placeholder="Enter DSCR value (e.g., 1.25)"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                            <small class="text-gray-500 dark:text-gray-400">Filter by specific DSCR value</small>
+                        </div>
+
+                        <!-- Loan Type DSCR Filter -->
+                        @if(isset($loanTypesDscr) && count($loanTypesDscr) > 0)
+                        <div>
+                            <label for="loan_type_dscr_id"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Loan Type DSCR
+                            </label>
+                            <select name="filter[loan_type_dscr_id]" id="loan_type_dscr_id"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All DSCR Loan Types</option>
+                                @foreach($loanTypesDscr as $loanTypeDscr)
+                                <option value="{{ $loanTypeDscr->id }}" {{
+                                    request('filter.loan_type_dscr_id')==$loanTypeDscr->id ?
+                                    'selected' : '' }}>
+                                    {{ $loanTypeDscr->loan_type_dscr_name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
                         <!-- FICO Band Filter -->
                         @if(isset($ficoBands) && count($ficoBands) > 0)
                         <div>
