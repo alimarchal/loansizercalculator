@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('transaction_type_ltv_adjustments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId(column: 'loan_type_id')->nullable()->constrained()->cascadeOnUpdate();
             $table->foreignId(column: 'transaction_type_id')->nullable()->constrained()->cascadeOnUpdate();
             $table->foreignId(column: 'ltv_ratio_id')->nullable()->constrained()->cascadeOnUpdate();
             $table->decimal(column: 'adjustment_pct', total: 6, places: 4)->nullable();

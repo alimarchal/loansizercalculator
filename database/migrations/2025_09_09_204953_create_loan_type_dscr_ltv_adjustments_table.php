@@ -12,11 +12,7 @@ return new class extends Migration {
     {
         Schema::create('loan_type_dscr_ltv_adjustments', function (Blueprint $table) {
             $table->id();
-
-            // Row dimension FK (loan_types): cascade delete rows if a loan type is removed
-            $table->foreignId('loan_type_id')
-                ->nullable()->constrained()->cascadeOnUpdate();
-
+            $table->foreignId('loan_type_id')->constrained()->cascadeOnUpdate();
             // Shared column FK (ltv_ratios): do NOT allow deleting an LTV column while in use
             $table->foreignId('ltv_ratio_id')
                 ->constrained() // ->references('id')->on('ltv_ratios')
