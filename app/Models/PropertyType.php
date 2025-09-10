@@ -15,4 +15,14 @@ class PropertyType extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function loanTypes()
+    {
+        return $this->belongsToMany(LoanType::class, 'loan_type_property_types');
+    }
+
+    public function propertyTypeLtvAdjustments()
+    {
+        return $this->hasMany(PropertyTypeLtvAdjustment::class);
+    }
 }

@@ -15,4 +15,9 @@ class FicoBand extends Model
     {
         return $this->hasMany(LoanRule::class);
     }
+
+    public function ficoLtvAdjustments()
+    {
+        return $this->hasMany(FicoLtvAdjustment::class);
+    }
 }

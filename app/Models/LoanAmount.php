@@ -11,7 +11,7 @@ class LoanAmount extends Model
     use HasFactory;
 
     protected $fillable = [
-        'range_name',
+        'amount_range',
         'min_amount',
         'max_amount',
         'display_order'
@@ -20,5 +20,10 @@ class LoanAmount extends Model
     public function dscrRateMatrices()
     {
         return $this->hasMany(DscrRateMatrix::class);
+    }
+
+    public function loanAmountLtvAdjustments()
+    {
+        return $this->hasMany(LoanAmountLtvAdjustment::class);
     }
 }

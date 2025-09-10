@@ -18,4 +18,9 @@ class TransactionType extends Model
     {
         return $this->hasMany(LoanRule::class);
     }
+
+    public function transactionTypeLtvAdjustments()
+    {
+        return $this->hasMany(TransactionTypeLtvAdjustments::class);
+    }
 }

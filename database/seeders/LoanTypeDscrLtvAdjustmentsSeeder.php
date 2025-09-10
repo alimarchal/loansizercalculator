@@ -23,6 +23,12 @@ class LoanTypeDscrLtvAdjustmentsSeeder extends Seeder
         $ltvId = LtvRatio::pluck('id', 'ratio_range');
         $dscrProdId = DB::table('loan_types_dscrs')->pluck('id', 'loan_type_dscr_name'); // '30 Year Fixed', '10 Year IO', '5/1 ARM'
 
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
+
         // Adjust these numbers to your sheet; null means N/A.
         $grid = [
             '30 Year Fixed' => [
@@ -68,8 +74,8 @@ class LoanTypeDscrLtvAdjustmentsSeeder extends Seeder
                 }
 
                 $rows[] = [
-                    'loan_type_id' => $ltId,
-                    'dscr_loan_type_id' => $ltId, // same as loan_type_id for DSCR products
+                    'loan_type_id' => $lp1,
+                    'dscr_loan_type_id' => $ltId,
                     'ltv_ratio_id' => $lrId,
                     'adjustment_pct' => $pct,    // decimal percent; null => N/A
                     'created_at' => now(),

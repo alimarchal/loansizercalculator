@@ -19,4 +19,9 @@ class OccupancyTypes extends Model
     {
         return $this->hasMany(DscrRateMatrix::class);
     }
+
+    public function occupancyLtvAdjustments()
+    {
+        return $this->hasMany(OccupancyLtvAdjustments::class);
+    }
 }

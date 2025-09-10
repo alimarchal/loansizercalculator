@@ -31,4 +31,45 @@ class LoanType extends Model
     {
         return $this->belongsToMany(PropertyType::class, 'loan_type_property_types');
     }
+
+    // LTV Adjustment relationships
+    public function ficoLtvAdjustments()
+    {
+        return $this->hasMany(FicoLtvAdjustment::class);
+    }
+
+    public function loanAmountLtvAdjustments()
+    {
+        return $this->hasMany(LoanAmountLtvAdjustment::class);
+    }
+
+    public function propertyTypeLtvAdjustments()
+    {
+        return $this->hasMany(PropertyTypeLtvAdjustment::class);
+    }
+
+    public function occupancyLtvAdjustments()
+    {
+        return $this->hasMany(OccupancyLtvAdjustments::class);
+    }
+
+    public function transactionTypeLtvAdjustments()
+    {
+        return $this->hasMany(TransactionTypeLtvAdjustments::class);
+    }
+
+    public function dscrLtvAdjustments()
+    {
+        return $this->hasMany(DscrLtvAdjustments::class);
+    }
+
+    public function prePayLtvAdjustments()
+    {
+        return $this->hasMany(PrePayLtvAdjustments::class);
+    }
+
+    public function loanTypeDscrLtvAdjustments()
+    {
+        return $this->hasMany(LoanTypeDscrLtvAdjustments::class);
+    }
 }

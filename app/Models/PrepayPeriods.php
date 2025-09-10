@@ -19,4 +19,9 @@ class PrepayPeriods extends Model
     {
         return $this->hasMany(DscrRateMatrix::class);
     }
+
+    public function prePayLtvAdjustments()
+    {
+        return $this->hasMany(PrePayLtvAdjustments::class, 'pre_pay_id');
+    }
 }
