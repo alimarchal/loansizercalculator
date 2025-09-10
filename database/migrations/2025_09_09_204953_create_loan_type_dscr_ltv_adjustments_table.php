@@ -13,12 +13,13 @@ return new class extends Migration {
         Schema::create('loan_type_dscr_ltv_adjustments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('loan_type_id')->constrained()->cascadeOnUpdate();
+            $table->foreignId('dscr_loan_type_id')->nullable()
+                ->constrained('loan_types_dscrs')->cascadeOnUpdate()->restrictOnDelete();
             // Shared column FK (ltv_ratios): do NOT allow deleting an LTV column while in use
             $table->foreignId('ltv_ratio_id')
                 ->constrained() // ->references('id')->on('ltv_ratios')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
-
             // Store decimal percentage; 4 dp is fine (e.g. 0.1250)
             $table->decimal('adjustment_pct', 6, 4)->nullable();
 

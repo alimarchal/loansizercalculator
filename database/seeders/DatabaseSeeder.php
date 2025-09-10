@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
             DscrLtvAdjustmentsSeeder::class,
             PrepayPeriodsSeeder::class,
             PrepayLtvAdjustmentsSeeder::class,
+            LoanTypesDscrSeeder::class,
             LoanTypeDscrLtvAdjustmentsSeeder::class,
 
 
