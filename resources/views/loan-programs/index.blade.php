@@ -1,7 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight inline-block">
-            @if($isQuickSearch)
+            @if(isset($isDscrMatrix) && $isDscrMatrix)
+            DSCR Rental Loans - LTV Adjustment Matrix
+            @elseif($isQuickSearch)
             Search Results
             @if(isset($searchInfo['credit_score']))
             - Credit Score: {{ $searchInfo['credit_score'] }}
@@ -15,6 +17,17 @@
         </h2>
 
         <div class="flex justify-center items-center float-right">
+            @if(isset($isDscrMatrix) && $isDscrMatrix)
+            <a href="{{ route('loan-programs.index') }}"
+                class="inline-flex items-center ml-2 px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 0V17m0-10a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2V7z" />
+                </svg>
+                Regular Matrix
+            </a>
+            @else
             <a href="{{ route('loan-programs.index', ['view' => 'dscr-matrix']) }}"
                 class="inline-flex items-center ml-2 px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -24,6 +37,7 @@
                 </svg>
                 DSCR Matrix
             </a>
+            @endif
             <button id="toggle"
                 class="inline-flex items-center ml-2 px-4 py-2 bg-blue-950 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-950 focus:bg-green-800 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -51,6 +65,136 @@
             style="display: none">
             <div class="p-6">
                 <form method="GET" action="{{ route('loan-programs.index') }}">
+                    @if(isset($isDscrMatrix) && $isDscrMatrix)
+                    <input type="hidden" name="view" value="dscr-matrix">
+                    @endif
+
+                    @if(isset($isDscrMatrix) && $isDscrMatrix)
+                    <!-- DSCR Matrix Enhanced Filters -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Credit Score Input -->
+                        <div>
+                            <label for="credit_score"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Credit Score (FICO)
+                            </label>
+                            <input type="number" name="credit_score" id="credit_score"
+                                value="{{ request('credit_score') }}" min="300" max="850"
+                                placeholder="Enter credit score (e.g., 700)"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                            <small class="text-gray-500 dark:text-gray-400">Range: 300-850</small>
+                        </div>
+
+                        <!-- Loan Amount Input -->
+                        <div>
+                            <label for="loan_amount"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Loan Amount
+                            </label>
+                            <input type="number" name="loan_amount" id="loan_amount"
+                                value="{{ request('loan_amount') }}" min="0"
+                                placeholder="Enter loan amount (e.g., 250000)"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                            <small class="text-gray-500 dark:text-gray-400">Filter by specific loan amount</small>
+                        </div>
+
+                        <!-- Filter by Loan Program -->
+                        <div>
+                            <label for="loan_program"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Loan Program
+                            </label>
+                            <select name="filter[loan_program]" id="loan_program"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                @foreach($loanPrograms as $programValue => $programDisplay)
+                                <option value="{{ $programValue }}" {{ request('filter.loan_program', 'Loan Program #1'
+                                    )==$programValue ? 'selected' : '' }}>
+                                    {{ $programDisplay }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Filter by Loan Type -->
+                        <div>
+                            <label for="loan_type_id"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Loan Type
+                            </label>
+                            <select name="filter[loan_type_id]" id="loan_type_id"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All DSCR Types</option>
+                                @foreach($loanTypes as $loanType)
+                                <option value="{{ $loanType->id }}" {{ request('filter.loan_type_id')==$loanType->id ?
+                                    'selected' : '' }}>
+                                    {{ $loanType->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Property Type Filter -->
+                        @if(isset($propertyTypes) && count($propertyTypes) > 0)
+                        <div>
+                            <label for="property_type_id"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Property Type
+                            </label>
+                            <select name="filter[property_type_id]" id="property_type_id"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All Property Types</option>
+                                @foreach($propertyTypes as $propertyType)
+                                <option value="{{ $propertyType->id }}" {{
+                                    request('filter.property_type_id')==$propertyType->id ? 'selected' : '' }}>
+                                    {{ $propertyType->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
+                        <!-- Occupancy Type Filter -->
+                        @if(isset($occupancyTypes) && count($occupancyTypes) > 0)
+                        <div>
+                            <label for="occupancy_type_id"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Occupancy Type
+                            </label>
+                            <select name="filter[occupancy_type_id]" id="occupancy_type_id"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All Occupancy Types</option>
+                                @foreach($occupancyTypes as $occupancyType)
+                                <option value="{{ $occupancyType->id }}" {{
+                                    request('filter.occupancy_type_id')==$occupancyType->id ? 'selected' : '' }}>
+                                    {{ $occupancyType->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
+                        <!-- DSCR Range Filter -->
+                        @if(isset($dscrRanges) && count($dscrRanges) > 0)
+                        <div>
+                            <label for="dscr_range"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                DSCR Range
+                            </label>
+                            <select name="filter[dscr_range]" id="dscr_range"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All DSCR Ranges</option>
+                                @foreach($dscrRanges as $dscrRange)
+                                <option value="{{ $dscrRange->id }}" {{ request('filter.dscr_range')==$dscrRange->id ?
+                                    'selected' : '' }}>
+                                    {{ $dscrRange->dscr_range }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+                    </div>
+                    @else
+                    <!-- Regular Matrix Filters -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Credit Score Input -->
                         <div>
@@ -106,6 +250,7 @@
                         <!-- Filter by Transaction Type -->
                         <x-transaction-type-select :transactionTypes="$transactionTypes" />
                     </div>
+                    @endif
 
                     <!-- Submit Button -->
                     <x-submit-button />
@@ -119,6 +264,113 @@
         <x-status-message />
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
 
+            @if(isset($isDscrMatrix) && $isDscrMatrix)
+            <!-- DSCR MATRIX TABLE -->
+            @if (count($groupedData) > 0)
+            <div class="relative overflow-x-auto rounded-lg">
+                <table class="min-w-max w-full table-auto text-xs border-collapse">
+                    <thead>
+                        <!-- Dynamic Header for DSCR -->
+                        <tr class="bg-green-800 text-white uppercase">
+                            <th colspan="9" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                                DSCR Rental Loans - {{ $loanProgram ?? 'Loan Program #1' }} - LTV Adjustment Matrix
+                            </th>
+                        </tr>
+
+                        <tr class="bg-green-800 text-white uppercase text-xs">
+                            <!-- Main columns with same styling as regular matrix -->
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">Category</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">Item</th>
+
+                            <!-- LTV Headers -->
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">50% LTV<br>or less
+                            </th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">55% LTV</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">60% LTV</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">65% LTV</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">70% LTV</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">75% LTV</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs" rowspan="2">80% LTV</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-black text-xs leading-normal">
+                        @foreach ($groupedData as $rowGroup => $rows)
+                        @foreach ($rows as $index => $row)
+                        <tr
+                            class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->parent->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
+                            @if ($index === 0)
+                            <!-- First row of each group shows the category -->
+                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold"
+                                rowspan="{{ count($rows) }}">
+                                {{ $rowGroup }}
+                            </td>
+                            @endif
+                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->row_label }}
+                            </td>
+
+                            <!-- LTV columns with same styling as regular matrix -->
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                @if($row->{'50% LTV or less'} === null)
+                                N/A
+                                @else
+                                {{ number_format((float)$row->{'50% LTV or less'} * 100, 3) }}%
+                                @endif
+                            </td>
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                @if($row->{'55% LTV'} === null)
+                                N/A
+                                @else
+                                {{ number_format((float)$row->{'55% LTV'} * 100, 3) }}%
+                                @endif
+                            </td>
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                @if($row->{'60% LTV'} === null)
+                                N/A
+                                @else
+                                {{ number_format((float)$row->{'60% LTV'} * 100, 3) }}%
+                                @endif
+                            </td>
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                @if($row->{'65% LTV'} === null)
+                                N/A
+                                @else
+                                {{ number_format((float)$row->{'65% LTV'} * 100, 3) }}%
+                                @endif
+                            </td>
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                @if($row->{'70% LTV'} === null)
+                                N/A
+                                @else
+                                {{ number_format((float)$row->{'70% LTV'} * 100, 3) }}%
+                                @endif
+                            </td>
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                @if($row->{'75% LTV'} === null)
+                                N/A
+                                @else
+                                {{ number_format((float)$row->{'75% LTV'} * 100, 3) }}%
+                                @endif
+                            </td>
+                            <td class="py-1 px-1 text-center border border-gray-300">
+                                @if($row->{'80% LTV'} === null)
+                                N/A
+                                @else
+                                {{ number_format((float)$row->{'80% LTV'} * 100, 3) }}%
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p class="text-gray-700 dark:text-gray-300 text-center py-8">
+                No DSCR matrix data found for the selected filters. Please ensure the database has DSCR adjustment data.
+            </p>
+            @endif
+            @else
+            <!-- REGULAR MATRIX TABLE -->
             @if (count($matrixData) > 0)
             <div class="relative overflow-x-auto rounded-lg">
                 <table class="min-w-max w-full table-auto text-xs border-collapse">
@@ -328,6 +580,7 @@
                 No loan program matrix data found. Please ensure the database is properly seeded.
             </p>
             @endif
+            @endif
         </div>
     </div>
 
@@ -364,9 +617,7 @@
             }
         }
     </style>
-    @endpush
-
-    @push('modals')
+    @endpush @push('modals')
     <script>
         const targetDiv = document.getElementById("filters");
         const btn = document.getElementById("toggle");

@@ -262,184 +262,482 @@ class LoanProgramController extends Controller
      */
     public function index(Request $request)
     {
-        // Check if this is a request for DSCR matrix view
-        if ($request->get('view') === 'dscr-matrix') {
-            return $this->dscrMatrix($request);
-        }
-
         try {
-            // Build query using Laravel Query Builder with Spatie QueryBuilder for filters
-            $matrixQuery = QueryBuilder::for(LoanRule::class)
-                ->allowedFilters([
-                    AllowedFilter::callback('loan_type_id', function ($query, $value) {
-                        $query->whereHas('experience.loanType', function ($q) use ($value) {
-                            $q->where('id', $value);
-                        });
-                    }),
-                    AllowedFilter::callback('loan_program', function ($query, $value) {
-                        $query->whereHas('experience.loanType', function ($q) use ($value) {
-                            $q->where('loan_program', $value);
-                        });
-                    }),
-                    AllowedFilter::exact('experience_id'),
-                    AllowedFilter::exact('fico_band_id'),
-                    AllowedFilter::exact('transaction_type_id'),
-                ])
-                ->with([
-                    'experience.loanType',
-                    'ficoBand',
-                    'transactionType',
-                    'rehabLimits.rehabLevel',
-                    'pricings.pricingTier'
-                ])
-                ->join('experiences', 'loan_rules.experience_id', '=', 'experiences.id')
-                ->join('fico_bands', 'loan_rules.fico_band_id', '=', 'fico_bands.id')
-                ->join('loan_types', 'experiences.loan_type_id', '=', 'loan_types.id')
-                // Handle credit score search
-                ->when($request->has('credit_score') && $request->credit_score, function ($query) use ($request) {
-                    $creditScore = (int) $request->credit_score;
-                    $query->where('fico_bands.fico_min', '<=', $creditScore)
-                        ->where('fico_bands.fico_max', '>=', $creditScore);
-                })
-                // Handle experience years search
-                ->when($request->has('experience_years') && is_numeric($request->experience_years), function ($query) use ($request) {
-                    $experienceYears = (int) $request->experience_years;
-                    $query->where('experiences.min_experience', '<=', $experienceYears)
-                        ->where('experiences.max_experience', '>=', $experienceYears);
-                })
-                // Filter by FULL APPRAISAL by default unless loan_program filter is specified or quick search is used
-                ->when(!$request->has('filter.loan_program') && !$request->has('credit_score') && !$request->has('experience_years'), function ($query) {
-                    $query->where('loan_types.loan_program', 'FULL APPRAISAL');
-                })
-                ->orderByRaw("
-                    CASE experiences.experiences_range
-                        WHEN '0' THEN 0 
-                        WHEN '1-2' THEN 1 
-                        WHEN '3-4' THEN 2 
-                        WHEN '5-9' THEN 3 
-                        WHEN '10+' THEN 4 
-                        ELSE 99
-                    END
-                ")
-                ->orderBy('fico_bands.fico_min')
-                ->orderBy('fico_bands.fico_max')
-                ->select('loan_rules.*');
+            // Check if this is a request for DSCR matrix view
+            $isDscrMatrix = $request->get('view') === 'dscr-matrix';
 
-            $loanRules = $matrixQuery->get();
-
-            // Transform the data to match the matrix format
-            $matrixData = $loanRules->map(function ($rule) {
-                // Get rehab limits grouped by rehab level
-                $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
-
-                // Get pricing data grouped by pricing tier
-                $pricings = $rule->pricings->keyBy('pricingTier.price_range');
-
-                return (object) [
-                    'loan_rule_id' => $rule->id,
-                    'loan_type' => $rule->experience->loanType->name ?? 'N/A',
-                    'loan_program' => $rule->experience->loanType->loan_program ?? null,
-                    'display_name' => $rule->experience->loanType->loan_program
-                        ? ($rule->experience->loanType->name . ' - ' . $rule->experience->loanType->loan_program)
-                        : ($rule->experience->loanType->name ?? 'N/A'),
-                    'experience' => $rule->experience->experiences_range ?? 'N/A',
-                    'fico' => $rule->ficoBand->fico_range ?? 'N/A',
-                    'transaction_type' => $rule->transactionType->name ?? 'N/A',
-                    'max_total_loan' => $rule->max_total_loan,
-                    'max_budget' => $rule->max_budget,
-
-                    // Light Rehab
-                    'light_ltc' => $rehabLimits->get('LIGHT REHAB')?->max_ltc,
-                    'light_ltv' => $rehabLimits->get('LIGHT REHAB')?->max_ltv,
-
-                    // Moderate Rehab
-                    'moderate_ltc' => $rehabLimits->get('MODERATE REHAB')?->max_ltc,
-                    'moderate_ltv' => $rehabLimits->get('MODERATE REHAB')?->max_ltv,
-
-                    // Heavy Rehab
-                    'heavy_ltc' => $rehabLimits->get('HEAVY REHAB')?->max_ltc,
-                    'heavy_ltv' => $rehabLimits->get('HEAVY REHAB')?->max_ltv,
-
-                    // Extensive Rehab
-                    'extensive_ltc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltc,
-                    'extensive_ltv' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltv,
-                    'extensive_ltfc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltfc,
-
-                    // Pricing < $250k
-                    'ir_lt_250k' => $pricings->get('<250k')?->interest_rate,
-                    'lp_lt_250k' => $pricings->get('<250k')?->lender_points,
-
-                    // Pricing $250k-$500k
-                    'ir_250_500k' => $pricings->get('250-500k')?->interest_rate,
-                    'lp_250_500k' => $pricings->get('250-500k')?->lender_points,
-
-                    // Pricing ≥ $500k
-                    'ir_gte_500k' => $pricings->get('>=500k')?->interest_rate,
-                    'lp_gte_500k' => $pricings->get('>=500k')?->lender_points,
-                ];
-            });
-
-            // Group data by display_name (loan type + program) instead of just loan_type
-            $groupedData = $matrixData->groupBy('display_name');
-            $processedData = [];
-
-            foreach ($groupedData as $displayName => $rows) {
-                $processedData[$displayName] = $rows;
+            if ($isDscrMatrix) {
+                return $this->handleDscrMatrix($request);
             }
 
-            $matrixData = $processedData;            // Get data for filter dropdowns
-            $loanTypes = LoanType::with(['states', 'propertyTypes'])
-                ->orderBy('name')
-                ->get(['id', 'name', 'loan_program']);
-            $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
-            $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
-
-            // Get unique loan programs for the filter dropdown
-            $loanPrograms = LoanType::select('loan_program', 'name')
-                ->distinct()
-                ->orderBy('loan_program')
-                ->get()
-                ->filter(function ($item) {
-                    return !empty($item->loan_program);
-                })
-                ->mapWithKeys(function ($item) {
-                    // Create a more descriptive display name
-                    $displayName = $item->loan_program;
-                    if ($item->loan_program === '#1') {
-                        $displayName = 'DSCR Rental - Program #1';
-                    }
-                    return [$item->loan_program => $displayName];
-                });
-
-            // Determine current loan program for header
-            $currentLoanProgram = $request->get('filter.loan_program', 'FULL APPRAISAL');
-
-            // Check if this is a quick search
-            $isQuickSearch = $request->has('credit_score') || $request->has('experience_years');
-            $searchInfo = [];
-            if ($isQuickSearch) {
-                if ($request->credit_score) {
-                    $searchInfo['credit_score'] = $request->credit_score;
-                }
-                if ($request->experience_years !== null && $request->experience_years !== '') {
-                    $searchInfo['experience_years'] = $request->experience_years;
-                }
-            }
-
-            return view('loan-programs.index', compact('matrixData', 'loanTypes', 'loanPrograms', 'ficoBands', 'transactionTypes', 'currentLoanProgram', 'isQuickSearch', 'searchInfo'));
+            // Regular matrix logic
+            return $this->handleRegularMatrix($request);
 
         } catch (\Exception $e) {
-            // If there's an error, return to dashboard with error message
             return redirect()->route('dashboard')
                 ->with('error', 'Failed to load loan matrix data. Please try again. Error: ' . $e->getMessage());
         }
     }
 
     /**
-     * Show form to create new loan program entry
-     * 
-     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     * Handle DSCR Matrix display with enhanced filters
      */
+    private function handleDscrMatrix(Request $request)
+    {
+        // Get filter parameters with enhanced filtering
+        $loanProgram = $request->get('filter.loan_program', 'Loan Program #1');
+        $loanTypeId = $request->get('filter.loan_type_id');
+        $ficoBandId = $request->get('filter.fico_band_id');
+        $transactionTypeId = $request->get('filter.transaction_type_id');
+
+        // Enhanced filters
+        $ficoScore = $request->get('credit_score');
+        $loanAmount = $request->get('loan_amount');
+        $propertyTypeId = $request->get('filter.property_type_id');
+        $occupancyTypeId = $request->get('filter.occupancy_type_id');
+        $dscrRange = $request->get('filter.dscr_range');
+        $prepayPeriod = $request->get('filter.prepay_period');
+
+        // Build the enhanced SQL query with dynamic WHERE conditions
+        $whereConditions = [];
+        $parameters = [];
+
+        // Add loan program filter
+        $whereConditions[] = "lt.loan_program = ?";
+        $parameters[] = $loanProgram;
+
+        // Add FICO score filter if provided
+        if ($ficoScore) {
+            $whereConditions[] = "fb.fico_min <= ? AND fb.fico_max >= ?";
+            $parameters[] = $ficoScore;
+            $parameters[] = $ficoScore;
+        }
+
+        // Add loan amount filter if provided
+        if ($loanAmount) {
+            $whereConditions[] = "la.min_amount <= ? AND la.max_amount >= ?";
+            $parameters[] = $loanAmount;
+            $parameters[] = $loanAmount;
+        }
+
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+
+        $sql = "
+            SELECT * FROM (
+              /* ---------- FICO × LTV (program-aware) ---------- */
+              SELECT
+                'FICO'                AS row_group,
+                lt.loan_program       AS program,
+                fb.fico_range         AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN fla.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN fla.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN fla.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN fla.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN fla.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN fla.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN fla.adjustment_pct END) AS `80% LTV`
+              FROM fico_bands fb
+              JOIN fico_ltv_adjustments fla ON fla.fico_band_id = fb.id
+              JOIN ltv_ratios lr ON lr.id = fla.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = fla.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, fb.fico_min, fb.fico_range
+
+              UNION ALL
+
+              /* ---------- Loan Amount × LTV (program-aware) ---------- */
+              SELECT
+                'Loan Amount'         AS row_group,
+                lt.loan_program       AS program,
+                la.amount_range       AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN l.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN l.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN l.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN l.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN l.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN l.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN l.adjustment_pct END) AS `80% LTV`
+              FROM loan_amounts la
+              JOIN loan_amount_ltv_adjustments l ON l.loan_amount_id = la.id
+              JOIN ltv_ratios lr ON lr.id = l.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = l.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, la.display_order, la.amount_range
+
+              UNION ALL
+
+              /* ---------- Property Type × LTV (program-aware) ---------- */
+              SELECT
+                'Property Type'       AS row_group,
+                lt.loan_program       AS program,
+                pt.name               AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN p.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN p.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN p.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN p.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN p.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN p.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN p.adjustment_pct END) AS `80% LTV`
+              FROM property_type_ltv_adjustments p
+              JOIN property_types pt ON pt.id = p.property_type_id
+              JOIN ltv_ratios lr ON lr.id = p.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = p.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, pt.name
+
+              UNION ALL
+
+              /* ---------- Occupancy × LTV (program-aware) ---------- */
+              SELECT
+                'Occupancy'           AS row_group,
+                lt.loan_program       AS program,
+                oc.name               AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN o.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN o.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN o.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN o.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN o.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN o.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN o.adjustment_pct END) AS `80% LTV`
+              FROM occupancy_ltv_adjustments o
+              JOIN occupancy_types oc ON oc.id = o.occupancy_type_id
+              JOIN ltv_ratios lr ON lr.id = o.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = o.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, oc.name
+
+              UNION ALL
+
+              /* ---------- Transaction Type × LTV (program-aware) ---------- */
+              SELECT
+                'Transaction Type'    AS row_group,
+                lt.loan_program       AS program,
+                tt.name               AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN t.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN t.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN t.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN t.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN t.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN t.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN t.adjustment_pct END) AS `80% LTV`
+              FROM transaction_type_ltv_adjustments t
+              JOIN transaction_types tt ON tt.id = t.transaction_type_id
+              JOIN ltv_ratios lr ON lr.id = t.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = t.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, tt.name
+
+              UNION ALL
+
+              /* ---------- DSCR Range × LTV (program-aware) ---------- */
+              SELECT
+                'DSCR'                AS row_group,
+                lt.loan_program       AS program,
+                dr.dscr_range         AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN d.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN d.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN d.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN d.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN d.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN d.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN d.adjustment_pct END) AS `80% LTV`
+              FROM dscr_ltv_adjustments d
+              JOIN dscr_ranges dr ON dr.id = d.dscr_range_id
+              JOIN ltv_ratios lr ON lr.id = d.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = d.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, dr.dscr_range
+
+              UNION ALL
+
+              /* ---------- Prepay × LTV (program-aware) ---------- */
+              SELECT
+                'Pre Pay'             AS row_group,
+                lt.loan_program       AS program,
+                pp.prepay_name        AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN p.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN p.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN p.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN p.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN p.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN p.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN p.adjustment_pct END) AS `80% LTV`
+              FROM pre_pay_ltv_adjustments p
+              JOIN prepay_periods pp ON pp.id = p.pre_pay_id
+              JOIN ltv_ratios lr ON lr.id = p.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = p.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, pp.prepay_name
+
+              UNION ALL
+
+              /* ---------- Loan Type × LTV (program-aware) ---------- */
+              SELECT
+                'Loan Type'           AS row_group,
+                lt.loan_program       AS program,
+                ltd.loan_type_dscr_name AS row_label,
+                MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN l.adjustment_pct END) AS `50% LTV or less`,
+                MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN l.adjustment_pct END) AS `55% LTV`,
+                MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN l.adjustment_pct END) AS `60% LTV`,
+                MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN l.adjustment_pct END) AS `65% LTV`,
+                MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN l.adjustment_pct END) AS `70% LTV`,
+                MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN l.adjustment_pct END) AS `75% LTV`,
+                MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN l.adjustment_pct END) AS `80% LTV`
+              FROM loan_type_dscr_ltv_adjustments l
+              JOIN loan_types_dscrs ltd ON ltd.id = l.dscr_loan_type_id
+              JOIN ltv_ratios lr ON lr.id = l.ltv_ratio_id
+              LEFT JOIN loan_types lt ON lt.id = l.loan_type_id
+              $whereClause
+              GROUP BY lt.loan_program, ltd.loan_type_dscr_name
+            ) AS big_matrix
+            ORDER BY
+              FIELD(row_group,
+                    'FICO','Loan Amount','Property Type','Occupancy',
+                    'Transaction Type','DSCR','Pre Pay','Loan Type'),
+              program IS NULL, program, row_label
+        ";
+
+        // Execute the query with parameters (repeat parameters for each UNION query)
+        $parameterSet = array_fill(0, 8, $parameters);
+        $flatParameters = array_merge(...$parameterSet);
+
+        $matrixData = DB::select($sql, $flatParameters);
+
+        // Group data by row_group for better display
+        $groupedData = collect($matrixData)->groupBy('row_group');
+
+        // Get data for filter dropdowns
+        $loanTypes = LoanType::where('name', 'LIKE', '%DSCR%')
+            ->orderBy('name')
+            ->get(['id', 'name', 'loan_program']);
+
+        $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
+        $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
+
+        // Get additional filter data for DSCR matrix
+        $propertyTypes = \App\Models\PropertyType::orderBy('name')->get(['id', 'name']);
+        $occupancyTypes = \App\Models\OccupancyTypes::orderBy('name')->get(['id', 'name']);
+        $dscrRanges = \App\Models\DscrRanges::orderBy('dscr_range')->get(['id', 'dscr_range']);
+        $prepayPeriods = \App\Models\PrepayPeriods::orderBy('prepay_name')->get(['id', 'prepay_name']);
+
+        // Get DSCR loan programs
+        $loanPrograms = LoanType::select('loan_program')
+            ->where('name', 'LIKE', '%DSCR%')
+            ->distinct()
+            ->orderBy('loan_program')
+            ->get()
+            ->filter(function ($item) {
+                return !empty($item->loan_program);
+            })
+            ->mapWithKeys(function ($item) {
+                return [$item->loan_program => $item->loan_program];
+            });
+
+        return view('loan-programs.index', compact(
+            'groupedData',
+            'loanTypes',
+            'loanPrograms',
+            'ficoBands',
+            'transactionTypes',
+            'propertyTypes',
+            'occupancyTypes',
+            'dscrRanges',
+            'prepayPeriods',
+            'loanProgram'
+        ))->with([
+                    'isDscrMatrix' => true,
+                    'currentLoanProgram' => $loanProgram,
+                    'isQuickSearch' => false,
+                    'searchInfo' => [],
+                    'matrixData' => []
+                ]);
+    }
+
+    /**
+     * Handle Regular Matrix display
+     */
+    private function handleRegularMatrix(Request $request)
+    {
+        // Build query using Laravel Query Builder with Spatie QueryBuilder for filters
+        $matrixQuery = QueryBuilder::for(LoanRule::class)
+            ->allowedFilters([
+                AllowedFilter::callback('loan_type_id', function ($query, $value) {
+                    $query->whereHas('experience.loanType', function ($q) use ($value) {
+                        $q->where('id', $value);
+                    });
+                }),
+                AllowedFilter::callback('loan_program', function ($query, $value) {
+                    $query->whereHas('experience.loanType', function ($q) use ($value) {
+                        $q->where('loan_program', $value);
+                    });
+                }),
+                AllowedFilter::exact('experience_id'),
+                AllowedFilter::exact('fico_band_id'),
+                AllowedFilter::exact('transaction_type_id'),
+            ])
+            ->with([
+                'experience.loanType',
+                'ficoBand',
+                'transactionType',
+                'rehabLimits.rehabLevel',
+                'pricings.pricingTier'
+            ])
+            ->join('experiences', 'loan_rules.experience_id', '=', 'experiences.id')
+            ->join('fico_bands', 'loan_rules.fico_band_id', '=', 'fico_bands.id')
+            ->join('loan_types', 'experiences.loan_type_id', '=', 'loan_types.id')
+            // Handle credit score search
+            ->when($request->has('credit_score') && $request->credit_score, function ($query) use ($request) {
+                $creditScore = (int) $request->credit_score;
+                $query->where('fico_bands.fico_min', '<=', $creditScore)
+                    ->where('fico_bands.fico_max', '>=', $creditScore);
+            })
+            // Handle experience years search
+            ->when($request->has('experience_years') && is_numeric($request->experience_years), function ($query) use ($request) {
+                $experienceYears = (int) $request->experience_years;
+                $query->where('experiences.min_experience', '<=', $experienceYears)
+                    ->where('experiences.max_experience', '>=', $experienceYears);
+            })
+            // Filter by FULL APPRAISAL by default unless loan_program filter is specified or quick search is used
+            ->when(!$request->has('filter.loan_program') && !$request->has('credit_score') && !$request->has('experience_years'), function ($query) {
+                $query->where('loan_types.loan_program', 'FULL APPRAISAL');
+            })
+            ->orderByRaw("
+                CASE experiences.experiences_range
+                    WHEN '0' THEN 0 
+                    WHEN '1-2' THEN 1 
+                    WHEN '3-4' THEN 2 
+                    WHEN '5-9' THEN 3 
+                    WHEN '10+' THEN 4 
+                    ELSE 99
+                END
+            ")
+            ->orderBy('fico_bands.fico_min')
+            ->orderBy('fico_bands.fico_max')
+            ->select('loan_rules.*');
+
+        $loanRules = $matrixQuery->get();
+
+        // Transform the data to match the matrix format
+        $matrixData = $loanRules->map(function ($rule) {
+            // Get rehab limits grouped by rehab level
+            $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
+
+            // Get pricing data grouped by pricing tier
+            $pricings = $rule->pricings->keyBy('pricingTier.price_range');
+
+            return (object) [
+                'loan_rule_id' => $rule->id,
+                'loan_type' => $rule->experience->loanType->name ?? 'N/A',
+                'loan_program' => $rule->experience->loanType->loan_program ?? null,
+                'display_name' => $rule->experience->loanType->loan_program
+                    ? ($rule->experience->loanType->name . ' - ' . $rule->experience->loanType->loan_program)
+                    : ($rule->experience->loanType->name ?? 'N/A'),
+                'experience' => $rule->experience->experiences_range ?? 'N/A',
+                'fico' => $rule->ficoBand->fico_range ?? 'N/A',
+                'transaction_type' => $rule->transactionType->name ?? 'N/A',
+                'max_total_loan' => $rule->max_total_loan,
+                'max_budget' => $rule->max_budget,
+
+                // Light Rehab
+                'light_ltc' => $rehabLimits->get('LIGHT REHAB')?->max_ltc,
+                'light_ltv' => $rehabLimits->get('LIGHT REHAB')?->max_ltv,
+
+                // Moderate Rehab
+                'moderate_ltc' => $rehabLimits->get('MODERATE REHAB')?->max_ltc,
+                'moderate_ltv' => $rehabLimits->get('MODERATE REHAB')?->max_ltv,
+
+                // Heavy Rehab
+                'heavy_ltc' => $rehabLimits->get('HEAVY REHAB')?->max_ltc,
+                'heavy_ltv' => $rehabLimits->get('HEAVY REHAB')?->max_ltv,
+
+                // Extensive Rehab
+                'extensive_ltc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltc,
+                'extensive_ltv' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltv,
+                'extensive_ltfc' => $rehabLimits->get('EXTENSIVE REHAB')?->max_ltfc,
+
+                // Pricing < $250k
+                'ir_lt_250k' => $pricings->get('<250k')?->interest_rate,
+                'lp_lt_250k' => $pricings->get('<250k')?->lender_points,
+
+                // Pricing $250k-$500k
+                'ir_250_500k' => $pricings->get('250-500k')?->interest_rate,
+                'lp_250_500k' => $pricings->get('250-500k')?->lender_points,
+
+                // Pricing ≥ $500k
+                'ir_gte_500k' => $pricings->get('>=500k')?->interest_rate,
+                'lp_gte_500k' => $pricings->get('>=500k')?->lender_points,
+            ];
+        });
+
+        // Group data by display_name (loan type + program) instead of just loan_type
+        $groupedData = $matrixData->groupBy('display_name');
+        $processedData = [];
+
+        foreach ($groupedData as $displayName => $rows) {
+            $processedData[$displayName] = $rows;
+        }
+
+        $matrixData = $processedData;
+
+        // Get data for filter dropdowns
+        $loanTypes = LoanType::with(['states', 'propertyTypes'])
+            ->orderBy('name')
+            ->get(['id', 'name', 'loan_program']);
+        $ficoBands = FicoBand::orderBy('fico_min')->get(['id', 'fico_range']);
+        $transactionTypes = TransactionType::orderBy('name')->get(['id', 'name']);
+
+        // Get unique loan programs for the filter dropdown
+        $loanPrograms = LoanType::select('loan_program', 'name')
+            ->distinct()
+            ->orderBy('loan_program')
+            ->get()
+            ->filter(function ($item) {
+                return !empty($item->loan_program);
+            })
+            ->mapWithKeys(function ($item) {
+                // Create a more descriptive display name
+                $displayName = $item->loan_program;
+                if ($item->loan_program === '#1') {
+                    $displayName = 'DSCR Rental - Program #1';
+                }
+                return [$item->loan_program => $displayName];
+            });
+
+        // Determine current loan program for header
+        $currentLoanProgram = $request->get('filter.loan_program', 'FULL APPRAISAL');
+
+        // Check if this is a quick search
+        $isQuickSearch = $request->has('credit_score') || $request->has('experience_years');
+        $searchInfo = [];
+        if ($isQuickSearch) {
+            if ($request->credit_score) {
+                $searchInfo['credit_score'] = $request->credit_score;
+            }
+            if ($request->experience_years !== null && $request->experience_years !== '') {
+                $searchInfo['experience_years'] = $request->experience_years;
+            }
+        }
+
+        return view('loan-programs.index', compact(
+            'matrixData',
+            'loanTypes',
+            'loanPrograms',
+            'ficoBands',
+            'transactionTypes',
+            'currentLoanProgram',
+            'isQuickSearch',
+            'searchInfo'
+        ))->with([
+                    'isDscrMatrix' => false,
+                    'groupedData' => collect([]),
+                    'propertyTypes' => collect([]),
+                    'occupancyTypes' => collect([]),
+                    'dscrRanges' => collect([]),
+                    'prepayPeriods' => collect([]),
+                    'loanProgram' => ''
+                ]);
+    }
+
     /**
      * Show form to create new loan program entry
      * 
