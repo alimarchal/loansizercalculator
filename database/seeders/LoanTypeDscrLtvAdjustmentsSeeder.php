@@ -2,28 +2,26 @@
 
 namespace Database\Seeders;
 
-use App\Models\LoanType;  // assumes columns: id, name
-use App\Models\LtvRatio;  // assumes columns: id, ratio_range
+use App\Models\LoanType;   // id, name, loan_program  (program rows: DSCR Rental Loans / Loan Program #1,#2,#3)
+use App\Models\LtvRatio;   // id, ratio_range         ('50% LTV or less', '55% LTV', ... '80% LTV')
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class LoanTypeDscrLtvAdjustmentsSeeder extends Seeder
 {
-    /**
-     * Seeds the Loan Type × LTV adjustment grid.
-     * Prereqs:
-     *  - loan_types seeded (pluck by 'name')
-     *  - ltv_ratios seeded (pluck by 'ratio_range' — labels must MATCH exactly)
-     *  - pivot table: loan_type_dscr_ltv_adjustments (loan_type_id, ltv_ratio_id, adjustment_pct)
-     */
     public function run(): void
     {
-        // IDs keyed by labels (must exist already)
-        $ltvId = LtvRatio::pluck('id', 'ratio_range'); // e.g. ['50% LTV or less' => 1, ...]
-        $loanTypeId = LoanType::pluck('id', 'name');        // e.g. ['30 Year Fixed' => 1, ...]
+        // Lookups
+        $ltvId = LtvRatio::pluck('id', 'ratio_range');
+        $dscrProdId = DB::table('loan_types_dscrs')->pluck('id', 'loan_type_dscr_name'); // '30 Year Fixed', '30 Year IO', '5/1 ARM'
 
-        // Adjust these numbers to your sheet; null means N/A.
-        $grid = [
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
+        // Program #1 values (edit to your sheet)
+        $GRID_LP1 = [
             '30 Year Fixed' => [
                 '50% LTV or less' => 0.0000,
                 '55% LTV' => 0.0000,
@@ -53,32 +51,47 @@ class LoanTypeDscrLtvAdjustmentsSeeder extends Seeder
             ],
         ];
 
+        // Program #2 and #3 placeholders so it runs
+        $GRID_LP2 = $GRID_LP1;
+        $GRID_LP3 = $GRID_LP1;
+
         $rows = [];
-        foreach ($grid as $loanTypeLabel => $cols) {
-            $ltId = $loanTypeId[$loanTypeLabel] ?? null;
-            if (!$ltId) {
-                continue; // label mismatch -> skip
-            }
+        $insert = function (array $grid, ?int $programId) use (&$rows, $dscrProdId, $ltvId) {
+            if (!$programId)
+                return;
 
-            foreach ($cols as $ltvLabel => $pct) {
-                $lrId = $ltvId[$ltvLabel] ?? null;
-                if (!$lrId) {
-                    continue; // label mismatch -> skip
+            foreach ($grid as $prodLabel => $cols) {
+                $prodId = $dscrProdId[$prodLabel] ?? null;
+                if (!$prodId)
+                    continue;
+
+                foreach ($cols as $ltvLabel => $pct) {
+                    $lrId = $ltvId[$ltvLabel] ?? null;
+                    if (!$lrId)
+                        continue;
+
+                    // If your column is NOT NULL, skip N/A cells:
+                    // if ($pct === null) continue;
+
+                    $rows[] = [
+                        'loan_type_id' => $programId,  // program row
+                        'dscr_loan_type_id' => $prodId,     // '30 Year Fixed' etc
+                        'ltv_ratio_id' => $lrId,
+                        'adjustment_pct' => $pct,        // decimal; null => N/A if nullable
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
                 }
-
-                $rows[] = [
-                    'loan_type_id' => $ltId,
-                    'ltv_ratio_id' => $lrId,
-                    'adjustment_pct' => $pct,    // decimal percent; null => N/A
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
             }
-        }
+        };
+
+        $insert($GRID_LP1, $lp1);
+        $insert($GRID_LP2, $lp2);
+        $insert($GRID_LP3, $lp3);
 
         DB::table('loan_type_dscr_ltv_adjustments')->upsert(
             $rows,
-            ['loan_type_id', 'ltv_ratio_id'],
+            ['loan_type_id', 'dscr_loan_type_id', 'ltv_ratio_id'],
             ['adjustment_pct', 'updated_at']
         );
     }

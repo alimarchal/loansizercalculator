@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\FicoBand;
+use App\Models\LoanType;
 use App\Models\LtvRange;
 use App\Models\LtvRatio;
 use Illuminate\Database\Seeder;
@@ -17,6 +18,13 @@ class FicoLtvAdjustmentSeeder extends Seeder
 
         // Map FICO labels -> ids (must be seeded first)
         $ficoId = FicoBand::pluck('id', 'fico_range'); // ['660-679' => 1, '680-699' => 2, ...]
+
+
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
 
         // Grid from your sheet (percent values, use NULL for N/A)
         $grid = [
@@ -90,6 +98,7 @@ class FicoLtvAdjustmentSeeder extends Seeder
                 }
 
                 $rows[] = [
+                    'loan_type_id' => $lp1,
                     'fico_band_id' => $fbId,
                     'ltv_ratio_id' => $lrId,
                     'adjustment_pct' => $pct,  // decimal percent, e.g. 0.125 = 0.125%

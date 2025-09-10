@@ -7,6 +7,7 @@ use App\Models\LtvRatio;
 use App\Models\TransactionType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\LoanType;
 
 class TransactionTypeLtvAdjustmentsSeeder extends Seeder
 {
@@ -22,6 +23,13 @@ class TransactionTypeLtvAdjustmentsSeeder extends Seeder
         // IDs keyed by labels (must be seeded first)
         $ltvId = LtvRatio::pluck('id', 'ratio_range');             // ['50% LTV or less' => 1, ...]
         $txId = TransactionType::pluck('id', 'name');      // ['Purchase' => 5, 'Refi No Cash Out' => 6, ...]
+
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
+
 
         // === TODO: Replace with your real adjustments (decimal percents). Use null for N/A. ===
         // The left keys MUST exactly match your TransactionType labels.
@@ -97,6 +105,7 @@ class TransactionTypeLtvAdjustmentsSeeder extends Seeder
                 }
 
                 $rows[] = [
+                    'loan_type_id' => $lp1,
                     'transaction_type_id' => $tId,
                     'ltv_ratio_id' => $lrId,
                     'adjustment_pct' => $pct,  // decimal percent; null => N/A

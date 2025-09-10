@@ -8,6 +8,7 @@ use App\Models\DscrRanges;
 use Illuminate\Database\Seeder;
 use App\Models\DscrLtvAdjustments;
 use Illuminate\Support\Facades\DB;
+use App\Models\LoanType;
 
 class DscrLtvAdjustmentsSeeder extends Seeder
 {
@@ -23,6 +24,12 @@ class DscrLtvAdjustmentsSeeder extends Seeder
         // IDs keyed by labels (must be seeded first)
         $ltvId = LtvRatio::pluck('id', 'ratio_range'); // ['50% LTV or less' => 1, ...]
         $dscrId = DscrRanges::pluck('id', 'dscr_range'); // ['1.20+' => 1, ...]           // ['1.20+' => 1, '1.10–1.20' => 2, ...]
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
+
 
         // TODO: Replace these with your real numbers.
         // Use decimal percents (0.125 means 0.125%). Use null for N/A cells.
@@ -84,6 +91,7 @@ class DscrLtvAdjustmentsSeeder extends Seeder
                 }
 
                 $rows[] = [
+                    'loan_type_id' => $lp1,
                     'dscr_range_id' => $dId,
                     'ltv_ratio_id' => $lrId,       // rename to 'ltv_range_id' if your pivot uses that
                     'adjustment_pct' => $pct,        // decimal percent; null => N/A

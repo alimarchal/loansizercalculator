@@ -7,6 +7,7 @@ use App\Models\LtvRatio;
 use App\Models\PrepayPeriods;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\LoanType;
 
 class PrePayLtvAdjustmentsSeeder extends Seeder
 {
@@ -15,6 +16,13 @@ class PrePayLtvAdjustmentsSeeder extends Seeder
         // Must be seeded already
         $ltvId = LtvRatio::pluck('id', 'ratio_range'); // ['50% LTV or less' => 1, ...]
         $prepayId = PrepayPeriods::pluck('id', 'prepay_name');         // ['3 Year Prepay' => 1, '5 Year Prepay' => 2, ...]
+
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
+
 
         // TODO: Replace with your real numbers (decimal %). null = N/A.
         $grid = [
@@ -52,6 +60,7 @@ class PrePayLtvAdjustmentsSeeder extends Seeder
                 }
 
                 $rows[] = [
+                    'loan_type_id' => $lp1,
                     'pre_pay_id' => $pId,
                     'ltv_ratio_id' => $lrId,
                     'adjustment_pct' => $pct,      // e.g. 0.125 for 0.125%

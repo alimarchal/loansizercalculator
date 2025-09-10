@@ -7,6 +7,7 @@ use App\Models\LtvRange;
 use App\Models\LtvRatio;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\LoanType;
 
 class LoanAmountLtvAdjustmentSeeder extends Seeder
 {
@@ -22,6 +23,12 @@ class LoanAmountLtvAdjustmentSeeder extends Seeder
         // Fetch IDs keyed by labels (both must be seeded first)
         $ltvId = LtvRatio::pluck('id', 'ratio_range');    // ['50% LTV or less' => 1, '55% LTV' => 2, ...]
         $amountId = LoanAmount::pluck('id', 'amount_range');  // ['50,000 - 99,999' => 1, '100,000 - 249,999' => 2, ...]
+
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
 
         // === FILL YOUR GRID HERE ===
         // Put your real adjustments (decimal percent; NULL means N/A).
@@ -102,6 +109,7 @@ class LoanAmountLtvAdjustmentSeeder extends Seeder
                 }
 
                 $rows[] = [
+                    'loan_type_id' => $lp1,
                     'loan_amount_id' => $laId,
                     'ltv_ratio_id' => $lrId,
                     'adjustment_pct' => $pct,  // e.g. 0.125 for 0.125%

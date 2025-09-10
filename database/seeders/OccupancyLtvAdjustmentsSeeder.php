@@ -7,6 +7,7 @@ use App\Models\OccupancyTypes;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\LoanType;
 
 
 
@@ -20,6 +21,11 @@ class OccupancyLtvAdjustmentsSeeder extends Seeder
         // IDs keyed by labels (must be seeded first)
         $ltvId = LtvRatio::pluck('id', 'ratio_range');      // ['50% LTV or less' => 1, ...]
         $occId = OccupancyTypes::pluck('id', 'name');     // ['Vacant' => 1, 'Occupied' => 2] (ensure your column is 'label')
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
 
         // === ADJUST THESE VALUES TO MATCH YOUR SHEET ===
         // Use decimal percentages (0.125 means 0.125%). Use null for N/A.
@@ -58,6 +64,7 @@ class OccupancyLtvAdjustmentsSeeder extends Seeder
                 }
 
                 $rows[] = [
+                    'loan_type_id' => $lp1,
                     'occupancy_type_id' => $oId,
                     'ltv_ratio_id' => $lrId,
                     'adjustment_pct' => $pct,   // decimal percent; null => N/A

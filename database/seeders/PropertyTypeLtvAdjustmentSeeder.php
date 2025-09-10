@@ -7,6 +7,7 @@ use App\Models\PropertyType;
 use App\Models\LtvRange;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\LoanType;
 
 class PropertyTypeLtvAdjustmentSeeder extends Seeder
 {
@@ -22,6 +23,12 @@ class PropertyTypeLtvAdjustmentSeeder extends Seeder
         // IDs keyed by labels (must be seeded first)
         $ltvId = LtvRatio::pluck('id', 'ratio_range');        // ['50% LTV or less' => 1, ...]
         $ptypeId = PropertyType::pluck('id', 'name');   // ['Single Family' => 3, ...]
+        // DSCR programs
+        $lp1 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->value('id');
+
+
 
         // === FILL THIS GRID WITH YOUR REAL ADJUSTMENTS ===
         // Use decimal percentages (e.g., 0.125 for 0.125%). Use null for N/A.
@@ -152,6 +159,7 @@ class PropertyTypeLtvAdjustmentSeeder extends Seeder
                 }
 
                 $rows[] = [
+                    'loan_type_id' => $lp1,
                     'property_type_id' => $ptId,
                     'ltv_ratio_id' => $lrId,
                     'adjustment_pct' => $pct,   // decimal percent; null => N/A
