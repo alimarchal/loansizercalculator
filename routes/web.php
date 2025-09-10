@@ -30,4 +30,5 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         'update' => 'loan-programs.update',
         'destroy' => 'loan-programs.destroy',
     ]);
+    ;
 });
