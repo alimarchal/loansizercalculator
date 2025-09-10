@@ -249,6 +249,36 @@
                         </div>
                         <!-- Filter by Transaction Type -->
                         <x-transaction-type-select :transactionTypes="$transactionTypes" />
+
+                        <!-- Category Filter -->
+                        <div>
+                            <label for="category_filter"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Category Filter
+                            </label>
+                            <select name="filter[category]" id="category_filter"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All Categories</option>
+                                <option value="FICO" {{ old('filter.category', request()->input('filter.category')) ==
+                                    'FICO' ? 'selected' : '' }}>FICO</option>
+                                <option value="Loan Amount" {{ old('filter.category', request()->
+                                    input('filter.category')) == 'Loan Amount' ? 'selected' : '' }}>Loan Amount</option>
+                                <option value="Property Type" {{ old('filter.category', request()->
+                                    input('filter.category')) == 'Property Type' ? 'selected' : '' }}>Property Type
+                                </option>
+                                <option value="Occupancy" {{ old('filter.category', request()->input('filter.category'))
+                                    == 'Occupancy' ? 'selected' : '' }}>Occupancy</option>
+                                <option value="Transaction Type" {{ old('filter.category', request()->
+                                    input('filter.category')) == 'Transaction Type' ? 'selected' : '' }}>Transaction
+                                    Type</option>
+                                <option value="DSCR" {{ old('filter.category', request()->input('filter.category')) ==
+                                    'DSCR' ? 'selected' : '' }}>DSCR</option>
+                                <option value="Pre Pay" {{ old('filter.category', request()->input('filter.category'))
+                                    == 'Pre Pay' ? 'selected' : '' }}>Pre Pay</option>
+                                <option value="Loan Type" {{ old('filter.category', request()->input('filter.category'))
+                                    == 'Loan Type' ? 'selected' : '' }}>Loan Type</option>
+                            </select>
+                        </div>
                     </div>
                     @endif
 
