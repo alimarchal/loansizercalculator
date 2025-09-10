@@ -2,16 +2,69 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\PrePay;
+use App\Models\LtvRatio;
+use App\Models\PrepayPeriods;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PrePayLtvAdjustmentsSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        // Must be seeded already
+        $ltvId = LtvRatio::pluck('id', 'ratio_range'); // ['50% LTV or less' => 1, ...]
+        $prepayId = PrepayPeriods::pluck('id', 'prepay_name');         // ['3 Year Prepay' => 1, '5 Year Prepay' => 2, ...]
+
+        // TODO: Replace with your real numbers (decimal %). null = N/A.
+        $grid = [
+            '3 Year Prepay' => [
+                '50% LTV or less' => 0.000,
+                '55% LTV' => 0.000,
+                '60% LTV' => 0.000,
+                '65% LTV' => 0.125,
+                '70% LTV' => 0.250,
+                '75% LTV' => 0.375,
+                '80% LTV' => null,
+            ],
+            '5 Year Prepay' => [
+                '50% LTV or less' => 0.000,
+                '55% LTV' => 0.000,
+                '60% LTV' => 0.000,
+                '65% LTV' => 0.000,
+                '70% LTV' => 0.125,
+                '75% LTV' => 0.250,
+                '80% LTV' => null,
+            ],
+        ];
+
+        $rows = [];
+        foreach ($grid as $prepayLabel => $cols) {
+            $pId = $prepayId[$prepayLabel] ?? null;
+            if (!$pId) {
+                continue;
+            }
+
+            foreach ($cols as $ltvLabel => $pct) {
+                $lrId = $ltvId[$ltvLabel] ?? null;
+                if (!$lrId) {
+                    continue;
+                }
+
+                $rows[] = [
+                    'pre_pay_id' => $pId,
+                    'ltv_ratio_id' => $lrId,
+                    'adjustment_pct' => $pct,      // e.g. 0.125 for 0.125%
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        DB::table('pre_pay_ltv_adjustments')->upsert(
+            $rows,
+            ['pre_pay_id', 'ltv_ratio_id'],
+            ['adjustment_pct', 'updated_at']
+        );
     }
 }

@@ -40,11 +40,21 @@ class DatabaseSeeder extends Seeder
 
                 // New DSCR matrix seeders
             LtvRatioSeeder::class,
-            LoanAmountSeeder::class,
+            FicoLtvAdjustmentSeeder::class,
+            LoanAmountSeeder::class,    // your loan_amounts bands
+            LoanAmountLtvAdjustmentSeeder::class,
+            PropertyTypeSeeder::class,
+            PropertyTypeLtvAdjustmentSeeder::class,
             OccupancyTypesSeeder::class,
-            DscrRangesSeeder::class,
+            OccupancyLtvAdjustmentsSeeder::class,
+            TransactionTypeSeeder::class,
+            TransactionTypeLtvAdjustmentsSeeder::class,
+            DscrRangesSeeder::class,       // your DSCR bands
+            DscrLtvAdjustmentsSeeder::class,
             PrepayPeriodsSeeder::class,
-            LoanTypesDscrSeeder::class,
+            PrepayLtvAdjustmentsSeeder::class,
+            LoanTypeDscrLtvAdjustmentsSeeder::class,
+
 
                 // Relationship seeders (run after the base data)
             LoanTypeStateSeeder::class,
