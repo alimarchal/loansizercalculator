@@ -324,6 +324,13 @@ class LoanProgramController extends Controller
                 'loan_program' => $loanProgram,
                 'category_filter' => $categoryFilter,
                 'fico_score' => $ficoScore,
+                'loan_amount' => $loanAmount,
+                'property_type_id' => $propertyTypeId,
+                'occupancy_type_id' => $occupancyTypeId,
+                'dscr_range' => $dscrRange,
+                'fico_band_id' => $ficoBandId,
+                'transaction_type_id' => $transactionTypeId,
+                'prepay_period' => $prepayPeriod,
                 'request_all' => $request->all(),
                 'filters_array' => $filters
             ]);
@@ -547,13 +554,123 @@ class LoanProgramController extends Controller
                 });
             }
 
+            // Apply loan amount filter if specified (only applies to Loan Amount rows)
+            if ($loanAmount) {
+                $filteredData = $filteredData->filter(function ($row) use ($loanAmount) {
+                    if ($row->row_group === 'Loan Amount') {
+                        // Extract loan amount range from row_label (e.g., "$100,000 - $249,999")
+                        $label = $row->row_label;
+                        // Remove dollar signs and commas, then extract numbers
+                        $cleanLabel = str_replace(['$', ','], '', $label);
+                        if (preg_match('/(\d+)\s*-\s*(\d+)/', $cleanLabel, $matches)) {
+                            $minAmount = (int) $matches[1];
+                            $maxAmount = (int) $matches[2];
+                            return $loanAmount >= $minAmount && $loanAmount <= $maxAmount;
+                        } elseif (preg_match('/(\d+)\+/', $cleanLabel, $matches)) {
+                            // Handle ranges like "500000+" 
+                            $minAmount = (int) $matches[1];
+                            return $loanAmount >= $minAmount;
+                        }
+                        return false;
+                    }
+                    // For non-Loan Amount rows, exclude them when loan amount filter is applied
+                    return false;
+                });
+            }
+
+            // Apply FICO Band filter if specified (only applies to FICO rows)
+            if ($ficoBandId) {
+                $ficoBand = FicoBand::find($ficoBandId);
+                if ($ficoBand) {
+                    $filteredData = $filteredData->filter(function ($row) use ($ficoBand) {
+                        if ($row->row_group === 'FICO') {
+                            return $row->row_label === $ficoBand->fico_range;
+                        }
+                        return false;
+                    });
+                }
+            }
+
+            // Apply Property Type filter if specified (only applies to Property Type rows)
+            if ($propertyTypeId) {
+                $propertyType = \App\Models\PropertyType::find($propertyTypeId);
+                if ($propertyType) {
+                    $filteredData = $filteredData->filter(function ($row) use ($propertyType) {
+                        if ($row->row_group === 'Property Type') {
+                            return $row->row_label === $propertyType->name;
+                        }
+                        return false;
+                    });
+                }
+            }
+
+            // Apply Occupancy Type filter if specified (only applies to Occupancy rows)
+            if ($occupancyTypeId) {
+                $occupancyType = \App\Models\OccupancyTypes::find($occupancyTypeId);
+                if ($occupancyType) {
+                    $filteredData = $filteredData->filter(function ($row) use ($occupancyType) {
+                        if ($row->row_group === 'Occupancy') {
+                            return $row->row_label === $occupancyType->name;
+                        }
+                        return false;
+                    });
+                }
+            }
+
+            // Apply DSCR Range filter if specified (only applies to DSCR rows)
+            if ($dscrRange) {
+                $dscrRangeModel = \App\Models\DscrRanges::find($dscrRange);
+                if ($dscrRangeModel) {
+                    $filteredData = $filteredData->filter(function ($row) use ($dscrRangeModel) {
+                        if ($row->row_group === 'DSCR') {
+                            return $row->row_label === $dscrRangeModel->dscr_range;
+                        }
+                        return false;
+                    });
+                }
+            }
+
+            // Apply Transaction Type filter if specified (only applies to Transaction Type rows)
+            if ($transactionTypeId) {
+                $transactionType = TransactionType::find($transactionTypeId);
+                if ($transactionType) {
+                    $filteredData = $filteredData->filter(function ($row) use ($transactionType) {
+                        if ($row->row_group === 'Transaction Type') {
+                            return $row->row_label === $transactionType->name;
+                        }
+                        return false;
+                    });
+                }
+            }
+
+            // Apply Prepay Period filter if specified (only applies to Pre Pay rows)
+            if ($prepayPeriod) {
+                $prepayPeriodModel = \App\Models\PrepayPeriods::find($prepayPeriod);
+                if ($prepayPeriodModel) {
+                    $filteredData = $filteredData->filter(function ($row) use ($prepayPeriodModel) {
+                        if ($row->row_group === 'Pre Pay') {
+                            return $row->row_label === $prepayPeriodModel->prepay_name;
+                        }
+                        return false;
+                    });
+                }
+            }
+
             // Convert back to array for grouping
             $matrixData = $filteredData->all();
 
             \Log::info('DSCR Matrix After Filtering', [
                 'filtered_count' => count($matrixData),
                 'category_filter' => $categoryFilter,
-                'fico_score' => $ficoScore
+                'fico_score' => $ficoScore,
+                'loan_amount' => $loanAmount,
+                'property_type_id' => $propertyTypeId,
+                'occupancy_type_id' => $occupancyTypeId,
+                'dscr_range' => $dscrRange,
+                'fico_band_id' => $ficoBandId,
+                'transaction_type_id' => $transactionTypeId,
+                'prepay_period' => $prepayPeriod,
+                'filtered_results' => array_slice($matrixData, 0, 3)
             ]);
 
             // Group data by row_group for better display

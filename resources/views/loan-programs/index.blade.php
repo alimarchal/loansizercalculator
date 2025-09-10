@@ -71,7 +71,7 @@
 
                     @if(isset($isDscrMatrix) && $isDscrMatrix)
                     <!-- DSCR Matrix Enhanced Filters -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         <!-- Credit Score Input -->
                         <div>
                             <label for="credit_score"
@@ -192,6 +192,98 @@
                             </select>
                         </div>
                         @endif
+
+                        <!-- FICO Band Filter -->
+                        @if(isset($ficoBands) && count($ficoBands) > 0)
+                        <div>
+                            <label for="fico_band_id"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                FICO Band
+                            </label>
+                            <select name="filter[fico_band_id]" id="fico_band_id"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All FICO Bands</option>
+                                @foreach($ficoBands as $ficoBand)
+                                <option value="{{ $ficoBand->id }}" {{ request('filter.fico_band_id')==$ficoBand->id ?
+                                    'selected' : '' }}>
+                                    {{ $ficoBand->fico_range }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
+                        <!-- Transaction Type Filter -->
+                        @if(isset($transactionTypes) && count($transactionTypes) > 0)
+                        <div>
+                            <label for="transaction_type_id"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Transaction Type
+                            </label>
+                            <select name="filter[transaction_type_id]" id="transaction_type_id"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All Transaction Types</option>
+                                @foreach($transactionTypes as $transactionType)
+                                <option value="{{ $transactionType->id }}" {{
+                                    request('filter.transaction_type_id')==$transactionType->id ?
+                                    'selected' : '' }}>
+                                    {{ $transactionType->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
+                        <!-- Prepay Period Filter -->
+                        @if(isset($prepayPeriods) && count($prepayPeriods) > 0)
+                        <div>
+                            <label for="prepay_period"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Prepay Period
+                            </label>
+                            <select name="filter[prepay_period]" id="prepay_period"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All Prepay Periods</option>
+                                @foreach($prepayPeriods as $prepayPeriod)
+                                <option value="{{ $prepayPeriod->id }}" {{
+                                    request('filter.prepay_period')==$prepayPeriod->id ?
+                                    'selected' : '' }}>
+                                    {{ $prepayPeriod->prepay_name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
+                        <!-- Category Filter -->
+                        <div>
+                            <label for="category_filter"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Category Filter
+                            </label>
+                            <select name="filter[category]" id="category_filter"
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                <option value="">All Categories</option>
+                                <option value="FICO" {{ old('filter.category', request()->input('filter.category')) ==
+                                    'FICO' ? 'selected' : '' }}>FICO</option>
+                                <option value="Loan Amount" {{ old('filter.category', request()->
+                                    input('filter.category')) == 'Loan Amount' ? 'selected' : '' }}>Loan Amount</option>
+                                <option value="Property Type" {{ old('filter.category', request()->
+                                    input('filter.category')) == 'Property Type' ? 'selected' : '' }}>Property Type
+                                </option>
+                                <option value="Occupancy" {{ old('filter.category', request()->input('filter.category'))
+                                    == 'Occupancy' ? 'selected' : '' }}>Occupancy</option>
+                                <option value="Transaction Type" {{ old('filter.category', request()->
+                                    input('filter.category')) == 'Transaction Type' ? 'selected' : '' }}>Transaction
+                                    Type</option>
+                                <option value="DSCR" {{ old('filter.category', request()->input('filter.category')) ==
+                                    'DSCR' ? 'selected' : '' }}>DSCR</option>
+                                <option value="Pre Pay" {{ old('filter.category', request()->input('filter.category'))
+                                    == 'Pre Pay' ? 'selected' : '' }}>Pre Pay</option>
+                                <option value="Loan Type" {{ old('filter.category', request()->input('filter.category'))
+                                    == 'Loan Type' ? 'selected' : '' }}>Loan Type</option>
+                            </select>
+                        </div>
                     </div>
                     @else
                     <!-- Regular Matrix Filters -->
