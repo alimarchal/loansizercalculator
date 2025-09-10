@@ -44,7 +44,7 @@ class TransactionTypeLtvAdjustmentsSeeder extends Seeder
                 '75% LTV' => 0.000,
                 '80% LTV' => null,
             ],
-            'Refi No Cash Out' => [
+            'Refinance No Cash Out' => [
                 '50% LTV or less' => 0.000,
                 '55% LTV' => 0.000,
                 '60% LTV' => 0.000,
@@ -53,41 +53,14 @@ class TransactionTypeLtvAdjustmentsSeeder extends Seeder
                 '75% LTV' => 0.250,
                 '80% LTV' => null,
             ],
-            'Cash Out Refi 660-679 FICO' => [
-                '50% LTV or less' => null,
-                '55% LTV' => null,
+            'Refinance Cash Out' => [
+                '50% LTV or less' => 0.000,
+                '55% LTV' => 0.000,
                 '60% LTV' => null,
-                '65% LTV' => null,
-                '70% LTV' => null,
+                '65% LTV' => 0.000,
+                '70% LTV' => 0.000,
                 '75% LTV' => null,
                 '80% LTV' => null,
-            ],
-            'Cash Out Refi 680-699 FICO' => [
-                '50% LTV or less' => 0.250,
-                '55% LTV' => 0.250,
-                '60% LTV' => 0.250,
-                '65% LTV' => 0.250,
-                '70% LTV' => 0.375,
-                '75% LTV' => 0.500,
-                '80% LTV' => null,
-            ],
-            'Cash Out Refi 700-720 FICO' => [
-                '50% LTV or less' => 0.250,
-                '55% LTV' => 0.250,
-                '60% LTV' => 0.250,
-                '65% LTV' => 0.250,
-                '70% LTV' => 0.375,
-                '75% LTV' => 0.500,
-                '80% LTV' => 0.750,
-            ],
-            'Cash Out Refi 720+ FICO' => [
-                '50% LTV or less' => 0.250,
-                '55% LTV' => 0.250,
-                '60% LTV' => 0.250,
-                '65% LTV' => 0.250,
-                '70% LTV' => 0.375,
-                '75% LTV' => 0.500,
-                '80% LTV' => 0.750,
             ],
         ];
 

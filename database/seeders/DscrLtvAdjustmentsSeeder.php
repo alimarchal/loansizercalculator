@@ -43,7 +43,7 @@ class DscrLtvAdjustmentsSeeder extends Seeder
                 '75% LTV' => 0.000,
                 '80% LTV' => null,
             ],
-            '1.10–1.20' => [
+            '1.10-1.20' => [
                 '50% LTV or less' => 0.125,
                 '55% LTV' => 0.125,
                 '60% LTV' => 0.125,
@@ -52,7 +52,7 @@ class DscrLtvAdjustmentsSeeder extends Seeder
                 '75% LTV' => 0.375,
                 '80% LTV' => null,
             ],
-            '1.00–1.10' => [
+            '1.00-1.10' => [
                 '50% LTV or less' => 0.250,
                 '55% LTV' => 0.250,
                 '60% LTV' => 0.250,
@@ -61,7 +61,7 @@ class DscrLtvAdjustmentsSeeder extends Seeder
                 '75% LTV' => null,
                 '80% LTV' => null,
             ],
-            '0.80–0.99' => [
+            '0.80-0.99' => [
                 '50% LTV or less' => 0.500,
                 '55% LTV' => 0.500,
                 '60% LTV' => null,

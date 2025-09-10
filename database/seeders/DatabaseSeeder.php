@@ -47,7 +47,6 @@ class DatabaseSeeder extends Seeder
             PropertyTypeLtvAdjustmentSeeder::class,
             OccupancyTypesSeeder::class,
             OccupancyLtvAdjustmentsSeeder::class,
-            TransactionTypeSeeder::class,
             TransactionTypeLtvAdjustmentsSeeder::class,
             DscrRangesSeeder::class,       // your DSCR bands
             DscrLtvAdjustmentsSeeder::class,

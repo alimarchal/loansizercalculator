@@ -26,7 +26,7 @@ return new class extends Migration {
             $table->timestamps();
 
             // One cell per intersection
-            $table->unique(['loan_type_id', 'ltv_ratio_id'], 'loan_type_dscr_ltv_adj_unique');
+            $table->unique(['loan_type_id', 'dscr_loan_type_id', 'ltv_ratio_id'], 'loan_type_dscr_ltv_adj_unique');
         });
     }
 
