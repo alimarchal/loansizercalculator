@@ -834,7 +834,53 @@ class LoanMatrixApiController extends Controller
                 // Format each category for this program
                 $formattedProgramData = [
                     'loan_program' => $program,
-                    'categories' => []
+                    'categories' => [],
+                    'loan_program_values' => [
+                        'loan_term' => 0,
+                        'max_ltv' => 0,
+                        'monthly_payment' => 0,
+                        'interest_rate' => 0,
+                        'lender_points' => 0,
+                        'pre_pay_penalty' => 0,
+                    ],
+                    'interest_rate_formula' => [
+                        'starting_rate' => 0,
+                        'ltv_fico' => 0,
+                        'loan_amount' => 0,
+                        'property_type' => 0,
+                        'occupancy' => 0,
+                        'transaction_type' => 0,
+                        'dscr' => 0,
+                        'pre_pay' => 0,
+                        'loan_type' => 0,
+                        'calculated_interest_rate' => 0,
+                    ],
+                    'ltv_formula' => [
+                        'fico' => [
+                            'input' => 0,
+                            'max_ltv' => 0,
+                        ],
+                        'transaction_type' => [
+                            'input' => 0,
+                            'max_ltv' => 0,
+                        ],
+                        'loan_amount' => [
+                            'input' => 0,
+                            'max_ltv' => 0,
+                        ],
+                        'dscr' => [
+                            'input' => 0,
+                            'max_ltv' => 0,
+                        ],
+                        'occupancy' => [
+                            'input' => 0,
+                            'max_ltv' => 0,
+                        ],
+                        'approved_max_ltv' => [
+                            'input' => 0,
+                            'max_ltv' => 0,
+                        ],
+                    ],
                 ];
 
                 foreach ($programData as $category => $rows) {
