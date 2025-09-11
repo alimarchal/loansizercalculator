@@ -1028,7 +1028,7 @@ class LoanMatrixApiController extends Controller
             'dscr' => 'required|numeric|min:0.01',
             'purchase_date' => 'nullable|date',
             'payoff_amount' => 'required|numeric|min:0',
-            'loan_term' => 'required|string|in:10 Year Interest Only,30 Year Fixed',
+            'loan_term' => 'required|string|in:' . implode(',', \App\Models\LoanTypesDscr::pluck('loan_type_dscr_name')->toArray()),
             'lender_points' => 'required|numeric|in:1.00,1.000,1.5000,2.000',
             'pre_pay_penalty' => 'required|string|in:5 Year,3 Year',
         ]);
@@ -1358,6 +1358,52 @@ class LoanMatrixApiController extends Controller
                 $calculatedInterestRate = $startingRate + $ltvFicoAdjustment + $loanAmountAdjustment + $propertyTypeAdjustment +
                     $occupancyAdjustment + $transactionTypeAdjustment + $dscrAdjustment + $prePayAdjustment + $loanTypeAdjustment;
 
+                // Adjust interest rate based on lender points
+                $adjustedInterestRate = $calculatedInterestRate;
+                $lenderPoints = (float) $request->lender_points;
+
+                if ($lenderPoints == 1.5 || $lenderPoints == 1.5000) {
+                    // 1.5 points: add 0.5% to the rate
+                    $adjustedInterestRate = $calculatedInterestRate + 0.5;
+                } elseif ($lenderPoints == 1.0 || $lenderPoints == 1.000) {
+                    // 1.0 points: add 1.0% to the rate  
+                    $adjustedInterestRate = $calculatedInterestRate + 1.0;
+                }
+                // 2.0 points: no adjustment needed (rate stays the same)
+
+                // Calculate monthly payment based on loan term
+                $monthlyPayment = 0;
+                // TODO: Review this calculation - Changed from hardcoded $380,000 to calculated loan amount
+                // Initial Loan Amount = Purchase Price × Approved Max LTV / 100
+                // Example: $300,000 × 80% = $240,000 (instead of hardcoded $380,000)
+                $initialLoanAmount = ($purchasePrice * $approvedMaxLtv) / 100;
+
+                if ($request->loan_term === '10 Year IO') {
+                    // Interest Only formula: (Loan Amount × Interest Rate / 12) + (Tax / 12) + (Insurance / 12)
+                    $monthlyInterest = ($initialLoanAmount * ($adjustedInterestRate / 100)) / 12;
+                    $monthlyTax = $request->annual_tax / 12;
+                    $monthlyInsurance = $request->annual_insurance / 12;
+
+                    $monthlyPayment = $monthlyInterest + $monthlyTax + $monthlyInsurance;
+                } else {
+                    // For other loan terms (like 30 Year Fixed), use PMT formula equivalent
+                    // PMT(rate, nper, pv, fv, type) - equivalent to Excel PMT function
+                    $monthlyRate = ($adjustedInterestRate / 100) / 12;
+                    $numberOfPayments = 360; // 30 years * 12 months
+
+                    if ($monthlyRate > 0) {
+                        // PMT formula: PV * (rate * (1 + rate)^nper) / ((1 + rate)^nper - 1)
+                        $pmt = $initialLoanAmount * ($monthlyRate * pow(1 + $monthlyRate, $numberOfPayments)) / (pow(1 + $monthlyRate, $numberOfPayments) - 1);
+                    } else {
+                        $pmt = $initialLoanAmount / $numberOfPayments;
+                    }
+
+                    $monthlyTax = $request->annual_tax / 12;
+                    $monthlyInsurance = $request->annual_insurance / 12;
+
+                    $monthlyPayment = $pmt + $monthlyTax + $monthlyInsurance;
+                }
+
                 // Format each category for this program
                 $formattedProgramData = [
                     'loan_program' => $program,
@@ -1365,8 +1411,8 @@ class LoanMatrixApiController extends Controller
                     'loan_program_values' => [
                         'loan_term' => $request->loan_term ?: 0,
                         'max_ltv' => $approvedMaxLtv,
-                        'monthly_payment' => 0,
-                        'interest_rate' => $calculatedInterestRate,
+                        'monthly_payment' => round($monthlyPayment, 2),
+                        'interest_rate' => $adjustedInterestRate,
                         'lender_points' => $request->lender_points ?: 0,
                         'pre_pay_penalty' => $request->pre_pay_penalty ?: '',
                     ],
