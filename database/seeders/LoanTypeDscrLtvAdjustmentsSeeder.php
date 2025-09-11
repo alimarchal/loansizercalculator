@@ -17,13 +17,22 @@ class LoanTypeDscrLtvAdjustmentsSeeder extends Seeder
         // Clear existing data first (optional)
         DB::table('loan_type_dscr_ltv_adjustments')->truncate();
 
-        // Get the loan program
+        // Get the loan programs
         $lp1 = LoanType::where('name', 'DSCR Rental Loans')
             ->where('loan_program', 'Loan Program #1')
             ->value('id');
+        $lp2 = LoanType::where('name', 'DSCR Rental Loans')
+            ->where('loan_program', 'Loan Program #2')
+            ->value('id');
+        $lp3 = LoanType::where('name', 'DSCR Rental Loans')
+            ->where('loan_program', 'Loan Program #3')
+            ->value('id');
 
-        if (!$lp1) {
-            $this->command->error('Loan Program #1 not found. Make sure loan_types are seeded first.');
+        $loanPrograms = [$lp1, $lp2, $lp3];
+
+        // Check if any loan programs were found
+        if (!$lp1 && !$lp2 && !$lp3) {
+            $this->command->error('No DSCR loan programs found. Make sure loan_types are seeded first.');
             return;
         }
 
@@ -93,25 +102,27 @@ class LoanTypeDscrLtvAdjustmentsSeeder extends Seeder
         $rows = [];
         $processedCount = 0;
 
-        foreach ($grid as $dscrProductName => $ltvAdjustments) {
-            $dscrId = $dscrIds[$dscrProductName];
+        foreach ($loanPrograms as $loanProgramId) {
+            foreach ($grid as $dscrProductName => $ltvAdjustments) {
+                $dscrId = $dscrIds[$dscrProductName];
 
-            $this->command->info("Processing {$dscrProductName} (ID: {$dscrId}):");
+                $this->command->info("Processing {$dscrProductName} (ID: {$dscrId}) for Loan Program ID: {$loanProgramId}:");
 
-            foreach ($ltvAdjustments as $ltvRange => $adjustmentPct) {
-                $ltvId = $ltvIds[$ltvRange];
+                foreach ($ltvAdjustments as $ltvRange => $adjustmentPct) {
+                    $ltvId = $ltvIds[$ltvRange];
 
-                $rows[] = [
-                    'loan_type_id' => $lp1,
-                    'dscr_loan_type_id' => $dscrId,
-                    'ltv_ratio_id' => $ltvId,
-                    'adjustment_pct' => $adjustmentPct,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                    $rows[] = [
+                        'loan_type_id' => $loanProgramId,
+                        'dscr_loan_type_id' => $dscrId,
+                        'ltv_ratio_id' => $ltvId,
+                        'adjustment_pct' => $adjustmentPct,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
 
-                $processedCount++;
-                $this->command->info("  {$ltvRange} -> {$adjustmentPct}");
+                    $processedCount++;
+                    $this->command->info("  {$ltvRange} -> {$adjustmentPct}");
+                }
             }
         }
 

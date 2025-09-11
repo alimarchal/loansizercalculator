@@ -91,37 +91,47 @@ class LoanAmountLtvAdjustmentSeeder extends Seeder
         ];
 
         $rows = [];
-        foreach ($grid as $amountLabel => $cols) {
-            $laId = $amountId[$amountLabel] ?? null;
-            if (!$laId) {
-                continue;
+
+        // Create data for all three loan programs
+        $loanPrograms = [$lp1, $lp2, $lp3];
+
+        foreach ($loanPrograms as $loanProgramId) {
+            if (!$loanProgramId) {
+                continue; // Skip if loan program not found
             }
 
-            foreach ($cols as $ltvLabel => $pct) {
-                $lrId = $ltvId[$ltvLabel] ?? null;
-                if (!$lrId) {
+            foreach ($grid as $amountLabel => $cols) {
+                $laId = $amountId[$amountLabel] ?? null;
+                if (!$laId) {
                     continue;
                 }
 
-                // Skip if adjustment percentage is null
-                if ($pct === null) {
-                    continue;
-                }
+                foreach ($cols as $ltvLabel => $pct) {
+                    $lrId = $ltvId[$ltvLabel] ?? null;
+                    if (!$lrId) {
+                        continue;
+                    }
 
-                $rows[] = [
-                    'loan_type_id' => $lp1,
-                    'loan_amount_id' => $laId,
-                    'ltv_ratio_id' => $lrId,
-                    'adjustment_pct' => $pct,  // e.g. 0.125 for 0.125%
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                    // Skip if adjustment percentage is null
+                    if ($pct === null) {
+                        continue;
+                    }
+
+                    $rows[] = [
+                        'loan_type_id' => $loanProgramId,
+                        'loan_amount_id' => $laId,
+                        'ltv_ratio_id' => $lrId,
+                        'adjustment_pct' => $pct,  // e.g. 0.125 for 0.125%
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
         }
 
         DB::table('loan_amount_ltv_adjustments')->upsert(
             $rows,
-            ['loan_amount_id', 'ltv_ratio_id'],
+            ['loan_type_id', 'loan_amount_id', 'ltv_ratio_id'],
             ['adjustment_pct', 'updated_at']
         );
     }

@@ -85,33 +85,43 @@ class FicoLtvAdjustmentSeeder extends Seeder
         ];
 
         $rows = [];
-        foreach ($grid as $ficoLabel => $cols) {
-            $fbId = $ficoId[$ficoLabel] ?? null;
-            if (!$fbId) {
-                continue;
+
+        // Create data for all three loan programs
+        $loanPrograms = [$lp1, $lp2, $lp3];
+
+        foreach ($loanPrograms as $loanProgramId) {
+            if (!$loanProgramId) {
+                continue; // Skip if loan program not found
             }
 
-            foreach ($cols as $ltvLabel => $pct) {
-                $lrId = $ltvId[$ltvLabel] ?? null;
-                if (!$lrId) {
+            foreach ($grid as $ficoLabel => $cols) {
+                $fbId = $ficoId[$ficoLabel] ?? null;
+                if (!$fbId) {
                     continue;
                 }
 
-                $rows[] = [
-                    'loan_type_id' => $lp1,
-                    'fico_band_id' => $fbId,
-                    'ltv_ratio_id' => $lrId,
-                    'adjustment_pct' => $pct,  // decimal percent, e.g. 0.125 = 0.125%
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                foreach ($cols as $ltvLabel => $pct) {
+                    $lrId = $ltvId[$ltvLabel] ?? null;
+                    if (!$lrId) {
+                        continue;
+                    }
+
+                    $rows[] = [
+                        'loan_type_id' => $loanProgramId,
+                        'fico_band_id' => $fbId,
+                        'ltv_ratio_id' => $lrId,
+                        'adjustment_pct' => $pct,  // decimal percent, e.g. 0.125 = 0.125%
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
         }
 
-        // Upsert on the natural unique pair
+        // Upsert on the natural unique constraint (loan_type_id, fico_band_id, ltv_ratio_id)
         DB::table('fico_ltv_adjustments')->upsert(
             $rows,
-            ['fico_band_id', 'ltv_ratio_id'],
+            ['loan_type_id', 'fico_band_id', 'ltv_ratio_id'],
             ['adjustment_pct', 'updated_at']
         );
     }

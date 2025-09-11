@@ -51,32 +51,42 @@ class OccupancyLtvAdjustmentsSeeder extends Seeder
         ];
 
         $rows = [];
-        foreach ($grid as $occLabel => $cols) {
-            $oId = $occId[$occLabel] ?? null;
-            if (!$oId) {
-                continue;
+
+        // Create data for all three loan programs
+        $loanPrograms = [$lp1, $lp2, $lp3];
+
+        foreach ($loanPrograms as $loanProgramId) {
+            if (!$loanProgramId) {
+                continue; // Skip if loan program not found
             }
 
-            foreach ($cols as $ltvLabel => $pct) {
-                $lrId = $ltvId[$ltvLabel] ?? null;
-                if (!$lrId) {
+            foreach ($grid as $occLabel => $cols) {
+                $oId = $occId[$occLabel] ?? null;
+                if (!$oId) {
                     continue;
                 }
 
-                $rows[] = [
-                    'loan_type_id' => $lp1,
-                    'occupancy_type_id' => $oId,
-                    'ltv_ratio_id' => $lrId,
-                    'adjustment_pct' => $pct,   // decimal percent; null => N/A
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                foreach ($cols as $ltvLabel => $pct) {
+                    $lrId = $ltvId[$ltvLabel] ?? null;
+                    if (!$lrId) {
+                        continue;
+                    }
+
+                    $rows[] = [
+                        'loan_type_id' => $loanProgramId,
+                        'occupancy_type_id' => $oId,
+                        'ltv_ratio_id' => $lrId,
+                        'adjustment_pct' => $pct,   // decimal percent; null => N/A
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
         }
 
         DB::table('occupancy_ltv_adjustments')->upsert(
             $rows,
-            ['occupancy_type_id', 'ltv_ratio_id'],
+            ['loan_type_id', 'occupancy_type_id', 'ltv_ratio_id'],
             ['adjustment_pct', 'updated_at']
         );
     }

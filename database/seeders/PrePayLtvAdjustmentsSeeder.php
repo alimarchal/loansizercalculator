@@ -47,32 +47,42 @@ class PrePayLtvAdjustmentsSeeder extends Seeder
         ];
 
         $rows = [];
-        foreach ($grid as $prepayLabel => $cols) {
-            $pId = $prepayId[$prepayLabel] ?? null;
-            if (!$pId) {
-                continue;
+
+        // Create data for all three loan programs
+        $loanPrograms = [$lp1, $lp2, $lp3];
+
+        foreach ($loanPrograms as $loanProgramId) {
+            if (!$loanProgramId) {
+                continue; // Skip if loan program not found
             }
 
-            foreach ($cols as $ltvLabel => $pct) {
-                $lrId = $ltvId[$ltvLabel] ?? null;
-                if (!$lrId) {
+            foreach ($grid as $prepayLabel => $cols) {
+                $pId = $prepayId[$prepayLabel] ?? null;
+                if (!$pId) {
                     continue;
                 }
 
-                $rows[] = [
-                    'loan_type_id' => $lp1,
-                    'pre_pay_id' => $pId,
-                    'ltv_ratio_id' => $lrId,
-                    'adjustment_pct' => $pct,      // e.g. 0.125 for 0.125%
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                foreach ($cols as $ltvLabel => $pct) {
+                    $lrId = $ltvId[$ltvLabel] ?? null;
+                    if (!$lrId) {
+                        continue;
+                    }
+
+                    $rows[] = [
+                        'loan_type_id' => $loanProgramId,
+                        'pre_pay_id' => $pId,
+                        'ltv_ratio_id' => $lrId,
+                        'adjustment_pct' => $pct,      // e.g. 0.125 for 0.125%
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
         }
 
         DB::table('pre_pay_ltv_adjustments')->upsert(
             $rows,
-            ['pre_pay_id', 'ltv_ratio_id'],
+            ['loan_type_id', 'pre_pay_id', 'ltv_ratio_id'],
             ['adjustment_pct', 'updated_at']
         );
     }

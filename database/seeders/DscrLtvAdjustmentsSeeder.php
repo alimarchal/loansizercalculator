@@ -73,37 +73,47 @@ class DscrLtvAdjustmentsSeeder extends Seeder
         ];
 
         $rows = [];
-        foreach ($grid as $dscrLabel => $cols) {
-            $dId = $dscrId[$dscrLabel] ?? null;
-            if (!$dId) {
-                continue;
+
+        // Create data for all three loan programs
+        $loanPrograms = [$lp1, $lp2, $lp3];
+
+        foreach ($loanPrograms as $loanProgramId) {
+            if (!$loanProgramId) {
+                continue; // Skip if loan program not found
             }
 
-            foreach ($cols as $ltvLabel => $pct) {
-                $lrId = $ltvId[$ltvLabel] ?? null;
-                if (!$lrId) {
+            foreach ($grid as $dscrLabel => $cols) {
+                $dId = $dscrId[$dscrLabel] ?? null;
+                if (!$dId) {
                     continue;
                 }
 
-                // Skip if adjustment percentage is null
-                if ($pct === null) {
-                    continue;
-                }
+                foreach ($cols as $ltvLabel => $pct) {
+                    $lrId = $ltvId[$ltvLabel] ?? null;
+                    if (!$lrId) {
+                        continue;
+                    }
 
-                $rows[] = [
-                    'loan_type_id' => $lp1,
-                    'dscr_range_id' => $dId,
-                    'ltv_ratio_id' => $lrId,       // rename to 'ltv_range_id' if your pivot uses that
-                    'adjustment_pct' => $pct,        // decimal percent; null => N/A
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                    // Skip if adjustment percentage is null
+                    if ($pct === null) {
+                        continue;
+                    }
+
+                    $rows[] = [
+                        'loan_type_id' => $loanProgramId,
+                        'dscr_range_id' => $dId,
+                        'ltv_ratio_id' => $lrId,       // rename to 'ltv_range_id' if your pivot uses that
+                        'adjustment_pct' => $pct,        // decimal percent; null => N/A
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
         }
 
         DB::table('dscr_ltv_adjustments')->upsert(
             $rows,
-            ['dscr_range_id', 'ltv_ratio_id'],              // change if your FK name differs
+            ['loan_type_id', 'dscr_range_id', 'ltv_ratio_id'],              // change if your FK name differs
             ['adjustment_pct', 'updated_at']
         );
     }

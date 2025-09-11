@@ -65,32 +65,42 @@ class TransactionTypeLtvAdjustmentsSeeder extends Seeder
         ];
 
         $rows = [];
-        foreach ($grid as $txLabel => $cols) {
-            $tId = $txId[$txLabel] ?? null;
-            if (!$tId) {
-                continue;
+
+        // Create data for all three loan programs
+        $loanPrograms = [$lp1, $lp2, $lp3];
+
+        foreach ($loanPrograms as $loanProgramId) {
+            if (!$loanProgramId) {
+                continue; // Skip if loan program not found
             }
 
-            foreach ($cols as $ltvLabel => $pct) {
-                $lrId = $ltvId[$ltvLabel] ?? null;
-                if (!$lrId) {
+            foreach ($grid as $txLabel => $cols) {
+                $tId = $txId[$txLabel] ?? null;
+                if (!$tId) {
                     continue;
                 }
 
-                $rows[] = [
-                    'loan_type_id' => $lp1,
-                    'transaction_type_id' => $tId,
-                    'ltv_ratio_id' => $lrId,
-                    'adjustment_pct' => $pct,  // decimal percent; null => N/A
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                foreach ($cols as $ltvLabel => $pct) {
+                    $lrId = $ltvId[$ltvLabel] ?? null;
+                    if (!$lrId) {
+                        continue;
+                    }
+
+                    $rows[] = [
+                        'loan_type_id' => $loanProgramId,
+                        'transaction_type_id' => $tId,
+                        'ltv_ratio_id' => $lrId,
+                        'adjustment_pct' => $pct,  // decimal percent; null => N/A
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
         }
 
         DB::table('transaction_type_ltv_adjustments')->upsert(
             $rows,
-            ['transaction_type_id', 'ltv_ratio_id'],
+            ['loan_type_id', 'transaction_type_id', 'ltv_ratio_id'],
             ['adjustment_pct', 'updated_at']
         );
     }

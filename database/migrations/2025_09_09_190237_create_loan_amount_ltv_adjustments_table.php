@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId(column: 'ltv_ratio_id')->nullable()->constrained()->cascadeOnUpdate();
             $table->decimal(column: 'adjustment_pct', total: 6, places: 4)->default(0.0000);
             $table->timestamps();
-            $table->unique(['loan_amount_id', 'ltv_ratio_id'], 'loan_amount_ltv_adj_unique');
+            $table->unique(['loan_type_id', 'loan_amount_id', 'ltv_ratio_id'], 'loan_amount_ltv_adj_unique');
 
         });
     }
