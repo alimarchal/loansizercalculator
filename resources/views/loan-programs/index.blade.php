@@ -468,49 +468,49 @@
                                 @if($row->{'50% LTV or less'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'50% LTV or less'} * 100, 3) }}%
+                                {{ number_format((float)$row->{'50% LTV or less'}, 4) }}%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'55% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'55% LTV'} * 100, 3) }}%
+                                {{ number_format((float)$row->{'55% LTV'}, 4) }}%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'60% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'60% LTV'} * 100, 3) }}%
+                                {{ number_format((float)$row->{'60% LTV'}, 4) }}%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'65% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'65% LTV'} * 100, 3) }}%
+                                {{ number_format((float)$row->{'65% LTV'}, 4) }}%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'70% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'70% LTV'} * 100, 3) }}%
+                                {{ number_format((float)$row->{'70% LTV'}, 4) }}%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'75% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'75% LTV'} * 100, 3) }}%
+                                {{ number_format((float)$row->{'75% LTV'}, 4) }}%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'80% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'80% LTV'} * 100, 3) }}%
+                                {{ number_format((float)$row->{'80% LTV'}, 4) }}%
                                 @endif
                             </td>
                         </tr>

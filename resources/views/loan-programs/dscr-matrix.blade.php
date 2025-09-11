@@ -189,9 +189,9 @@
                                 @if ($value === null)
                                 N/A
                                 @elseif ($value == 0)
-                                0.000%
+                                0.0000%
                                 @else
-                                {{ number_format((float)$value, 3) }}%
+                                {{ number_format((float)$value, 4) }}%
                                 @endif
                             </td>
                             @endforeach
