@@ -1030,7 +1030,7 @@ class LoanMatrixApiController extends Controller
             'payoff_amount' => 'required|numeric|min:0',
             'loan_term' => 'required|string|in:' . implode(',', \App\Models\LoanTypesDscr::pluck('loan_type_dscr_name')->toArray()),
             'lender_points' => 'required|numeric|in:1.00,1.000,1.5000,2.000',
-            'pre_pay_penalty' => 'required|string|in:5 Year,3 Year',
+            'pre_pay_penalty' => 'required|string|in:' . implode(',', \App\Models\PrepayPeriods::pluck('prepay_name')->toArray()),
         ]);
 
         if ($validator->fails()) {
@@ -1925,12 +1925,12 @@ class LoanMatrixApiController extends Controller
         // Property Type Validation - Get eligible property types from database
         $eligiblePropertyTypes = \App\Models\PropertyType::whereIn('name', [
             'Single Family',
-            'Townhomes',
-            'Condos'
+            'Townhome',
+            'Condo'
         ])->pluck('name')->toArray();
 
         if (!in_array($propertyType, $eligiblePropertyTypes)) {
-            $notifications[] = 'Property Type: Eligible property type for DSCR is Single Family, Townhomes, Condos';
+            $notifications[] = 'Property Type: Eligible property type for DSCR is Single Family, Townhome, Condo';
             $valid = false;
         }
 
@@ -1939,5 +1939,140 @@ class LoanMatrixApiController extends Controller
             'notifications' => $notifications,
             'eligible_property_types' => $eligiblePropertyTypes
         ];
+    }
+
+    /**
+     * Get occupancy types for DSCR loans
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getOccupancyTypes()
+    {
+        try {
+            $occupancyTypes = \App\Models\OccupancyTypes::select('id', 'name')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($occupancyType) {
+                    return [
+                        'id' => $occupancyType->id,
+                        'name' => $occupancyType->name,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Occupancy types retrieved successfully',
+                'data' => $occupancyTypes
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving occupancy types',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get prepay periods for DSCR loans
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPrepayPeriods()
+    {
+        try {
+            $prepayPeriods = \App\Models\PrepayPeriods::select('id', 'prepay_name')
+                ->orderBy('prepay_name')
+                ->get()
+                ->map(function ($period) {
+                    return [
+                        'id' => $period->id,
+                        'name' => $period->prepay_name,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Prepay periods retrieved successfully',
+                'data' => $prepayPeriods
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving prepay periods',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get property types for DSCR loans
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDscrPropertyTypes()
+    {
+        try {
+            // Get property types that are eligible for DSCR loans
+            $propertyTypes = \App\Models\PropertyType::
+                select('id', 'name')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($propertyType) {
+                    return [
+                        'id' => $propertyType->id,
+                        'name' => $propertyType->name,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'DSCR property types retrieved successfully',
+                'data' => $propertyTypes
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving DSCR property types',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }    /**
+         * Get states available for DSCR loans
+         * 
+         * @return \Illuminate\Http\JsonResponse
+         */
+    public function getDscrStates()
+    {
+        try {
+            // Get states that are allowed for DSCR loans
+            $states = \App\Models\State::where('is_allowed', true)
+                ->select('id', 'code')
+                ->orderBy('code')
+                ->get()
+                ->map(function ($state) {
+                    return [
+                        'id' => $state->id,
+                        'code' => $state->code,
+                        'name' => $state->code, // Use code as name since no separate name field exists
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'DSCR states retrieved successfully',
+                'data' => $states
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving DSCR states',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

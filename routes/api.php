@@ -16,3 +16,11 @@ Route::get('/loan-matrix-dscr', [LoanMatrixApiController::class, 'getLoanMatrixD
 
 // API endpoint for getting loan type options (property types and states)
 Route::get('/loan-type-options', [LoanMatrixApiController::class, 'getLoanTypeOptions']);
+
+// API endpoints for DSCR-specific data
+Route::get('/occupancy-types', [LoanMatrixApiController::class, 'getOccupancyTypes']);
+Route::get('/prepay-periods', [LoanMatrixApiController::class, 'getPrepayPeriods']);
+
+// Optional DSCR-specific endpoints (if you want separate from regular loan-type-options)
+Route::get('/dscr-property-types', [LoanMatrixApiController::class, 'getDscrPropertyTypes']);
+Route::get('/dscr-states', [LoanMatrixApiController::class, 'getDscrStates']);

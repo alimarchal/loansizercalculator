@@ -344,7 +344,7 @@
                             </div>
 
                             <!-- Rehab Budget -->
-                            <div>
+                            <div id="rehab_budget_field">
                                 <label class="block font-medium text-sm text-gray-700" for="rehab_budget">
                                     Rehab Budget <span class="text-red-500">*</span>
                                 </label>
@@ -355,7 +355,7 @@
                             </div>
 
                             <!-- ARV -->
-                            <div>
+                            <div id="arv_field">
                                 <label class="block font-medium text-sm text-gray-700" for="arv">
                                     ARV (After Repair Value) <span class="text-red-500">*</span>
                                 </label>
@@ -363,6 +363,119 @@
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
                                     type="number" name="arv" id="arv" min="0" value="250000"
                                     placeholder="Enter ARV amount" required>
+                            </div>
+
+                            <!-- DSCR Rental Loan Specific Fields -->
+
+                            <!-- Occupancy Type (DSCR only) -->
+                            <div id="occupancy_type_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="occupancy_type">
+                                    Occupancy Type <span class="text-red-500">*</span>
+                                </label>
+                                <select name="occupancy_type" id="occupancy_type"
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">-- Select Occupancy Type --</option>
+                                </select>
+                            </div>
+
+                            <!-- Monthly Market Rent (DSCR only) -->
+                            <div id="monthly_market_rent_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="monthly_market_rent">
+                                    Monthly Market Rent <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="number" name="monthly_market_rent" id="monthly_market_rent" min="0" value=""
+                                    placeholder="Enter monthly market rent">
+                            </div>
+
+                            <!-- Annual Tax (DSCR only) -->
+                            <div id="annual_tax_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="annual_tax">
+                                    Annual Tax <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="number" name="annual_tax" id="annual_tax" min="0" value=""
+                                    placeholder="Enter annual tax amount">
+                            </div>
+
+                            <!-- Annual Insurance (DSCR only) -->
+                            <div id="annual_insurance_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="annual_insurance">
+                                    Annual Insurance <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="number" name="annual_insurance" id="annual_insurance" min="0" value=""
+                                    placeholder="Enter annual insurance amount">
+                            </div>
+
+                            <!-- Annual HOA (DSCR only) -->
+                            <div id="annual_hoa_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="annual_hoa">
+                                    Annual HOA <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="number" name="annual_hoa" id="annual_hoa" min="0" value=""
+                                    placeholder="Enter annual HOA amount">
+                            </div>
+
+                            <!-- DSCR (DSCR only) -->
+                            <div id="dscr_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="dscr">
+                                    DSCR <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="number" name="dscr" id="dscr" min="0" step="0.01" value=""
+                                    placeholder="Enter DSCR value">
+                            </div>
+
+                            <!-- Purchase Date (DSCR only) -->
+                            <div id="purchase_date_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="purchase_date">
+                                    Purchase Date
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="date" name="purchase_date" id="purchase_date" value="">
+                            </div>
+
+                            <!-- Payoff Amount (DSCR only) -->
+                            <div id="payoff_amount_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="payoff_amount">
+                                    Payoff Amount <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="number" name="payoff_amount" id="payoff_amount" min="0" value=""
+                                    placeholder="Enter payoff amount">
+                            </div>
+
+                            <!-- Lender Points (DSCR only) -->
+                            <div id="lender_points_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="lender_points">
+                                    Lender Points (%) <span class="text-red-500">*</span>
+                                </label>
+                                <select name="lender_points" id="lender_points"
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="1.000">1.000</option>
+                                    <option value="1.500">1.500</option>
+                                    <option value="2.000" selected>2.000</option>
+                                </select>
+                            </div>
+
+                            <!-- Pre Pay Penalty (DSCR only) -->
+                            <div id="pre_pay_penalty_field" class="hidden">
+                                <label class="block font-medium text-sm text-gray-700" for="pre_pay_penalty">
+                                    Pre Pay Penalty <span class="text-red-500">*</span>
+                                </label>
+                                <select name="pre_pay_penalty" id="pre_pay_penalty"
+                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">-- Select Pre Pay Penalty --</option>
+                                </select>
                             </div>
 
                         </div>
@@ -644,25 +757,52 @@
                 try {
                     // Get form data
                     const formData = new FormData(form);
+                    const loanType = formData.get('loan_type');
                     
-                    // Build API URL with only required parameters
-                    const apiParams = new URLSearchParams({
-                        credit_score: formData.get('credit_score'),
-                        experience: formData.get('experience'),
-                        loan_type: formData.get('loan_type'),
-                        transaction_type: formData.get('transaction_type'),
-                        loan_term: formData.get('loan_term'),
-                        purchase_price: formData.get('purchase_price'),
-                        arv: formData.get('arv'),
-                        rehab_budget: formData.get('rehab_budget'),
-                        broker_points: formData.get('broker_points'),
-                        state: formData.get('state')
-                    });
+                    let apiUrl;
+                    const apiParams = new URLSearchParams();
                     
-                    const apiUrl = `/api/loan-matrix?${apiParams.toString()}`;
+                    // Add common parameters
+                    apiParams.append('credit_score', formData.get('credit_score'));
+                    apiParams.append('experience', formData.get('experience'));
+                    apiParams.append('loan_type', loanType);
+                    apiParams.append('transaction_type', formData.get('transaction_type'));
+                    apiParams.append('loan_term', formData.get('loan_term'));
+                    apiParams.append('purchase_price', formData.get('purchase_price'));
+                    apiParams.append('broker_points', formData.get('broker_points'));
+                    apiParams.append('state', formData.get('state'));
+                    
+                    if (loanType === 'DSCR Rental Loans') {
+                        // Use DSCR-specific API endpoint and parameters
+                        apiUrl = '/api/loan-matrix-dscr';
+                        
+                        // Add DSCR-specific parameters
+                        apiParams.append('property_type', formData.get('property_type'));
+                        apiParams.append('occupancy_type', formData.get('occupancy_type'));
+                        apiParams.append('monthly_market_rent', formData.get('monthly_market_rent'));
+                        apiParams.append('annual_tax', formData.get('annual_tax'));
+                        apiParams.append('annual_insurance', formData.get('annual_insurance'));
+                        apiParams.append('annual_hoa', formData.get('annual_hoa'));
+                        apiParams.append('dscr', formData.get('dscr'));
+                        apiParams.append('payoff_amount', formData.get('payoff_amount'));
+                        apiParams.append('lender_points', formData.get('lender_points'));
+                        apiParams.append('pre_pay_penalty', formData.get('pre_pay_penalty'));
+                        
+                        // Add purchase date if provided
+                        if (formData.get('purchase_date')) {
+                            apiParams.append('purchase_date', formData.get('purchase_date'));
+                        }
+                    } else {
+                        // Use regular API endpoint and parameters
+                        apiUrl = '/api/loan-matrix';
+                        apiParams.append('arv', formData.get('arv'));
+                        apiParams.append('rehab_budget', formData.get('rehab_budget'));
+                    }
+                    
+                    const finalApiUrl = `${apiUrl}?${apiParams.toString()}`;
                     
                     // Make API call
-                    const response = await fetch(apiUrl);
+                    const response = await fetch(finalApiUrl);
                     
                     // Check if response is ok (status 200-299)
                     if (!response.ok) {
@@ -681,7 +821,11 @@
                     loadingSpinner.classList.add('hidden');
                     
                     if (data.success && data.data && data.data.length > 0) {
-                        populateResults(data.data);
+                        if (loanType === 'DSCR Rental Loans') {
+                            populateDscrResults(data.data);
+                        } else {
+                            populateResults(data.data);
+                        }
                     } else {
                         // Show specific API error message if available, otherwise show generic message
                         const errorMsg = data.message || 'No loan programs found for the given criteria.';
@@ -717,6 +861,11 @@
                     $('#loan_term').val('').trigger('change');
                     $('#property_type').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
                     $('#state').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
+                    $('#occupancy_type').empty().append('<option value="">-- Select Occupancy Type --</option>').trigger('change');
+                    $('#pre_pay_penalty').empty().append('<option value="">-- Select Pre Pay Penalty --</option>').trigger('change');
+                    
+                    // Reset field visibility to default state (show regular fields, hide DSCR fields)
+                    handleLoanTypeFieldVisibility('');
                 }, 100);
             });
             
@@ -1038,6 +1187,183 @@
                 });
             }
             
+            function populateDscrResults(loans) {
+                console.log('DSCR loans data:', loans); // Debug log
+                
+                const tableBody = document.getElementById('loanResultsTable');
+                
+                // Clear existing content
+                tableBody.innerHTML = '';
+                
+                if (!loans || loans.length === 0) {
+                    return;
+                }
+                
+                // Generate DSCR-specific table header
+                generateDscrTableHeader();
+                
+                // Create table rows for each DSCR loan program
+                loans.forEach((loan, index) => {
+                    const loanData = loan.loan_program_values;
+                    const programName = loan.loan_program || `Loan Program #${index + 1}`;
+                    
+                    // Create enhanced table row for DSCR loans
+                    const row = document.createElement('tr');
+                    row.className = `hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`;
+                    
+                    let colorClass = index === 0 ? 'blue' : index === 1 ? 'green' : 'purple';
+                    let iconClass = 'fas fa-home';
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 border-r border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-${colorClass}-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="${iconClass} text-${colorClass}-600"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-gray-900">${programName}</div>
+                                    <div class="text-sm text-gray-500">DSCR Rental Loan</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                ${loanData?.loan_term || 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                ${loanData?.max_ltv ? loanData.max_ltv + '%' : '0%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="text-lg font-bold text-green-600">
+                                $${loanData?.monthly_payment ? numberWithCommas(loanData.monthly_payment) : 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="text-lg font-bold text-orange-600">
+                                ${loanData?.interest_rate ? loanData.interest_rate + '%' : '0.00%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center border-r border-gray-200">
+                            <span class="text-lg font-bold text-indigo-600">
+                                ${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                ${loanData?.pre_pay_penalty || 'None'}
+                            </span>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+
+                // Create DSCR loan program selection cards (simplified for DSCR)
+                createDscrLoanProgramCards(loans);
+                
+                // Show results section
+                document.getElementById('resultsAndClosingSection').classList.remove('hidden');
+                
+                // Smooth scroll to results section after calculation
+                setTimeout(() => {
+                    document.getElementById('resultsSection').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 300);
+            }
+            
+            function generateDscrTableHeader() {
+                const tableHeader = document.getElementById('tableHeader');
+                
+                const headerHTML = `
+                    <th class="px-6 py-4 text-left font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border-r border-blue-500">
+                        <i class="fas fa-clipboard-list mr-2"></i>Loan Program
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-green-600 to-green-700 border-r border-green-500">
+                        <i class="fas fa-calendar-alt mr-2"></i>Loan Term
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-purple-600 to-purple-700 border-r border-purple-500">
+                        <i class="fas fa-percentage mr-2"></i>Max LTV
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-orange-600 to-orange-700 border-r border-orange-500">
+                        <i class="fas fa-dollar-sign mr-2"></i>Monthly Payment
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 border-r border-indigo-500">
+                        <i class="fas fa-chart-line mr-2"></i>Interest Rate
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 border-r border-cyan-500">
+                        <i class="fas fa-coins mr-2"></i>Lender Points
+                    </th>
+                    <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-violet-600 to-violet-700">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Pre Pay Penalty
+                    </th>
+                `;
+                
+                tableHeader.innerHTML = headerHTML;
+            }
+            
+            function createDscrLoanProgramCards(loans) {
+                const cardsContainer = document.getElementById('loanProgramCardsContainer');
+                cardsContainer.innerHTML = '';
+
+                // Store DSCR loans data globally for later use
+                window.allLoansData = {};
+                
+                loans.forEach((loan, index) => {
+                    const programName = loan.loan_program || `Loan Program #${index + 1}`;
+                    window.allLoansData[programName] = [loan];
+                    
+                    const loanData = loan.loan_program_values;
+                    
+                    let cardColorClass = index === 0 ? 'border-blue-500 bg-blue-50' : index === 1 ? 'border-green-500 bg-green-50' : 'border-purple-500 bg-purple-50';
+                    let headerColorClass = index === 0 ? 'bg-blue-600' : index === 1 ? 'bg-green-600' : 'bg-purple-600';
+                    let buttonColorClass = index === 0 ? 'bg-blue-600 hover:bg-blue-700' : index === 1 ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700';
+                    
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-lg shadow-lg border-2 ${cardColorClass} overflow-hidden`;
+                    card.innerHTML = `
+                        <div class="${headerColorClass} text-white p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-home text-2xl mr-3"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">${programName}</h3>
+                                    <p class="text-sm opacity-90">DSCR Rental Loan</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b pb-2">
+                                    <span class="font-medium text-gray-700">Monthly Payment:</span>
+                                    <span class="font-bold text-green-600">$${loanData?.monthly_payment ? numberWithCommas(loanData.monthly_payment) : 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-2">
+                                    <span class="font-medium text-gray-700">Interest Rate:</span>
+                                    <span class="font-bold text-orange-600">${loanData?.interest_rate ? loanData.interest_rate + '%' : '0.00%'}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-2">
+                                    <span class="font-medium text-gray-700">Max LTV:</span>
+                                    <span class="font-bold text-purple-600">${loanData?.max_ltv ? loanData.max_ltv + '%' : '0%'}</span>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <button onclick="selectLoanProgram('${programName}')" 
+                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 hover:shadow-lg">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    Check Summary for This Program
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                });
+            }
+            
             function showError(message) {
                 document.getElementById('errorText').textContent = message;
                 errorMessage.classList.remove('hidden');
@@ -1143,6 +1469,9 @@
                     const propertyTypeSelect = $('#property_type');
                     const stateSelect = $('#state');
                     
+                    // Handle field visibility based on loan type
+                    handleLoanTypeFieldVisibility(selectedLoanType);
+                    
                     if (!selectedLoanType) {
                         // Reset property type and state if no loan type selected
                         propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
@@ -1153,51 +1482,333 @@
                     }
                     
                     try {
-                        // Fetch available property types and states for selected loan type
-                        const response = await fetch(`/api/loan-type-options?loan_type=${encodeURIComponent(selectedLoanType)}`);
+                        let apiEndpoint = '/api/loan-type-options';
                         
-                        if (response.ok) {
-                            const data = await response.json();
-                            
-                            if (data.success) {
-                                // Update property types
-                                propertyTypeSelect.empty().append('<option value="">-- Select Property Type --</option>');
-                                data.data.property_types.forEach(propertyType => {
-                                    propertyTypeSelect.append(`<option value="${propertyType.name}">${propertyType.name}</option>`);
-                                });
-                                propertyTypeSelect.trigger('change');
-                                
-                                // Update states
-                                stateSelect.empty().append('<option value="">-- Select State --</option>');
-                                data.data.states.forEach(state => {
-                                    stateSelect.append(`<option value="${state.code}">${state.code}</option>`);
-                                });
-                                stateSelect.trigger('change');
-                            } else {
-                                console.error('Failed to load loan type options:', data.message);
-                                // Reset to default state
-                                propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
-                                stateSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
-                                propertyTypeSelect.trigger('change');
-                                stateSelect.trigger('change');
-                            }
+                        // For DSCR Rental loans, use different logic
+                        if (selectedLoanType === 'DSCR Rental Loans') {
+                            // Load DSCR-specific data
+                            await loadDscrLoanData();
                         } else {
-                            console.error('Failed to fetch loan type options');
-                            // Reset to default state
-                            propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
-                            stateSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
-                            propertyTypeSelect.trigger('change');
-                            stateSelect.trigger('change');
+                            // Regular loan type logic
+                            const response = await fetch(`${apiEndpoint}?loan_type=${encodeURIComponent(selectedLoanType)}`);
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                
+                                if (data.success) {
+                                    // Update property types
+                                    propertyTypeSelect.empty().append('<option value="">-- Select Property Type --</option>');
+                                    data.data.property_types.forEach(propertyType => {
+                                        propertyTypeSelect.append(`<option value="${propertyType.name}">${propertyType.name}</option>`);
+                                    });
+                                    propertyTypeSelect.trigger('change');
+                                    
+                                    // Update states
+                                    stateSelect.empty().append('<option value="">-- Select State --</option>');
+                                    data.data.states.forEach(state => {
+                                        stateSelect.append(`<option value="${state.code}">${state.code}</option>`);
+                                    });
+                                    stateSelect.trigger('change');
+                                } else {
+                                    console.error('Failed to load loan type options:', data.message);
+                                    resetDropdownsToDefault();
+                                }
+                            } else {
+                                console.error('Failed to fetch loan type options');
+                                resetDropdownsToDefault();
+                            }
                         }
                     } catch (error) {
                         console.error('Error fetching loan type options:', error);
-                        // Reset to default state
+                        resetDropdownsToDefault();
+                    }
+                    
+                    function resetDropdownsToDefault() {
                         propertyTypeSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
                         stateSelect.empty().append('<option value="">-- Select Loan Type First --</option>');
                         propertyTypeSelect.trigger('change');
                         stateSelect.trigger('change');
                     }
                 });
+                
+                // Function to handle field visibility based on loan type
+                function handleLoanTypeFieldVisibility(loanType) {
+                    const isDscrLoan = loanType === 'DSCR Rental Loans';
+                    
+                    console.log('handleLoanTypeFieldVisibility called with:', loanType, 'isDscrLoan:', isDscrLoan); // Debug log
+                    
+                    // Update loan term options based on loan type
+                    const loanTermSelect = $('#loan_term');
+                    loanTermSelect.empty();
+                    loanTermSelect.append('<option value="">-- Select Loan Term --</option>');
+                    
+                    if (isDscrLoan) {
+                        // DSCR loan terms (30 Year Fixed based on your API example)
+                        loanTermSelect.append('<option value="30 Year Fixed">30 Year Fixed</option>');
+                        loanTermSelect.append('<option value="15 Year Fixed">15 Year Fixed</option>');
+                        loanTermSelect.append('<option value="10 Year Fixed">10 Year Fixed</option>');
+                    } else {
+                        // Regular loan terms (months)
+                        loanTermSelect.append('<option value="12">12 Months</option>');
+                        loanTermSelect.append('<option value="18">18 Months</option>');
+                    }
+                    loanTermSelect.trigger('change');
+                    
+                    // Regular loan fields - hide for DSCR
+                    const regularFields = ['#rehab_budget_field', '#arv_field'];
+                    regularFields.forEach(fieldId => {
+                        const field = document.querySelector(fieldId);
+                        if (field) {
+                            if (isDscrLoan) {
+                                field.classList.add('hidden');
+                                // Remove required attribute from hidden fields
+                                const input = field.querySelector('input');
+                                if (input) input.removeAttribute('required');
+                            } else {
+                                field.classList.remove('hidden');
+                                // Add required attribute back for visible fields
+                                const input = field.querySelector('input');
+                                if (input && (fieldId === '#rehab_budget_field' || fieldId === '#arv_field')) {
+                                    input.setAttribute('required', 'required');
+                                }
+                            }
+                        }
+                    });
+                    
+                    // DSCR specific fields - show only for DSCR
+                    const dscrFields = [
+                        '#occupancy_type_field', '#monthly_market_rent_field', '#annual_tax_field',
+                        '#annual_insurance_field', '#annual_hoa_field', '#dscr_field',
+                        '#purchase_date_field', '#payoff_amount_field', '#lender_points_field',
+                        '#pre_pay_penalty_field'
+                    ];
+                    dscrFields.forEach(fieldId => {
+                        const field = document.querySelector(fieldId);
+                        console.log('Processing field:', fieldId, 'found:', !!field); // Debug log
+                        if (field) {
+                            if (isDscrLoan) {
+                                field.classList.remove('hidden');
+                                console.log('Showing field:', fieldId); // Debug log
+                                // Add required attribute for DSCR required fields
+                                const input = field.querySelector('input, select');
+                                if (input && [
+                                    '#occupancy_type_field', '#monthly_market_rent_field', '#annual_tax_field',
+                                    '#annual_insurance_field', '#annual_hoa_field', '#dscr_field',
+                                    '#payoff_amount_field', '#lender_points_field', '#pre_pay_penalty_field'
+                                ].includes(fieldId)) {
+                                    input.setAttribute('required', 'required');
+                                }
+                                
+                                // Reinitialize Select2 for select elements that were just shown
+                                const select = field.querySelector('select');
+                                if (select && select.classList.contains('select2')) {
+                                    // Destroy existing Select2 instance if it exists
+                                    if ($(select).hasClass('select2-hidden-accessible')) {
+                                        $(select).select2('destroy');
+                                    }
+                                    // Reinitialize Select2
+                                    $(select).select2();
+                                }
+                            } else {
+                                field.classList.add('hidden');
+                                console.log('Hiding field:', fieldId); // Debug log
+                                // Remove required attribute from hidden fields
+                                const input = field.querySelector('input, select');
+                                if (input) input.removeAttribute('required');
+                            }
+                        }
+                    });
+                }
+                
+                // Function to load DSCR-specific data (property types, states, occupancy types, prepay penalties)
+                async function loadDscrLoanData() {
+                    console.log('loadDscrLoanData called'); // Debug log
+                    try {
+                        // Load DSCR property types
+                        console.log('Loading DSCR property types...'); // Debug log
+                        const propertyResponse = await fetch('/api/dscr-property-types');
+                        if (propertyResponse.ok) {
+                            const propertyData = await propertyResponse.json();
+                            console.log('Property types API response:', propertyData); // Debug log
+                            if (propertyData.success) {
+                                const propertyTypeSelect = $('#property_type');
+                                propertyTypeSelect.empty().append('<option value="">-- Select Property Type --</option>');
+                                propertyData.data.forEach(propertyType => {
+                                    propertyTypeSelect.append(`<option value="${propertyType.name}">${propertyType.name}</option>`);
+                                });
+                                propertyTypeSelect.trigger('change');
+                                console.log('Property types loaded successfully from database'); // Debug log
+                            }
+                        } else {
+                            console.error('Failed to load property types from database, status:', propertyResponse.status);
+                            // Add default DSCR-eligible property types
+                            console.log('Adding default DSCR property types');
+                            const propertyTypeSelect = $('#property_type');
+                            propertyTypeSelect.empty().append('<option value="">-- Select Property Type --</option>');
+                            propertyTypeSelect.append('<option value="Single Family">Single Family</option>');
+                            propertyTypeSelect.append('<option value="Townhome">Townhome</option>');
+                            propertyTypeSelect.append('<option value="Condo">Condo</option>');
+                            propertyTypeSelect.trigger('change');
+                        }
+
+                        // Load states for DSCR loans
+                        console.log('Loading DSCR states...'); // Debug log
+                        const stateResponse = await fetch('/api/dscr-states');
+                        if (stateResponse.ok) {
+                            const stateData = await stateResponse.json();
+                            if (stateData.success) {
+                                const stateSelect = $('#state');
+                                stateSelect.empty().append('<option value="">-- Select State --</option>');
+                                stateData.data.forEach(state => {
+                                    stateSelect.append(`<option value="${state.code}">${state.code}</option>`);
+                                });
+                                stateSelect.trigger('change');
+                                console.log('States loaded successfully'); // Debug log
+                            }
+                        } else {
+                            console.error('Failed to load states, status:', stateResponse.status);
+                            // Fallback to regular states API
+                            console.log('Falling back to regular states API');
+                            try {
+                                const fallbackResponse = await fetch('/api/loan-type-options?loan_type=DSCR%20Rental%20Loans');
+                                if (fallbackResponse.ok) {
+                                    const fallbackData = await fallbackResponse.json();
+                                    console.log('Fallback states data:', fallbackData);
+                                    if (fallbackData.success && fallbackData.data.states) {
+                                        const stateSelect = $('#state');
+                                        stateSelect.empty().append('<option value="">-- Select State --</option>');
+                                        fallbackData.data.states.forEach(state => {
+                                            stateSelect.append(`<option value="${state.code}">${state.code}</option>`);
+                                        });
+                                        stateSelect.trigger('change');
+                                        console.log('Fallback states loaded successfully');
+                                    }
+                                } else {
+                                    console.log('Fallback API also failed, adding default states');
+                                    const stateSelect = $('#state');
+                                    stateSelect.empty().append('<option value="">-- Select State --</option>');
+                                    stateSelect.append('<option value="CA">CA</option>');
+                                    stateSelect.append('<option value="TX">TX</option>');
+                                    stateSelect.append('<option value="FL">FL</option>');
+                                    stateSelect.append('<option value="NY">NY</option>');
+                                    stateSelect.trigger('change');
+                                }
+                            } catch (fallbackError) {
+                                console.error('Fallback API error:', fallbackError);
+                                console.log('Adding default states due to fallback error');
+                                const stateSelect = $('#state');
+                                stateSelect.empty().append('<option value="">-- Select State --</option>');
+                                stateSelect.append('<option value="CA">CA</option>');
+                                stateSelect.append('<option value="TX">TX</option>');
+                                stateSelect.append('<option value="FL">FL</option>');
+                                stateSelect.append('<option value="NY">NY</option>');
+                                stateSelect.trigger('change');
+                            }
+                        }
+                        
+                        // Load occupancy types
+                        console.log('Loading occupancy types...'); // Debug log
+                        await loadOccupancyTypes();
+                        
+                        // Load prepay penalty options from prepay_periods table
+                        console.log('Loading prepay penalties...'); // Debug log
+                        await loadDscrPrepayPenalties();
+                        
+                    } catch (error) {
+                        console.error('Error loading DSCR loan data:', error);
+                    }
+                }
+                
+                // Function to load occupancy types for DSCR loans
+                async function loadOccupancyTypes() {
+                    console.log('loadOccupancyTypes called'); // Debug log
+                    try {
+                        const response = await fetch('/api/occupancy-types');
+                        console.log('Occupancy types API response status:', response.status); // Debug log
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Occupancy types data:', data); // Debug log
+                            if (data.success) {
+                                const occupancySelect = $('#occupancy_type');
+                                console.log('Occupancy select element found:', occupancySelect.length > 0); // Debug log
+                                occupancySelect.empty().append('<option value="">-- Select Occupancy Type --</option>');
+                                data.data.forEach(occupancy => {
+                                    occupancySelect.append(`<option value="${occupancy.name}">${occupancy.name}</option>`);
+                                });
+                                occupancySelect.trigger('change');
+                                console.log('Occupancy types loaded successfully, total options:', data.data.length); // Debug log
+                            }
+                        } else {
+                            console.error('Failed to load occupancy types, status:', response.status);
+                            // Add some default options for testing
+                            console.log('Adding default occupancy options for testing');
+                            const occupancySelect = $('#occupancy_type');
+                            occupancySelect.empty().append('<option value="">-- Select Occupancy Type --</option>');
+                            occupancySelect.append('<option value="Owner Occupied">Owner Occupied</option>');
+                            occupancySelect.append('<option value="Investment Property">Investment Property</option>');
+                            occupancySelect.append('<option value="Second Home">Second Home</option>');
+                            occupancySelect.trigger('change');
+                        }
+                    } catch (error) {
+                        console.error('Error loading occupancy types:', error);
+                        // Add some default options for testing
+                        console.log('Adding default occupancy options due to error');
+                        const occupancySelect = $('#occupancy_type');
+                        occupancySelect.empty().append('<option value="">-- Select Occupancy Type --</option>');
+                        occupancySelect.append('<option value="Owner Occupied">Owner Occupied</option>');
+                        occupancySelect.append('<option value="Investment Property">Investment Property</option>');
+                        occupancySelect.append('<option value="Second Home">Second Home</option>');
+                        occupancySelect.trigger('change');
+                    }
+                }
+                
+                // Function to load prepay penalty options from prepay_periods table
+                async function loadDscrPrepayPenalties() {
+                    console.log('loadDscrPrepayPenalties called'); // Debug log
+                    try {
+                        const response = await fetch('/api/prepay-periods');
+                        console.log('Prepay penalties API response status:', response.status); // Debug log
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Prepay penalties data:', data); // Debug log
+                            if (data.success) {
+                                const prepaySelect = $('#pre_pay_penalty');
+                                console.log('Prepay select element found:', prepaySelect.length > 0); // Debug log
+                                prepaySelect.empty().append('<option value="">-- Select Pre Pay Penalty --</option>');
+                                data.data.forEach(prepay => {
+                                    // Use 'name' field from API response (which maps to prepay_name from database)
+                                    prepaySelect.append(`<option value="${prepay.name}">${prepay.name}</option>`);
+                                });
+                                prepaySelect.trigger('change');
+                                console.log('Prepay penalties loaded successfully, total options:', data.data.length); // Debug log
+                            }
+                        } else {
+                            console.error('Failed to load prepay penalties, status:', response.status);
+                            // Add some default options for testing
+                            console.log('Adding default prepay penalty options for testing');
+                            const prepaySelect = $('#pre_pay_penalty');
+                            prepaySelect.empty().append('<option value="">-- Select Pre Pay Penalty --</option>');
+                            prepaySelect.append('<option value="None">None</option>');
+                            prepaySelect.append('<option value="1 Year">1 Year</option>');
+                            prepaySelect.append('<option value="2 Year">2 Year</option>');
+                            prepaySelect.append('<option value="3 Year">3 Year</option>');
+                            prepaySelect.append('<option value="5 Year">5 Year</option>');
+                            prepaySelect.trigger('change');
+                        }
+                    } catch (error) {
+                        console.error('Error loading prepay penalties:', error);
+                        // Add some default options for testing
+                        console.log('Adding default prepay penalty options due to error');
+                        const prepaySelect = $('#pre_pay_penalty');
+                        prepaySelect.empty().append('<option value="">-- Select Pre Pay Penalty --</option>');
+                        prepaySelect.append('<option value="None">None</option>');
+                        prepaySelect.append('<option value="1 Year">1 Year</option>');
+                        prepaySelect.append('<option value="2 Year">2 Year</option>');
+                        prepaySelect.append('<option value="3 Year">3 Year</option>');
+                        prepaySelect.append('<option value="5 Year">5 Year</option>');
+                        prepaySelect.trigger('change');
+                    }
+                }
             });
 
             $('form').submit(function(){
