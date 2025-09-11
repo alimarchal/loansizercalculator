@@ -1029,6 +1029,8 @@ class LoanMatrixApiController extends Controller
             'purchase_date' => 'nullable|date',
             'payoff_amount' => 'required|numeric|min:0',
             'loan_term' => 'required|string|in:10 Year Interest Only,30 Year Fixed',
+            'lender_points' => 'required|numeric|in:1.00,1.000,1.5000,2.000',
+            'pre_pay_penalty' => 'required|string|in:5 Year,3 Year',
         ]);
 
         if ($validator->fails()) {
@@ -1111,6 +1113,8 @@ class LoanMatrixApiController extends Controller
                         'purchase_date' => $request->purchase_date,
                         'payoff_amount' => $request->payoff_amount,
                         'loan_term' => $request->loan_term,
+                        'lender_points' => $request->lender_points,
+                        'pre_pay_penalty' => $request->pre_pay_penalty,
                     ]
                 ], 400);
             }
@@ -1363,8 +1367,8 @@ class LoanMatrixApiController extends Controller
                         'max_ltv' => $approvedMaxLtv,
                         'monthly_payment' => 0,
                         'interest_rate' => $calculatedInterestRate,
-                        'lender_points' => 0,
-                        'pre_pay_penalty' => 0,
+                        'lender_points' => $request->lender_points ?: 0,
+                        'pre_pay_penalty' => $request->pre_pay_penalty ?: '',
                     ],
                     'interest_rate_formula' => [
                         'starting_rate' => $startingRate,
