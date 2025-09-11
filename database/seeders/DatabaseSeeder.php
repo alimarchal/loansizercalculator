@@ -43,7 +43,6 @@ class DatabaseSeeder extends Seeder
             FicoLtvAdjustmentSeeder::class,
             LoanAmountSeeder::class,    // your loan_amounts bands
             LoanAmountLtvAdjustmentSeeder::class,
-            PropertyTypeSeeder::class,
             PropertyTypeLtvAdjustmentSeeder::class,
             OccupancyTypesSeeder::class,
             OccupancyLtvAdjustmentsSeeder::class,
