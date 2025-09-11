@@ -575,6 +575,232 @@ class LoanMatrixApiController extends Controller
     }
 
     /**
+     * Get starting interest rate for a loan program
+     * 
+     * @param string $loanProgram
+     * @return float
+     */
+    private function getStartingRate($loanProgram)
+    {
+        $loanType = \App\Models\LoanType::where('loan_program', $loanProgram)
+            ->where('name', 'DSCR Rental Loans')
+            ->first();
+
+        return $loanType ? (float) $loanType->loan_starting_rate : 0;
+    }
+
+    /**
+     * Calculate FICO interest rate adjustment based on credit score and LTV
+     * 
+     * @param float $creditScore
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $ficoData
+     * @return float
+     */
+    private function calculateFicoInterestAdjustment($creditScore, $ltv, $ficoData)
+    {
+        foreach ($ficoData as $row) {
+            // Extract FICO range from row_label (e.g., "660-679", "680-699")
+            $range = explode('-', $row->row_label);
+            if (count($range) == 2) {
+                $min = (int) $range[0];
+                $max = (int) $range[1];
+
+                if ($creditScore >= $min && $creditScore <= $max) {
+                    return $this->findAdjustmentValueByLtv($row, $ltv);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate loan amount interest rate adjustment
+     * 
+     * @param float $purchasePrice
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $loanAmountData
+     * @return float
+     */
+    private function calculateLoanAmountInterestAdjustment($purchasePrice, $ltv, $loanAmountData)
+    {
+        foreach ($loanAmountData as $row) {
+            // Parse amount range (e.g., "1,000,000 - 1,499,999", "50,000 - 99,999")
+            $range = $row->row_label;
+
+            // Handle different range formats
+            if (strpos($range, ' - ') !== false) {
+                $parts = explode(' - ', $range);
+                $min = (float) str_replace(',', '', $parts[0]);
+                $max = (float) str_replace(',', '', $parts[1]);
+
+                if ($purchasePrice >= $min && $purchasePrice <= $max) {
+                    return $this->findAdjustmentValueByLtv($row, $ltv);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate property type interest rate adjustment
+     * 
+     * @param string $propertyType
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $propertyTypeData
+     * @return float
+     */
+    private function calculatePropertyTypeInterestAdjustment($propertyType, $ltv, $propertyTypeData)
+    {
+        foreach ($propertyTypeData as $row) {
+            if ($row->row_label === $propertyType) {
+                return $this->findAdjustmentValueByLtv($row, $ltv);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate occupancy interest rate adjustment
+     * 
+     * @param string $occupancyType
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $occupancyData
+     * @return float
+     */
+    private function calculateOccupancyInterestAdjustment($occupancyType, $ltv, $occupancyData)
+    {
+        foreach ($occupancyData as $row) {
+            if ($row->row_label === $occupancyType) {
+                return $this->findAdjustmentValueByLtv($row, $ltv);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate transaction type interest rate adjustment
+     * 
+     * @param string $transactionType
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $transactionData
+     * @return float
+     */
+    private function calculateTransactionTypeInterestAdjustment($transactionType, $ltv, $transactionData)
+    {
+        foreach ($transactionData as $row) {
+            if ($row->row_label === $transactionType) {
+                return $this->findAdjustmentValueByLtv($row, $ltv);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate DSCR interest rate adjustment
+     * 
+     * @param float $dscr
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $dscrData
+     * @return float
+     */
+    private function calculateDscrInterestAdjustment($dscr, $ltv, $dscrData)
+    {
+        foreach ($dscrData as $row) {
+            // Parse DSCR range (e.g., "0.80-0.99", "1.00-1.10", "1.10-1.20", "1.20+")
+            $range = $row->row_label;
+
+            if (strpos($range, '+') !== false) {
+                // Handle ranges like "1.20+"
+                $min = (float) str_replace('+', '', $range);
+                if ($dscr >= $min) {
+                    return $this->findAdjustmentValueByLtv($row, $ltv);
+                }
+            } elseif (strpos($range, '-') !== false) {
+                // Handle ranges like "0.80-0.99"
+                $parts = explode('-', $range);
+                $min = (float) $parts[0];
+                $max = (float) $parts[1];
+
+                if ($dscr >= $min && $dscr <= $max) {
+                    return $this->findAdjustmentValueByLtv($row, $ltv);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate prepay interest rate adjustment
+     * 
+     * @param string $prepayType
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $prepayData
+     * @return float
+     */
+    private function calculatePrePayInterestAdjustment($prepayType, $ltv, $prepayData)
+    {
+        foreach ($prepayData as $row) {
+            if ($row->row_label === $prepayType) {
+                return $this->findAdjustmentValueByLtv($row, $ltv);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate loan type interest rate adjustment
+     * 
+     * @param string $loanTypeStr
+     * @param int $ltv
+     * @param \Illuminate\Support\Collection $loanTypeData
+     * @return float
+     */
+    private function calculateLoanTypeInterestAdjustment($loanTypeStr, $ltv, $loanTypeData)
+    {
+        foreach ($loanTypeData as $row) {
+            if ($row->row_label === $loanTypeStr) {
+                return $this->findAdjustmentValueByLtv($row, $ltv);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Find the adjustment value for a specific LTV percentage from a matrix row
+     * 
+     * @param object $row
+     * @param int $ltv
+     * @return float
+     */
+    private function findAdjustmentValueByLtv($row, $ltv)
+    {
+        $ltvColumns = [
+            50 => '50% LTV or less',
+            55 => '55% LTV',
+            60 => '60% LTV',
+            65 => '65% LTV',
+            70 => '70% LTV',
+            75 => '75% LTV',
+            80 => '80% LTV'
+        ];
+
+        // Find the exact LTV column or the closest lower one
+        $targetColumn = null;
+        foreach ($ltvColumns as $ltvPercentage => $column) {
+            if ($ltv >= $ltvPercentage) {
+                $targetColumn = $column;
+            }
+        }
+
+        if ($targetColumn && isset($row->{$targetColumn}) && $row->{$targetColumn} !== null) {
+            return (float) $row->{$targetColumn};
+        }
+
+        return 0;
+    }
+
+    /**
      * Calculate max LTV for FICO category based on credit score
      * 
      * @param float $creditScore
@@ -1113,6 +1339,21 @@ class LoanMatrixApiController extends Controller
                     $occupancyMaxLtv
                 );
 
+                // Calculate interest rate formula components
+                $startingRate = $this->getStartingRate($program);
+                $ltvFicoAdjustment = $this->calculateFicoInterestAdjustment($creditScore, $approvedMaxLtv, $programData->get('FICO', collect()));
+                $loanAmountAdjustment = $this->calculateLoanAmountInterestAdjustment($purchasePrice, $approvedMaxLtv, $programData->get('Loan Amount', collect()));
+                $propertyTypeAdjustment = $this->calculatePropertyTypeInterestAdjustment($propertyType, $approvedMaxLtv, $programData->get('Property Type', collect()));
+                $occupancyAdjustment = $this->calculateOccupancyInterestAdjustment($occupancyType, $approvedMaxLtv, $programData->get('Occupancy', collect()));
+                $transactionTypeAdjustment = $this->calculateTransactionTypeInterestAdjustment($transactionType, $approvedMaxLtv, $programData->get('Transaction Type', collect()));
+                $dscrAdjustment = $this->calculateDscrInterestAdjustment($dscr, $approvedMaxLtv, $programData->get('DSCR', collect()));
+                $prePayAdjustment = $this->calculatePrePayInterestAdjustment('No Prepay', $approvedMaxLtv, $programData->get('Pre Pay', collect()));
+                $loanTypeAdjustment = $this->calculateLoanTypeInterestAdjustment('30 Year Fixed', $approvedMaxLtv, $programData->get('Loan Type', collect()));
+
+                // Calculate final interest rate as sum of all components
+                $calculatedInterestRate = $startingRate + $ltvFicoAdjustment + $loanAmountAdjustment + $propertyTypeAdjustment +
+                    $occupancyAdjustment + $transactionTypeAdjustment + $dscrAdjustment + $prePayAdjustment + $loanTypeAdjustment;
+
                 // Format each category for this program
                 $formattedProgramData = [
                     'loan_program' => $program,
@@ -1126,16 +1367,16 @@ class LoanMatrixApiController extends Controller
                         'pre_pay_penalty' => 0,
                     ],
                     'interest_rate_formula' => [
-                        'starting_rate' => 0,
-                        'ltv_fico' => 0,
-                        'loan_amount' => 0,
-                        'property_type' => 0,
-                        'occupancy' => 0,
-                        'transaction_type' => 0,
-                        'dscr' => 0,
-                        'pre_pay' => 0,
-                        'loan_type' => 0,
-                        'calculated_interest_rate' => 0,
+                        'starting_rate' => $startingRate,
+                        'ltv_fico' => $ltvFicoAdjustment,
+                        'loan_amount' => $loanAmountAdjustment,
+                        'property_type' => $propertyTypeAdjustment,
+                        'occupancy' => $occupancyAdjustment,
+                        'transaction_type' => $transactionTypeAdjustment,
+                        'dscr' => $dscrAdjustment,
+                        'pre_pay' => $prePayAdjustment,
+                        'loan_type' => $loanTypeAdjustment,
+                        'calculated_interest_rate' => $calculatedInterestRate,
                     ],
                     'ltv_formula' => [
                         'fico' => [
