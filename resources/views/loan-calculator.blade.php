@@ -296,6 +296,18 @@
                                 </select>
                             </div>
 
+
+                            <!-- Property Address -->
+                            <div>
+                                <label class="block font-medium text-sm text-gray-700" for="property_address">
+                                    Property Address
+                                </label>
+                                <input
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                                    type="text" name="property_address" id="property_address" value=""
+                                    placeholder="Enter property address">
+                            </div>
+
                             <!-- State -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="state">
@@ -318,16 +330,7 @@
                                     type="text" name="zip_code" id="zip_code" value="" placeholder="Enter zip code">
                             </div>
 
-                            <!-- Property Address -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="property_address">
-                                    Property Address
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="text" name="property_address" id="property_address" value=""
-                                    placeholder="Enter property address">
-                            </div>
+
 
                             <!-- Purchase Price -->
                             <div>
