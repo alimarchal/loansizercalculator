@@ -1023,8 +1023,8 @@ class LoanMatrixApiController extends Controller
             return 'N/A';
         }
 
-        // Convert to percentage format
-        return number_format((float) $value * 100, 4) . '%';
+        // Return raw database value with 4 decimal places
+        return number_format((float) $value, 4) . '%';
     }
 
     /**
