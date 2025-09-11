@@ -601,16 +601,35 @@ class LoanMatrixApiController extends Controller
     /**
      * Get DSCR loan matrix data for all three loan programs
      * Returns the complete DSCR matrix with all adjustment tables
-     * Supports filtering by loan_program parameter
+     * Supports filtering by loan_program parameter and validates DSCR loan inputs
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function getLoanMatrixDscr(Request $request)
     {
-        // Validate optional filter parameters
+        // Enhanced validation for DSCR loan inputs
         $validator = Validator::make($request->all(), [
+            // Optional filter parameter
             'loan_program' => 'nullable|string|in:Loan Program #1,Loan Program #2,Loan Program #3',
+
+            // Required DSCR loan validation inputs
+            'credit_score' => 'required|integer|min:300|max:850',
+            'experience' => 'required|integer|min:0',
+            'broker_points' => 'required|numeric|min:0|max:100',
+            'loan_type' => 'required|string|in:DSCR Rental Loans',
+            'transaction_type' => 'required|string',
+            'property_type' => 'required|string',
+            'purchase_price' => 'required|numeric|min:1',
+            'occupancy_type' => 'required|string',
+            'monthly_market_rent' => 'required|numeric|min:0',
+            'annual_tax' => 'required|numeric|min:0',
+            'annual_insurance' => 'required|numeric|min:0',
+            'annual_hoa' => 'required|numeric|min:0',
+            'dscr' => 'required|numeric|min:0.01',
+            'purchase_date' => 'nullable|date',
+            'payoff_amount' => 'required|numeric|min:0',
+            'loan_term' => 'required|string|in:10 Year Interest Only,30 Year Fixed',
         ]);
 
         if ($validator->fails()) {
@@ -622,6 +641,80 @@ class LoanMatrixApiController extends Controller
         }
 
         try {
+            // Extract parameters
+            $creditScore = $request->credit_score;
+            $experience = $request->experience;
+            $transactionType = $request->transaction_type;
+            $propertyType = $request->property_type;
+            $purchasePrice = $request->purchase_price;
+            $occupancyType = $request->occupancy_type;
+            $dscr = $request->dscr;
+
+            // Validate transaction type exists in database
+            $transactionTypeModel = \App\Models\TransactionType::where('name', $transactionType)->first();
+            if (!$transactionTypeModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid transaction type. Please select a valid transaction type.',
+                    'available_transaction_types' => \App\Models\TransactionType::pluck('name')->toArray()
+                ], 400);
+            }
+
+            // Validate property type exists in database
+            $propertyTypeModel = \App\Models\PropertyType::where('name', $propertyType)->first();
+            if (!$propertyTypeModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid property type. Please select a valid property type.',
+                    'available_property_types' => \App\Models\PropertyType::pluck('name')->toArray()
+                ], 400);
+            }
+
+            // Validate occupancy type exists in database
+            $occupancyTypeModel = \App\Models\OccupancyTypes::where('name', $occupancyType)->first();
+            if (!$occupancyTypeModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid occupancy type. Please select a valid occupancy type.',
+                    'available_occupancy_types' => \App\Models\OccupancyTypes::pluck('name')->toArray()
+                ], 400);
+            }
+
+            // Run DSCR-specific disqualifier validation
+            $dscrValidation = $this->validateDscrBusinessRules(
+                $creditScore,
+                $experience,
+                $purchasePrice,
+                $dscr,
+                $propertyType
+            );
+
+            // If validation fails, return disqualifier notifications
+            if (!$dscrValidation['valid']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'DSCR loan application does not meet qualification criteria',
+                    'disqualifier_notifications' => $dscrValidation['notifications'],
+                    'user_inputs' => [
+                        'credit_score' => $creditScore,
+                        'experience' => $experience,
+                        'broker_points' => $request->broker_points,
+                        'loan_type' => $request->loan_type,
+                        'transaction_type' => $transactionType,
+                        'property_type' => $propertyType,
+                        'purchase_price' => $purchasePrice,
+                        'occupancy_type' => $occupancyType,
+                        'monthly_market_rent' => $request->monthly_market_rent,
+                        'annual_tax' => $request->annual_tax,
+                        'annual_insurance' => $request->annual_insurance,
+                        'annual_hoa' => $request->annual_hoa,
+                        'dscr' => $dscr,
+                        'purchase_date' => $request->purchase_date,
+                        'payoff_amount' => $request->payoff_amount,
+                        'loan_term' => $request->loan_term,
+                    ]
+                ], 400);
+            }
             // Get requested loan program or all three by default
             $requestedProgram = $request->get('loan_program');
             $loanPrograms = $requestedProgram ? [$requestedProgram] : [
@@ -1310,5 +1403,62 @@ class LoanMatrixApiController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Validate DSCR-specific business rules and return disqualifier notifications
+     * 
+     * @param float $creditScore
+     * @param int $experience
+     * @param float $purchasePrice
+     * @param float $dscr
+     * @param string $propertyType
+     * @return array
+     */
+    private function validateDscrBusinessRules($creditScore, $experience, $purchasePrice, $dscr, $propertyType)
+    {
+        $notifications = [];
+        $valid = true;
+
+        // Credit Score Validation
+        if ($creditScore < 660) {
+            $notifications[] = 'Credit: Minimum credit score allowed 660+ for DSCR Loan';
+            $valid = false;
+        }
+
+        // Loan Size Validation
+        if ($purchasePrice > 1500000) {
+            $notifications[] = 'Loan Size: Maximum Loan size allowed $1,500,000. Contact Loan officer for Pricing';
+            $valid = false;
+        }
+
+        if ($purchasePrice < 200000) {
+            $notifications[] = 'Loan Size: Minimum Loan size allowed $200,000 for DSCR Loan. Contact Loan officer for Pricing';
+            $valid = false;
+        }
+
+        // DSCR Validation
+        if ($dscr < 0.80) {
+            $notifications[] = 'DSCR: Minimum DSCR allowed for DSCR loan is 0.80x';
+            $valid = false;
+        }
+
+        // Property Type Validation - Get eligible property types from database
+        $eligiblePropertyTypes = \App\Models\PropertyType::whereIn('name', [
+            'Single Family',
+            'Townhomes',
+            'Condos'
+        ])->pluck('name')->toArray();
+
+        if (!in_array($propertyType, $eligiblePropertyTypes)) {
+            $notifications[] = 'Property Type: Eligible property type for DSCR is Single Family, Townhomes, Condos';
+            $valid = false;
+        }
+
+        return [
+            'valid' => $valid,
+            'notifications' => $notifications,
+            'eligible_property_types' => $eligiblePropertyTypes
+        ];
     }
 }
