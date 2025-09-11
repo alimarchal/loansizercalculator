@@ -15,6 +15,9 @@ class LoanType extends Model
     protected $fillable = [
         'name',
         'loan_program',
+        'underwritting_fee',
+        'legal_doc_prep_fee',
+        'loan_starting_rate'
     ];
 
     public function experiences()

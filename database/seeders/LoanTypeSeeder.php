@@ -14,13 +14,13 @@ class LoanTypeSeeder extends Seeder
     public function run(): void
     {
         $loanTypes = [
-            ['name' => 'Fix and Flip', 'loan_program' => 'FULL APPRAISAL', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 995],
-            ['name' => 'Fix and Flip', 'loan_program' => 'DESKTOP APPRAISAL', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0],
-            ['name' => 'New Construction', 'loan_program' => 'EXPERIENCED BUILDER', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0],
-            ['name' => 'New Construction', 'loan_program' => 'NEW BUILDER', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0],
-            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #1', 'underwritting_fee' => 1595, 'legal_doc_prep_fee' => 995],
-            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #2', 'underwritting_fee' => 1999, 'legal_doc_prep_fee' => 0],
-            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #3', 'underwritting_fee' => 1595, 'legal_doc_prep_fee' => 0],
+            ['name' => 'Fix and Flip', 'loan_program' => 'FULL APPRAISAL', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 995, 'loan_starting_rate' => 0.000],
+            ['name' => 'Fix and Flip', 'loan_program' => 'DESKTOP APPRAISAL', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0, 'loan_starting_rate' => 0.000],
+            ['name' => 'New Construction', 'loan_program' => 'EXPERIENCED BUILDER', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0, 'loan_starting_rate' => 0.000],
+            ['name' => 'New Construction', 'loan_program' => 'NEW BUILDER', 'underwritting_fee' => 1495, 'legal_doc_prep_fee' => 0, 'loan_starting_rate' => 0.000],
+            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #1', 'underwritting_fee' => 1595, 'legal_doc_prep_fee' => 995, 'loan_starting_rate' => 6.000],
+            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #2', 'underwritting_fee' => 1999, 'legal_doc_prep_fee' => 0, 'loan_starting_rate' => 6.000],
+            ['name' => 'DSCR Rental Loans', 'loan_program' => 'Loan Program #3', 'underwritting_fee' => 1595, 'legal_doc_prep_fee' => 0, 'loan_starting_rate' => 6.000],
 
         ];
 
@@ -29,7 +29,8 @@ class LoanTypeSeeder extends Seeder
                 'name' => $loanType['name'],
                 'loan_program' => $loanType['loan_program'],
                 'underwritting_fee' => $loanType['underwritting_fee'],
-                'legal_doc_prep_fee' => $loanType['legal_doc_prep_fee']
+                'legal_doc_prep_fee' => $loanType['legal_doc_prep_fee'],
+                'loan_starting_rate' => $loanType['loan_starting_rate'],
             ]);
         }
     }

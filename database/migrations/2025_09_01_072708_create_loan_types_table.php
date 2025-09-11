@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('loan_program')->nullable();
             $table->decimal('underwritting_fee', 8, 2)->default(1495);
             $table->decimal('legal_doc_prep_fee', 8, 2)->default(0);
+            $table->decimal('loan_starting_rate', 8, 3)->default(0);
             $table->userTracking();
             $table->softDeletes();
             $table->timestamps();

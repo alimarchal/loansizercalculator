@@ -575,6 +575,179 @@ class LoanMatrixApiController extends Controller
     }
 
     /**
+     * Calculate max LTV for FICO category based on credit score
+     * 
+     * @param float $creditScore
+     * @param \Illuminate\Support\Collection $ficoData
+     * @return int
+     */
+    private function calculateFicoMaxLtv($creditScore, $ficoData)
+    {
+        foreach ($ficoData as $row) {
+            // Extract FICO range from row_label (e.g., "660-679", "680-699")
+            $range = explode('-', $row->row_label);
+            if (count($range) == 2) {
+                $min = (int) $range[0];
+                $max = (int) $range[1];
+
+                if ($creditScore >= $min && $creditScore <= $max) {
+                    return $this->findMaxLtvFromRow($row);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate max LTV for Transaction Type category
+     * 
+     * @param string $transactionType
+     * @param \Illuminate\Support\Collection $transactionData
+     * @return int
+     */
+    private function calculateTransactionTypeMaxLtv($transactionType, $transactionData)
+    {
+        foreach ($transactionData as $row) {
+            if ($row->row_label === $transactionType) {
+                return $this->findMaxLtvFromRow($row);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate max LTV for Loan Amount category based on purchase price
+     * 
+     * @param float $purchasePrice
+     * @param \Illuminate\Support\Collection $loanAmountData
+     * @return int
+     */
+    private function calculateLoanAmountMaxLtv($purchasePrice, $loanAmountData)
+    {
+        foreach ($loanAmountData as $row) {
+            // Parse amount range (e.g., "1,000,000 - 1,499,999", "50,000 - 99,999")
+            $range = $row->row_label;
+
+            // Handle different range formats
+            if (strpos($range, ' - ') !== false) {
+                $parts = explode(' - ', $range);
+                $min = (float) str_replace(',', '', $parts[0]);
+                $max = (float) str_replace(',', '', $parts[1]);
+
+                if ($purchasePrice >= $min && $purchasePrice <= $max) {
+                    return $this->findMaxLtvFromRow($row);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate max LTV for DSCR category based on DSCR value
+     * 
+     * @param float $dscr
+     * @param \Illuminate\Support\Collection $dscrData
+     * @return int
+     */
+    private function calculateDscrMaxLtv($dscr, $dscrData)
+    {
+        foreach ($dscrData as $row) {
+            // Parse DSCR range (e.g., "0.80-0.99", "1.00-1.10", "1.10-1.20", "1.20+")
+            $range = $row->row_label;
+
+            if (strpos($range, '+') !== false) {
+                // Handle ranges like "1.20+"
+                $min = (float) str_replace('+', '', $range);
+                if ($dscr >= $min) {
+                    return $this->findMaxLtvFromRow($row);
+                }
+            } elseif (strpos($range, '-') !== false) {
+                // Handle ranges like "0.80-0.99"
+                $parts = explode('-', $range);
+                $min = (float) $parts[0];
+                $max = (float) $parts[1];
+
+                if ($dscr >= $min && $dscr <= $max) {
+                    return $this->findMaxLtvFromRow($row);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Calculate max LTV for Occupancy category
+     * 
+     * @param string $occupancyType
+     * @param \Illuminate\Support\Collection $occupancyData
+     * @return int
+     */
+    private function calculateOccupancyMaxLtv($occupancyType, $occupancyData)
+    {
+        foreach ($occupancyData as $row) {
+            if ($row->row_label === $occupancyType) {
+                return $this->findMaxLtvFromRow($row);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Find the maximum LTV percentage from a row by examining all LTV columns
+     * 
+     * @param object $row
+     * @return int
+     */
+    private function findMaxLtvFromRow($row)
+    {
+        $ltvColumns = [
+            '50% LTV or less' => 50,
+            '55% LTV' => 55,
+            '60% LTV' => 60,
+            '65% LTV' => 65,
+            '70% LTV' => 70,
+            '75% LTV' => 75,
+            '80% LTV' => 80
+        ];
+
+        $maxValue = -1;
+        $maxLtvPercentage = 0;
+
+        foreach ($ltvColumns as $column => $ltvPercentage) {
+            $value = $row->{$column};
+
+            // Skip null values (N/A)
+            if ($value !== null) {
+                $numericValue = (float) $value;
+
+                // Find the maximum non-null value (including zero values)
+                if ($numericValue > $maxValue) {
+                    $maxValue = $numericValue;
+                    $maxLtvPercentage = $ltvPercentage;
+                }
+            }
+        }
+
+        // If all values are zero or no valid values found, check which column has the highest zero value
+        if ($maxValue == 0) {
+            // Return the highest LTV column that has a zero value (not N/A)
+            for ($ltv = 80; $ltv >= 50; $ltv -= 5) {
+                if ($ltv == 50) {
+                    $column = '50% LTV or less';
+                } else {
+                    $column = $ltv . '% LTV';
+                }
+
+                if (isset($ltvColumns[$column]) && $row->{$column} !== null) {
+                    return $ltvColumns[$column];
+                }
+            }
+        }
+
+        return $maxLtvPercentage;
+    }
+
+    /**
      * Calculate rehab category based on rehab budget percentage
      * 
      * @param float $rehabBudget
@@ -924,6 +1097,22 @@ class LoanMatrixApiController extends Controller
             foreach ($loanPrograms as $program) {
                 $programData = $groupedByProgram->get($program, collect());
 
+                // Calculate max LTV for each category based on user inputs
+                $ficoMaxLtv = $this->calculateFicoMaxLtv($creditScore, $programData->get('FICO', collect()));
+                $transactionTypeMaxLtv = $this->calculateTransactionTypeMaxLtv($transactionType, $programData->get('Transaction Type', collect()));
+                $loanAmountMaxLtv = $this->calculateLoanAmountMaxLtv($purchasePrice, $programData->get('Loan Amount', collect()));
+                $dscrMaxLtv = $this->calculateDscrMaxLtv($dscr, $programData->get('DSCR', collect()));
+                $occupancyMaxLtv = $this->calculateOccupancyMaxLtv($occupancyType, $programData->get('Occupancy', collect()));
+
+                // Calculate approved max LTV as minimum of all
+                $approvedMaxLtv = min(
+                    $ficoMaxLtv,
+                    $transactionTypeMaxLtv,
+                    $loanAmountMaxLtv,
+                    $dscrMaxLtv,
+                    $occupancyMaxLtv
+                );
+
                 // Format each category for this program
                 $formattedProgramData = [
                     'loan_program' => $program,
@@ -951,27 +1140,27 @@ class LoanMatrixApiController extends Controller
                     'ltv_formula' => [
                         'fico' => [
                             'input' => $request->credit_score ?: 0,
-                            'max_ltv' => 0,
+                            'max_ltv' => $ficoMaxLtv,
                         ],
                         'transaction_type' => [
                             'input' => $request->transaction_type ?: '',
-                            'max_ltv' => 0,
+                            'max_ltv' => $transactionTypeMaxLtv,
                         ],
                         'loan_amount' => [
-                            'input' => $request->purchase_price ?: 0,
-                            'max_ltv' => 0,
+                            'input' => $request->purchase_price ? ($request->purchase_price * ($transactionTypeMaxLtv / 100)) : 0,
+                            'max_ltv' => $loanAmountMaxLtv,
                         ],
                         'dscr' => [
                             'input' => $request->dscr ?: 0,
-                            'max_ltv' => 0,
+                            'max_ltv' => $dscrMaxLtv,
                         ],
                         'occupancy' => [
                             'input' => $request->occupancy_type ?: '',
-                            'max_ltv' => 0,
+                            'max_ltv' => $occupancyMaxLtv,
                         ],
                         'approved_max_ltv' => [
-                            'input' => 0,
-                            'max_ltv' => 0,
+                            'input' => $approvedMaxLtv,
+                            'max_ltv' => $approvedMaxLtv,
                         ],
                     ],
                 ];
