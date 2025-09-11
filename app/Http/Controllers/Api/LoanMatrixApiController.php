@@ -1360,9 +1360,9 @@ class LoanMatrixApiController extends Controller
                     'categories' => [],
                     'loan_program_values' => [
                         'loan_term' => $request->loan_term ?: 0,
-                        'max_ltv' => 0,
+                        'max_ltv' => $approvedMaxLtv,
                         'monthly_payment' => 0,
-                        'interest_rate' => 0,
+                        'interest_rate' => $calculatedInterestRate,
                         'lender_points' => 0,
                         'pre_pay_penalty' => 0,
                     ],
@@ -1400,7 +1400,6 @@ class LoanMatrixApiController extends Controller
                             'max_ltv' => $occupancyMaxLtv,
                         ],
                         'approved_max_ltv' => [
-                            'input' => $approvedMaxLtv,
                             'max_ltv' => $approvedMaxLtv,
                         ],
                     ],
