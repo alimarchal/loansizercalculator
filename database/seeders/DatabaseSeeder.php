@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
             DscrRangesSeeder::class,       // your DSCR bands
             DscrLtvAdjustmentsSeeder::class,
             PrepayPeriodsSeeder::class,
-            PrepayLtvAdjustmentsSeeder::class,
+            PrePayLtvAdjustmentsSeeder::class,
             LoanTypesDscrSeeder::class,
             LoanTypeDscrLtvAdjustmentsSeeder::class,
 
