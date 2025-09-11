@@ -3,6 +3,9 @@
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight inline-block">
             DSCR Rental Loans - {{ $loanProgram }} Matrix
         </h2>
+        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Click on any percentage value in the LTV columns to edit it directly
+        </div>
 
         <div class="flex justify-center items-center float-right">
             <button id="toggle"
@@ -188,10 +191,11 @@
                             ">
                                 @if ($value === null)
                                 N/A
-                                @elseif ($value == 0)
-                                0.0000%
                                 @else
-                                {{ number_format((float)$value, 4) }}%
+                                <span class="editable-cell" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="{{ $ltvColumn }}"
+                                    data-program="{{ $loanProgram }}" contenteditable="true" title="Click to edit">{{
+                                    number_format((float)$value, 3) }}%</span>
                                 @endif
                             </td>
                             @endforeach
@@ -265,6 +269,50 @@
         .bg-gray-200 {
             background-color: #e5e7eb !important;
         }
+
+        /* Editable cell styles */
+        .editable-cell {
+            background: transparent;
+            border: none;
+            outline: none;
+            cursor: text;
+            display: inline-block;
+            min-width: 60px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .editable-cell:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+        }
+
+        .editable-cell:focus {
+            background-color: white;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+            outline: none;
+        }
+
+        .editable-cell.editing {
+            background-color: white;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        .editable-cell.saving {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .editable-cell.success {
+            background-color: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+        }
+
+        .editable-cell.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
     </style>
     @endpush
 
@@ -316,6 +364,128 @@
         const style = document.createElement('style');
         style.textContent = `#filters {transition: opacity 0.3s ease, transform 0.3s ease;}`;
         document.head.appendChild(style);
+
+        // Inline editing functionality for DSCR matrix
+        document.addEventListener('DOMContentLoaded', function() {
+            const editableCells = document.querySelectorAll('.editable-cell');
+            
+            editableCells.forEach(cell => {
+                let originalValue = cell.textContent;
+                
+                // Handle focus event
+                cell.addEventListener('focus', function() {
+                    originalValue = this.textContent;
+                    this.classList.add('editing');
+                    
+                    // Remove % symbol and select all text
+                    let value = this.textContent.replace('%', '');
+                    this.textContent = value;
+                    
+                    // Select all text
+                    setTimeout(() => {
+                        this.selectAll();
+                    }, 0);
+                });
+
+                // Handle blur event (when cell loses focus)
+                cell.addEventListener('blur', function() {
+                    this.classList.remove('editing');
+                    this.classList.add('saving');
+                    
+                    let newValue = this.textContent.trim();
+                    
+                    // Validate the input
+                    if (isNaN(newValue) || newValue === '') {
+                        this.classList.remove('saving');
+                        this.classList.add('error');
+                        this.textContent = originalValue;
+                        setTimeout(() => {
+                            this.classList.remove('error');
+                        }, 2000);
+                        return;
+                    }
+                    
+                    // Format the value
+                    let formattedValue = parseFloat(newValue).toFixed(3) + '%';
+                    this.textContent = formattedValue;
+                    
+                    // Save the value
+                    this.saveValue(newValue);
+                });
+
+                // Handle Enter key
+                cell.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                    
+                    // Handle Escape key
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        this.textContent = originalValue;
+                        this.blur();
+                    }
+                });
+
+                // Add save method to each cell
+                cell.saveValue = function(value) {
+                    const cellData = {
+                        row_group: this.dataset.rowGroup,
+                        row_label: this.dataset.rowLabel,
+                        ltv_column: this.dataset.ltvColumn,
+                        program: this.dataset.program,
+                        value: value
+                    };
+                    
+                    console.log('Saving value:', cellData);
+                    
+                    // Make AJAX call to save the value
+                    fetch('/loan-programs/api/dscr-matrix/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify(cellData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.classList.remove('saving');
+                        if (data.success) {
+                            this.classList.add('success');
+                            console.log('Value saved successfully');
+                            setTimeout(() => {
+                                this.classList.remove('success');
+                            }, 1000);
+                        } else {
+                            this.classList.add('error');
+                            console.error('Failed to save value:', data.message);
+                            setTimeout(() => {
+                                this.classList.remove('error');
+                            }, 2000);
+                        }
+                    })
+                    .catch(error => {
+                        this.classList.remove('saving');
+                        this.classList.add('error');
+                        console.error('Error saving value:', error);
+                        setTimeout(() => {
+                            this.classList.remove('error');
+                        }, 2000);
+                    });
+                };
+            });
+
+            // Helper function to select all text in a contenteditable element
+            HTMLElement.prototype.selectAll = function() {
+                const range = document.createRange();
+                range.selectNodeContents(this);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            };
+        });
     </script>
     @endpush
 </x-app-layout>

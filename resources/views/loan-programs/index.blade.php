@@ -463,54 +463,96 @@
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">{{ $row->row_label }}
                             </td>
 
-                            <!-- LTV columns with same styling as regular matrix -->
+                            <!-- LTV columns with inline editing functionality -->
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'50% LTV or less'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'50% LTV or less'}, 3) }}%
+                                <span
+                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="50% LTV or less"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">{{ number_format((float)$row->{'50% LTV or less'},
+                                    3) }}</span>%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'55% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'55% LTV'}, 3) }}%
+                                <span
+                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="55% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">{{ number_format((float)$row->{'55% LTV'}, 3)
+                                    }}</span>%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'60% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'60% LTV'}, 3) }}%
+                                <span
+                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="60% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">{{ number_format((float)$row->{'60% LTV'}, 3)
+                                    }}</span>%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'65% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'65% LTV'}, 3) }}%
+                                <span
+                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="65% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">{{ number_format((float)$row->{'65% LTV'}, 3)
+                                    }}</span>%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'70% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'70% LTV'}, 3) }}%
+                                <span
+                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="70% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">{{ number_format((float)$row->{'70% LTV'}, 3)
+                                    }}</span>%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'75% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'75% LTV'}, 3) }}%
+                                <span
+                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="75% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">{{ number_format((float)$row->{'75% LTV'}, 3)
+                                    }}</span>%
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'80% LTV'} === null)
                                 N/A
                                 @else
-                                {{ number_format((float)$row->{'80% LTV'}, 3) }}%
+                                <span
+                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="80% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">{{ number_format((float)$row->{'80% LTV'}, 3)
+                                    }}</span>%
                                 @endif
                             </td>
                         </tr>
@@ -773,6 +815,147 @@
         }
     </style>
     @endpush @push('modals')
+
+    <!-- DSCR Matrix Inline Editing JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DSCR Matrix editing script loaded');
+            
+            // Find all editable cells
+            const editableCells = document.querySelectorAll('.editable-cell');
+            console.log('Found editable cells:', editableCells.length);
+            
+            editableCells.forEach(function(cell) {
+                let originalValue = '';
+                
+                // Focus event - when user clicks to edit
+                cell.addEventListener('focus', function() {
+                    console.log('Cell focused for editing');
+                    originalValue = this.textContent.trim();
+                    this.style.backgroundColor = '#fef3c7'; // yellow-100
+                    this.style.border = '2px solid #f59e0b'; // yellow-500
+                    this.style.outline = 'none';
+                    
+                    // Select all text when focused
+                    if (window.getSelection) {
+                        const selection = window.getSelection();
+                        const range = document.createRange();
+                        range.selectNodeContents(this);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                });
+                
+                // Blur event - when user clicks away
+                cell.addEventListener('blur', function() {
+                    console.log('Cell lost focus');
+                    this.style.backgroundColor = '';
+                    this.style.border = '';
+                    
+                    const newValue = this.textContent.trim();
+                    
+                    // Only save if value actually changed
+                    if (newValue !== originalValue && newValue !== '') {
+                        console.log('Value changed from', originalValue, 'to', newValue);
+                        saveMatrixValue(this, newValue);
+                    } else if (newValue === '') {
+                        // Restore original value if empty
+                        this.textContent = originalValue;
+                    }
+                });
+                
+                // Enter key to save and exit
+                cell.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                    
+                    // Escape key to cancel
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        this.textContent = originalValue;
+                        this.blur();
+                    }
+                });
+            });
+            
+            function saveMatrixValue(cell, newValue) {
+                console.log('Saving matrix value...');
+                
+                // Get data attributes
+                const rowGroup = cell.getAttribute('data-row-group');
+                const rowLabel = cell.getAttribute('data-row-label');
+                const ltvColumn = cell.getAttribute('data-ltv-column');
+                const program = cell.getAttribute('data-program');
+                
+                console.log('Saving:', {
+                    rowGroup: rowGroup,
+                    rowLabel: rowLabel,
+                    ltvColumn: ltvColumn,
+                    program: program,
+                    newValue: newValue
+                });
+                
+                // Show loading state
+                const originalContent = cell.innerHTML;
+                cell.innerHTML = '<div class="animate-spin inline-block w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full"></div>';
+                
+                // Make AJAX request
+                fetch('/loan-programs/api/dscr-matrix/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        row_group: rowGroup,
+                        row_label: rowLabel,
+                        ltv_column: ltvColumn,
+                        program: program,
+                        value: parseFloat(newValue)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Save response:', data);
+                    if (data.success) {
+                        // Update display with formatted value
+                        cell.textContent = parseFloat(newValue).toFixed(3);
+                        
+                        // Show success feedback
+                        cell.style.backgroundColor = '#d1fae5'; // green-100
+                        setTimeout(() => {
+                            cell.style.backgroundColor = '';
+                        }, 1000);
+                        
+                        console.log('Matrix value updated successfully');
+                    } else {
+                        throw new Error(data.message || 'Failed to update value');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving matrix value:', error);
+                    
+                    // Show error feedback
+                    cell.style.backgroundColor = '#fee2e2'; // red-100
+                    cell.style.border = '2px solid #ef4444'; // red-500
+                    
+                    // Restore original content
+                    cell.innerHTML = originalContent;
+                    
+                    // Show error message
+                    alert('Error updating value: ' + error.message);
+                    
+                    setTimeout(() => {
+                        cell.style.backgroundColor = '';
+                        cell.style.border = '';
+                    }, 3000);
+                });
+            }
+        });
+    </script>
+
     <script>
         const targetDiv = document.getElementById("filters");
         const btn = document.getElementById("toggle");

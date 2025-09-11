@@ -1294,4 +1294,232 @@ class LoanProgramController extends Controller
             'loan_program' => $loanType->loan_program
         ]);
     }
+
+    /**
+     * Update DSCR matrix cell value
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateDscrMatrixCell(Request $request)
+    {
+        try {
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'row_group' => 'required|string',
+                'row_label' => 'required|string',
+                'ltv_column' => 'required|string',
+                'program' => 'required|string',
+                'value' => 'required|numeric'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 400);
+            }
+
+            $rowGroup = $request->row_group;
+            $rowLabel = $request->row_label;
+            $ltvColumn = $request->ltv_column;
+            $program = $request->program;
+            $value = $request->value;
+
+            // Map LTV column names to database column names
+            $ltvColumnMapping = [
+                '50% LTV or less' => '50% LTV or less',
+                '55% LTV' => '55% LTV',
+                '60% LTV' => '60% LTV',
+                '65% LTV' => '65% LTV',
+                '70% LTV' => '70% LTV',
+                '75% LTV' => '75% LTV',
+                '80% LTV' => '80% LTV'
+            ];
+
+            if (!isset($ltvColumnMapping[$ltvColumn])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid LTV column'
+                ], 400);
+            }
+
+            $dbColumn = $ltvColumnMapping[$ltvColumn];
+
+            // Determine which table to update based on row_group
+            $updated = false;
+
+            switch ($rowGroup) {
+                case 'FICO':
+                    $updated = $this->updateFicoLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                case 'Loan Amount':
+                    $updated = $this->updateLoanAmountLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                case 'Property Type':
+                    $updated = $this->updatePropertyTypeLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                case 'Occupancy':
+                    $updated = $this->updateOccupancyLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                case 'Transaction Type':
+                    $updated = $this->updateTransactionTypeLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                case 'DSCR':
+                    $updated = $this->updateDscrLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                case 'Pre Pay':
+                    $updated = $this->updatePrePayLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                case 'Loan Type':
+                    $updated = $this->updateLoanTypeDscrLtvAdjustment($rowLabel, $dbColumn, $value, $program);
+                    break;
+                default:
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unknown row group: ' . $rowGroup
+                    ], 400);
+            }
+
+            if ($updated) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Value updated successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update value'
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('DSCR Matrix Update Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the value',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update FICO LTV adjustment
+     */
+    private function updateFicoLtvAdjustment($ficoRange, $ltvColumn, $value, $program)
+    {
+        return DB::table('fico_ltv_adjustments')
+            ->join('fico_bands', 'fico_ltv_adjustments.fico_band_id', '=', 'fico_bands.id')
+            ->join('ltv_ratios', 'fico_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'fico_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('fico_bands.fico_range', $ficoRange)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['fico_ltv_adjustments.adjustment_pct' => $value]);
+    }
+
+    /**
+     * Update Loan Amount LTV adjustment
+     */
+    private function updateLoanAmountLtvAdjustment($amountRange, $ltvColumn, $value, $program)
+    {
+        return DB::table('loan_amount_ltv_adjustments')
+            ->join('loan_amounts', 'loan_amount_ltv_adjustments.loan_amount_id', '=', 'loan_amounts.id')
+            ->join('ltv_ratios', 'loan_amount_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'loan_amount_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('loan_amounts.amount_range', $amountRange)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['loan_amount_ltv_adjustments.adjustment_pct' => $value]);
+    }
+
+    /**
+     * Update Property Type LTV adjustment
+     */
+    private function updatePropertyTypeLtvAdjustment($propertyType, $ltvColumn, $value, $program)
+    {
+        return DB::table('property_type_ltv_adjustments')
+            ->join('property_types', 'property_type_ltv_adjustments.property_type_id', '=', 'property_types.id')
+            ->join('ltv_ratios', 'property_type_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'property_type_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('property_types.name', $propertyType)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['property_type_ltv_adjustments.adjustment_pct' => $value]);
+    }
+
+    /**
+     * Update Occupancy LTV adjustment
+     */
+    private function updateOccupancyLtvAdjustment($occupancyType, $ltvColumn, $value, $program)
+    {
+        return DB::table('occupancy_ltv_adjustments')
+            ->join('occupancy_types', 'occupancy_ltv_adjustments.occupancy_type_id', '=', 'occupancy_types.id')
+            ->join('ltv_ratios', 'occupancy_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'occupancy_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('occupancy_types.name', $occupancyType)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['occupancy_ltv_adjustments.adjustment_pct' => $value]);
+    }
+
+    /**
+     * Update Transaction Type LTV adjustment
+     */
+    private function updateTransactionTypeLtvAdjustment($transactionType, $ltvColumn, $value, $program)
+    {
+        return DB::table('transaction_type_ltv_adjustments')
+            ->join('transaction_types', 'transaction_type_ltv_adjustments.transaction_type_id', '=', 'transaction_types.id')
+            ->join('ltv_ratios', 'transaction_type_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'transaction_type_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('transaction_types.name', $transactionType)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['transaction_type_ltv_adjustments.adjustment_pct' => $value]);
+    }
+
+    /**
+     * Update DSCR LTV adjustment
+     */
+    private function updateDscrLtvAdjustment($dscrRange, $ltvColumn, $value, $program)
+    {
+        return DB::table('dscr_ltv_adjustments')
+            ->join('dscr_ranges', 'dscr_ltv_adjustments.dscr_range_id', '=', 'dscr_ranges.id')
+            ->join('ltv_ratios', 'dscr_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'dscr_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('dscr_ranges.dscr_range', $dscrRange)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['dscr_ltv_adjustments.adjustment_pct' => $value]);
+    }
+
+    /**
+     * Update Pre Pay LTV adjustment
+     */
+    private function updatePrePayLtvAdjustment($prepayPeriod, $ltvColumn, $value, $program)
+    {
+        return DB::table('pre_pay_ltv_adjustments')
+            ->join('prepay_periods', 'pre_pay_ltv_adjustments.pre_pay_id', '=', 'prepay_periods.id')
+            ->join('ltv_ratios', 'pre_pay_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'pre_pay_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('prepay_periods.prepay_name', $prepayPeriod)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['pre_pay_ltv_adjustments.adjustment_pct' => $value]);
+    }
+
+    /**
+     * Update Loan Type DSCR LTV adjustment
+     */
+    private function updateLoanTypeDscrLtvAdjustment($loanTypeDscr, $ltvColumn, $value, $program)
+    {
+        return DB::table('loan_type_dscr_ltv_adjustments')
+            ->join('loan_types_dscrs', 'loan_type_dscr_ltv_adjustments.dscr_loan_type_id', '=', 'loan_types_dscrs.id')
+            ->join('ltv_ratios', 'loan_type_dscr_ltv_adjustments.ltv_ratio_id', '=', 'ltv_ratios.id')
+            ->join('loan_types', 'loan_type_dscr_ltv_adjustments.loan_type_id', '=', 'loan_types.id')
+            ->where('loan_types_dscrs.loan_type_dscr_name', $loanTypeDscr)
+            ->where('ltv_ratios.ratio_range', $ltvColumn)
+            ->where('loan_types.loan_program', $program)
+            ->update(['loan_type_dscr_ltv_adjustments.adjustment_pct' => $value]);
+    }
 }

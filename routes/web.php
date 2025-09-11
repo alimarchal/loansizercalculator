@@ -20,6 +20,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('loan-programs/api/restrictions', [LoanProgramController::class, 'getLoanTypeRestrictions'])
         ->name('loan-programs.restrictions');
 
+    // DSCR Matrix update API
+    Route::post('loan-programs/api/dscr-matrix/update', [LoanProgramController::class, 'updateDscrMatrixCell'])
+        ->name('loan-programs.dscr-matrix.update');
+
     // Loan Program Matrix Routes
     Route::resource('loan-programs', LoanProgramController::class)->names([
         'index' => 'loan-programs.index',
