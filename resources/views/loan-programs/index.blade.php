@@ -466,93 +466,128 @@
                             <!-- LTV columns with inline editing functionality -->
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'50% LTV or less'} === null)
-                                N/A
+                                <span
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="50% LTV or less"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">N/A</span>
                                 @else
                                 <span
-                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
                                     contenteditable="true" data-row-group="{{ $rowGroup }}"
                                     data-row-label="{{ $row->row_label }}" data-ltv-column="50% LTV or less"
                                     data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
                                     title="Click to edit this value">{{ number_format((float)$row->{'50% LTV or less'},
-                                    3) }}</span>%
+                                    3) }}%</span>
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'55% LTV'} === null)
-                                N/A
+                                <span
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="55% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">N/A</span>
                                 @else
                                 <span
-                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
                                     contenteditable="true" data-row-group="{{ $rowGroup }}"
                                     data-row-label="{{ $row->row_label }}" data-ltv-column="55% LTV"
                                     data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
                                     title="Click to edit this value">{{ number_format((float)$row->{'55% LTV'}, 3)
-                                    }}</span>%
+                                    }}%</span>
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'60% LTV'} === null)
-                                N/A
+                                <span
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="60% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">N/A</span>
                                 @else
                                 <span
-                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
                                     contenteditable="true" data-row-group="{{ $rowGroup }}"
                                     data-row-label="{{ $row->row_label }}" data-ltv-column="60% LTV"
                                     data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
                                     title="Click to edit this value">{{ number_format((float)$row->{'60% LTV'}, 3)
-                                    }}</span>%
+                                    }}%</span>
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'65% LTV'} === null)
-                                N/A
+                                <span
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="65% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">N/A</span>
                                 @else
                                 <span
-                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
                                     contenteditable="true" data-row-group="{{ $rowGroup }}"
                                     data-row-label="{{ $row->row_label }}" data-ltv-column="65% LTV"
                                     data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
                                     title="Click to edit this value">{{ number_format((float)$row->{'65% LTV'}, 3)
-                                    }}</span>%
+                                    }}%</span>
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'70% LTV'} === null)
-                                N/A
+                                <span
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="70% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">N/A</span>
                                 @else
                                 <span
-                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
                                     contenteditable="true" data-row-group="{{ $rowGroup }}"
                                     data-row-label="{{ $row->row_label }}" data-ltv-column="70% LTV"
                                     data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
                                     title="Click to edit this value">{{ number_format((float)$row->{'70% LTV'}, 3)
-                                    }}</span>%
+                                    }}%</span>
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'75% LTV'} === null)
-                                N/A
+                                <span
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="75% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">N/A</span>
                                 @else
                                 <span
-                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
                                     contenteditable="true" data-row-group="{{ $rowGroup }}"
                                     data-row-label="{{ $row->row_label }}" data-ltv-column="75% LTV"
                                     data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
                                     title="Click to edit this value">{{ number_format((float)$row->{'75% LTV'}, 3)
-                                    }}</span>%
+                                    }}%</span>
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 @if($row->{'80% LTV'} === null)
-                                N/A
+                                <span
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
+                                    contenteditable="true" data-row-group="{{ $rowGroup }}"
+                                    data-row-label="{{ $row->row_label }}" data-ltv-column="80% LTV"
+                                    data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
+                                    title="Click to edit this value">N/A</span>
                                 @else
                                 <span
-                                    class="editable-cell inline-block w-full h-full cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-1 rounded transition-colors duration-200"
+                                    class="editable-cell inline-block cursor-pointer hover:bg-yellow-100 focus:bg-yellow-200 px-1 py-0 rounded transition-colors duration-200 min-w-12 text-center"
                                     contenteditable="true" data-row-group="{{ $rowGroup }}"
                                     data-row-label="{{ $row->row_label }}" data-ltv-column="80% LTV"
                                     data-program="{{ $loanProgram ?? 'Loan Program #1' }}"
                                     title="Click to edit this value">{{ number_format((float)$row->{'80% LTV'}, 3)
-                                    }}</span>%
+                                    }}%</span>
                                 @endif
                             </td>
                         </tr>
@@ -789,6 +824,15 @@
             white-space: nowrap;
         }
 
+        /* Compact editable cells */
+        .editable-cell {
+            max-width: 60px;
+            min-width: 48px;
+            display: inline-block;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+
         /* Responsive text sizing */
         @media (max-width: 768px) {
             .table-auto {
@@ -798,6 +842,12 @@
             .table-auto th,
             .table-auto td {
                 padding: 0.25rem;
+            }
+
+            .editable-cell {
+                max-width: 50px;
+                min-width: 40px;
+                font-size: 0.65rem;
             }
         }
 
@@ -827,11 +877,20 @@
             
             editableCells.forEach(function(cell) {
                 let originalValue = '';
+                let isEscapePressed = false;
                 
                 // Focus event - when user clicks to edit
                 cell.addEventListener('focus', function() {
                     console.log('Cell focused for editing');
                     originalValue = this.textContent.trim();
+                    isEscapePressed = false; // Reset escape flag
+                    
+                    // Remove % symbol for editing (but keep N/A as is)
+                    if (originalValue !== 'N/A') {
+                        const valueWithoutPercent = originalValue.replace('%', '');
+                        this.textContent = valueWithoutPercent;
+                    }
+                    
                     this.style.backgroundColor = '#fef3c7'; // yellow-100
                     this.style.border = '2px solid #f59e0b'; // yellow-500
                     this.style.outline = 'none';
@@ -852,15 +911,41 @@
                     this.style.backgroundColor = '';
                     this.style.border = '';
                     
-                    const newValue = this.textContent.trim();
+                    // If escape was pressed, don't save
+                    if (isEscapePressed) {
+                        console.log('Escape was pressed, not saving');
+                        return;
+                    }
                     
-                    // Only save if value actually changed
-                    if (newValue !== originalValue && newValue !== '') {
-                        console.log('Value changed from', originalValue, 'to', newValue);
-                        saveMatrixValue(this, newValue);
+                    const newValue = this.textContent.trim();
+                    const originalValueWithoutPercent = originalValue === 'N/A' ? 'N/A' : originalValue.replace('%', '');
+                    
+                    // Only save if value actually changed and is not empty
+                    if (newValue !== originalValueWithoutPercent && newValue !== '') {
+                        console.log('Value changed from', originalValueWithoutPercent, 'to', newValue);
+                        
+                        // Check if changing from N/A to a number or vice versa
+                        if (originalValue === 'N/A' && !isNaN(parseFloat(newValue))) {
+                            // Changing from N/A to a number
+                            saveMatrixValue(this, newValue);
+                        } else if (originalValue !== 'N/A' && newValue.toLowerCase() === 'n/a') {
+                            // Changing from number to N/A
+                            saveMatrixValue(this, null); // Send null to represent N/A
+                        } else if (originalValue !== 'N/A' && !isNaN(parseFloat(newValue))) {
+                            // Changing from number to number
+                            saveMatrixValue(this, newValue);
+                        } else {
+                            // Invalid input, restore original
+                            this.textContent = originalValue;
+                        }
                     } else if (newValue === '') {
                         // Restore original value if empty
                         this.textContent = originalValue;
+                    } else {
+                        // No change, add % back if it was a number
+                        if (originalValue !== 'N/A') {
+                            this.textContent = newValue + '%';
+                        }
                     }
                 });
                 
@@ -874,6 +959,7 @@
                     // Escape key to cancel
                     if (e.key === 'Escape') {
                         e.preventDefault();
+                        isEscapePressed = true;
                         this.textContent = originalValue;
                         this.blur();
                     }
@@ -913,15 +999,19 @@
                         row_label: rowLabel,
                         ltv_column: ltvColumn,
                         program: program,
-                        value: parseFloat(newValue)
+                        value: newValue === null ? null : parseFloat(newValue)
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     console.log('Save response:', data);
                     if (data.success) {
-                        // Update display with formatted value
-                        cell.textContent = parseFloat(newValue).toFixed(3);
+                        // Update display with formatted value and % symbol or N/A
+                        if (newValue === null) {
+                            cell.textContent = 'N/A';
+                        } else {
+                            cell.textContent = parseFloat(newValue).toFixed(3) + '%';
+                        }
                         
                         // Show success feedback
                         cell.style.backgroundColor = '#d1fae5'; // green-100

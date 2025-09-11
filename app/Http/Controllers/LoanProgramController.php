@@ -1309,7 +1309,7 @@ class LoanProgramController extends Controller
                 'row_label' => 'required|string',
                 'ltv_column' => 'required|string',
                 'program' => 'required|string',
-                'value' => 'required|numeric'
+                'value' => 'nullable|numeric' // Allow null for N/A values
             ]);
 
             if ($validator->fails()) {
