@@ -382,7 +382,7 @@
                                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                                     </path>
                                 </svg>
-                                Reset Form
+                                Clear All Fields
                             </button>
                         </div>
                     </form>
@@ -694,6 +694,27 @@
                     document.getElementById('resultsAndClosingSection').classList.add('hidden');
                     console.error('API Error:', error);
                 }
+            });
+            
+            // Add reset event listener to hide results when form is reset
+            form.addEventListener('reset', function(e) {
+                // Hide results and closing sections
+                document.getElementById('resultsAndClosingSection').classList.add('hidden');
+                document.getElementById('closingStatementSection').classList.add('hidden');
+                // Hide error messages
+                errorMessage.classList.add('hidden');
+                // Hide loading spinner if visible
+                loadingSpinner.classList.add('hidden');
+                
+                // Reset Select2 dropdowns to default state
+                setTimeout(() => {
+                    // Reset all Select2 dropdowns to their default/first option
+                    $('#loan_type').val('').trigger('change');
+                    $('#transaction_type').val('').trigger('change');
+                    $('#loan_term').val('').trigger('change');
+                    $('#property_type').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
+                    $('#state').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
+                }, 100);
             });
             
             function generateTableHeader(loanType) {
