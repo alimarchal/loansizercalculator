@@ -187,8 +187,8 @@ class LoanTypeStateSeeder extends Seeder
             'WY'
         ];
 
-        // DSCR Rental states
-        $dscrRentalStates = [
+        // DSCR Rental Loans states - same for all programs
+        $dscrRentalLoansStates = [
             'AL',
             'AK',
             'AZ',
@@ -243,6 +243,11 @@ class LoanTypeStateSeeder extends Seeder
         $newBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first();
         $dscrRental = \App\Models\LoanType::where('name', 'DSCR Rental')->first();
 
+        // Get DSCR Rental Loans programs
+        $dscrRentalLoans1 = \App\Models\LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #1')->first();
+        $dscrRentalLoans2 = \App\Models\LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #2')->first();
+        $dscrRentalLoans3 = \App\Models\LoanType::where('name', 'DSCR Rental Loans')->where('loan_program', 'Loan Program #3')->first();
+
         // Attach states to Full Appraisal Fix & Flip
         if ($fixFlipFull) {
             $stateIds = [];
@@ -291,15 +296,52 @@ class LoanTypeStateSeeder extends Seeder
             $newBuilder->states()->sync($stateIds);
         }
 
+        // Attach states to DSCR Rental (legacy)
         if ($dscrRental) {
             $stateIds = [];
-            foreach ($dscrRentalStates as $stateCode) {
+            foreach ($dscrRentalLoansStates as $stateCode) {
                 $state = \App\Models\State::where('code', $stateCode)->first();
                 if ($state) {
                     $stateIds[] = $state->id;
                 }
             }
             $dscrRental->states()->sync($stateIds);
+        }
+
+        // Attach states to DSCR Rental Loans Program #1
+        if ($dscrRentalLoans1) {
+            $stateIds = [];
+            foreach ($dscrRentalLoansStates as $stateCode) {
+                $state = \App\Models\State::where('code', $stateCode)->first();
+                if ($state) {
+                    $stateIds[] = $state->id;
+                }
+            }
+            $dscrRentalLoans1->states()->sync($stateIds);
+        }
+
+        // Attach states to DSCR Rental Loans Program #2
+        if ($dscrRentalLoans2) {
+            $stateIds = [];
+            foreach ($dscrRentalLoansStates as $stateCode) {
+                $state = \App\Models\State::where('code', $stateCode)->first();
+                if ($state) {
+                    $stateIds[] = $state->id;
+                }
+            }
+            $dscrRentalLoans2->states()->sync($stateIds);
+        }
+
+        // Attach states to DSCR Rental Loans Program #3
+        if ($dscrRentalLoans3) {
+            $stateIds = [];
+            foreach ($dscrRentalLoansStates as $stateCode) {
+                $state = \App\Models\State::where('code', $stateCode)->first();
+                if ($state) {
+                    $stateIds[] = $state->id;
+                }
+            }
+            $dscrRentalLoans3->states()->sync($stateIds);
         }
     }
 }
