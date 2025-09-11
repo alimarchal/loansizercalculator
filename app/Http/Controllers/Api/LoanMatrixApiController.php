@@ -929,7 +929,7 @@ class LoanMatrixApiController extends Controller
                     'loan_program' => $program,
                     'categories' => [],
                     'loan_program_values' => [
-                        'loan_term' => 0,
+                        'loan_term' => $request->loan_term ?: 0,
                         'max_ltv' => 0,
                         'monthly_payment' => 0,
                         'interest_rate' => 0,
