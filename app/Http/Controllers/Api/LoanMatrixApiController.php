@@ -950,23 +950,23 @@ class LoanMatrixApiController extends Controller
                     ],
                     'ltv_formula' => [
                         'fico' => [
-                            'input' => 0,
+                            'input' => $request->credit_score ?: 0,
                             'max_ltv' => 0,
                         ],
                         'transaction_type' => [
-                            'input' => 0,
+                            'input' => $request->transaction_type ?: '',
                             'max_ltv' => 0,
                         ],
                         'loan_amount' => [
-                            'input' => 0,
+                            'input' => $request->purchase_price ?: 0,
                             'max_ltv' => 0,
                         ],
                         'dscr' => [
-                            'input' => 0,
+                            'input' => $request->dscr ?: 0,
                             'max_ltv' => 0,
                         ],
                         'occupancy' => [
-                            'input' => 0,
+                            'input' => $request->occupancy_type ?: '',
                             'max_ltv' => 0,
                         ],
                         'approved_max_ltv' => [
