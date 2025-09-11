@@ -1024,7 +1024,7 @@ class LoanMatrixApiController extends Controller
         }
 
         // Return raw database value with 4 decimal places
-        return number_format((float) $value, 4) . '%';
+        return number_format((float) $value, 3) . '%';
     }
 
     /**
