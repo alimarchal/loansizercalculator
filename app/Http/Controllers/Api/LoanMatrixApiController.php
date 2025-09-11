@@ -10,6 +10,7 @@ use App\Models\TransactionType;
 use App\Models\Experience;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 /**
  * API Controller for Loan Matrix calculations
@@ -595,6 +596,296 @@ class LoanMatrixApiController extends Controller
         } else {
             return 'EXTENSIVE REHAB'; // >100%
         }
+    }
+
+    /**
+     * Get DSCR loan matrix data for all three loan programs
+     * Returns the complete DSCR matrix with all adjustment tables
+     * Supports filtering by loan_program parameter
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLoanMatrixDscr(Request $request)
+    {
+        // Validate optional filter parameters
+        $validator = Validator::make($request->all(), [
+            'loan_program' => 'nullable|string|in:Loan Program #1,Loan Program #2,Loan Program #3',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // Get requested loan program or all three by default
+            $requestedProgram = $request->get('loan_program');
+            $loanPrograms = $requestedProgram ? [$requestedProgram] : [
+                'Loan Program #1',
+                'Loan Program #2',
+                'Loan Program #3'
+            ];
+
+            // Build the raw SQL query for DSCR matrix (same as LoanProgramController)
+            $sql = "
+                SELECT * FROM (
+                  /* ---------- FICO × LTV (program-aware) ---------- */
+                  SELECT
+                    'FICO'                AS row_group,
+                    lt.loan_program       AS program,
+                    fb.fico_range         AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN fla.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN fla.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN fla.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN fla.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN fla.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN fla.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN fla.adjustment_pct END) AS `80% LTV`
+                  FROM fico_bands fb
+                  JOIN fico_ltv_adjustments fla ON fla.fico_band_id = fb.id
+                  JOIN ltv_ratios lr ON lr.id = fla.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = fla.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, fb.fico_min, fb.fico_range
+
+                  UNION ALL
+
+                  /* ---------- Loan Amount × LTV (program-aware) ---------- */
+                  SELECT
+                    'Loan Amount'         AS row_group,
+                    lt.loan_program       AS program,
+                    la.amount_range       AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN l.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN l.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN l.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN l.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN l.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN l.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN l.adjustment_pct END) AS `80% LTV`
+                  FROM loan_amounts la
+                  JOIN loan_amount_ltv_adjustments l ON l.loan_amount_id = la.id
+                  JOIN ltv_ratios lr ON lr.id = l.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = l.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, la.display_order, la.amount_range
+
+                  UNION ALL
+
+                  /* ---------- Property Type × LTV (program-aware) ---------- */
+                  SELECT
+                    'Property Type'       AS row_group,
+                    lt.loan_program       AS program,
+                    pt.name               AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN p.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN p.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN p.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN p.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN p.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN p.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN p.adjustment_pct END) AS `80% LTV`
+                  FROM property_type_ltv_adjustments p
+                  JOIN property_types pt ON pt.id = p.property_type_id
+                  JOIN ltv_ratios lr ON lr.id = p.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = p.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, pt.name
+
+                  UNION ALL
+
+                  /* ---------- Occupancy × LTV (program-aware) ---------- */
+                  SELECT
+                    'Occupancy'           AS row_group,
+                    lt.loan_program       AS program,
+                    oc.name               AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN o.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN o.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN o.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN o.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN o.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN o.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN o.adjustment_pct END) AS `80% LTV`
+                  FROM occupancy_ltv_adjustments o
+                  JOIN occupancy_types oc ON oc.id = o.occupancy_type_id
+                  JOIN ltv_ratios lr ON lr.id = o.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = o.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, oc.name
+
+                  UNION ALL
+
+                  /* ---------- Transaction Type × LTV (program-aware) ---------- */
+                  SELECT
+                    'Transaction Type'    AS row_group,
+                    lt.loan_program       AS program,
+                    tt.name               AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN t.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN t.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN t.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN t.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN t.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN t.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN t.adjustment_pct END) AS `80% LTV`
+                  FROM transaction_type_ltv_adjustments t
+                  JOIN transaction_types tt ON tt.id = t.transaction_type_id
+                  JOIN ltv_ratios lr ON lr.id = t.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = t.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, tt.name
+
+                  UNION ALL
+
+                  /* ---------- DSCR Range × LTV (program-aware) ---------- */
+                  SELECT
+                    'DSCR'                AS row_group,
+                    lt.loan_program       AS program,
+                    dr.dscr_range         AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN d.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN d.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN d.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN d.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN d.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN d.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN d.adjustment_pct END) AS `80% LTV`
+                  FROM dscr_ltv_adjustments d
+                  JOIN dscr_ranges dr ON dr.id = d.dscr_range_id
+                  JOIN ltv_ratios lr ON lr.id = d.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = d.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, dr.dscr_range
+
+                  UNION ALL
+
+                  /* ---------- Prepay × LTV (program-aware) ---------- */
+                  SELECT
+                    'Pre Pay'             AS row_group,
+                    lt.loan_program       AS program,
+                    pp.prepay_name        AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN p.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN p.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN p.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN p.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN p.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN p.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN p.adjustment_pct END) AS `80% LTV`
+                  FROM pre_pay_ltv_adjustments p
+                  JOIN prepay_periods pp ON pp.id = p.pre_pay_id
+                  JOIN ltv_ratios lr ON lr.id = p.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = p.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, pp.prepay_name
+
+                  UNION ALL
+
+                  /* ---------- Loan Type × LTV (program-aware) ---------- */
+                  SELECT
+                    'Loan Type'           AS row_group,
+                    lt.loan_program       AS program,
+                    ltd.loan_type_dscr_name AS row_label,
+                    MAX(CASE WHEN lr.ratio_range='50% LTV or less' THEN l.adjustment_pct END) AS `50% LTV or less`,
+                    MAX(CASE WHEN lr.ratio_range='55% LTV'         THEN l.adjustment_pct END) AS `55% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='60% LTV'         THEN l.adjustment_pct END) AS `60% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='65% LTV'         THEN l.adjustment_pct END) AS `65% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='70% LTV'         THEN l.adjustment_pct END) AS `70% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='75% LTV'         THEN l.adjustment_pct END) AS `75% LTV`,
+                    MAX(CASE WHEN lr.ratio_range='80% LTV'         THEN l.adjustment_pct END) AS `80% LTV`
+                  FROM loan_type_dscr_ltv_adjustments l
+                  JOIN loan_types_dscrs ltd ON ltd.id = l.dscr_loan_type_id
+                  JOIN ltv_ratios lr ON lr.id = l.ltv_ratio_id
+                  LEFT JOIN loan_types lt ON lt.id = l.loan_type_id
+                  WHERE lt.loan_program " . ($requestedProgram ? "= ?" : "IN (?, ?, ?)") . "
+                  GROUP BY lt.loan_program, ltd.loan_type_dscr_name
+                ) AS big_matrix
+                ORDER BY
+                  FIELD(row_group,
+                        'FICO','Loan Amount','Property Type','Occupancy',
+                        'Transaction Type','DSCR','Pre Pay','Loan Type'),
+                  program IS NULL, program, row_label
+            ";
+
+            // Prepare parameters based on filtering
+            $parameters = [];
+            $parametersPerQuery = $requestedProgram ? 1 : 3;
+
+            for ($i = 0; $i < 8; $i++) { // 8 UNION queries
+                if ($requestedProgram) {
+                    $parameters[] = $requestedProgram;
+                } else {
+                    $parameters = array_merge($parameters, $loanPrograms);
+                }
+            }
+
+            // Execute the query
+            $matrixData = DB::select($sql, $parameters);
+
+            // Group data by loan program and then by row_group
+            $groupedByProgram = collect($matrixData)->groupBy('program')->map(function ($programData) {
+                return $programData->groupBy('row_group');
+            });
+
+            // Transform the data into the response format
+            $responseData = [];
+            foreach ($loanPrograms as $program) {
+                $programData = $groupedByProgram->get($program, collect());
+
+                // Format each category for this program
+                $formattedProgramData = [
+                    'loan_program' => $program,
+                    'categories' => []
+                ];
+
+                foreach ($programData as $category => $rows) {
+                    $formattedProgramData['categories'][$category] = $rows->map(function ($row) {
+                        return [
+                            'row_label' => $row->row_label,
+                            'adjustments' => [
+                                '50% LTV or less' => $this->formatAdjustment($row->{'50% LTV or less'}),
+                                '55% LTV' => $this->formatAdjustment($row->{'55% LTV'}),
+                                '60% LTV' => $this->formatAdjustment($row->{'60% LTV'}),
+                                '65% LTV' => $this->formatAdjustment($row->{'65% LTV'}),
+                                '70% LTV' => $this->formatAdjustment($row->{'70% LTV'}),
+                                '75% LTV' => $this->formatAdjustment($row->{'75% LTV'}),
+                                '80% LTV' => $this->formatAdjustment($row->{'80% LTV'}),
+                            ]
+                        ];
+                    })->values()->toArray();
+                }
+
+                $responseData[] = $formattedProgramData;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'DSCR Loan Matrix Retrieved Successfully',
+                'data' => $responseData,
+                'total_programs' => count($loanPrograms),
+                'filtered_by' => $requestedProgram ? "Single program: $requestedProgram" : "All programs"
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving DSCR loan matrix data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }    /**
+         * Format adjustment percentage for display
+         * 
+         * @param mixed $value
+         * @return string
+         */
+    private function formatAdjustment($value)
+    {
+        if ($value === null) {
+            return 'N/A';
+        }
+
+        // Convert to percentage format
+        return number_format((float) $value * 100, 4) . '%';
     }
 
     /**
