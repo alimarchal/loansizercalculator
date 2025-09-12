@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoanProgramController;
 use App\Http\Controllers\LoanCalculatorController;
+use App\Http\Controllers\LoanTypeController;
 
 Route::get('/', function () {
     return to_route('login');
@@ -23,6 +24,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // DSCR Matrix update API
     Route::post('loan-programs/api/dscr-matrix/update', [LoanProgramController::class, 'updateDscrMatrixCell'])
         ->name('loan-programs.dscr-matrix.update');
+
+    // Loan Types Settings Routes
+    Route::get('settings/loan-types', [LoanTypeController::class, 'index'])
+        ->name('settings.loan-types.index');
+    Route::post('settings/loan-types/api/update', [LoanTypeController::class, 'updateField'])
+        ->name('settings.loan-types.api.update');
 
     // Loan Program Matrix Routes
     Route::resource('loan-programs', LoanProgramController::class)->names([
