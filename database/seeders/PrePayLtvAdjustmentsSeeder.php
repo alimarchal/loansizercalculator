@@ -27,22 +27,22 @@ class PrePayLtvAdjustmentsSeeder extends Seeder
         // TODO: Replace with your real numbers (decimal %). null = N/A.
         $grid = [
             '3 Year Prepay' => [
-                '50% LTV or less' => 0.000,
-                '55% LTV' => 0.000,
-                '60% LTV' => 0.000,
+                '50% LTV or less' => 0.125,
+                '55% LTV' => 0.125,
+                '60% LTV' => 0.125,
                 '65% LTV' => 0.125,
-                '70% LTV' => 0.250,
-                '75% LTV' => 0.375,
-                '80% LTV' => null,
+                '70% LTV' => 0.125,
+                '75% LTV' => 0.125,
+                '80% LTV' => 0.125,
             ],
             '5 Year Prepay' => [
                 '50% LTV or less' => 0.000,
                 '55% LTV' => 0.000,
                 '60% LTV' => 0.000,
                 '65% LTV' => 0.000,
-                '70% LTV' => 0.125,
-                '75% LTV' => 0.250,
-                '80% LTV' => null,
+                '70% LTV' => 0.000,
+                '75% LTV' => 0.000,
+                '80% LTV' => 0.000,
             ],
         ];
 
