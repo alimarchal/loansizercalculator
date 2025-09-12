@@ -19,6 +19,9 @@
                         :active="request()->routeIs('loan-programs.*')">
                         {{ __('Loan Programs Matrix') }}
                     </x-nav-link>
+                    <x-nav-link href="{{ route('settings.index') }}" :active="request()->routeIs('settings.*')">
+                        {{ __('Settings') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -160,6 +163,9 @@
             <x-responsive-nav-link href="{{ route('loan-programs.index') }}"
                 :active="request()->routeIs('loan-programs.*')">
                 {{ __('Loan Programs Matrix') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('settings.index') }}" :active="request()->routeIs('settings.*')">
+                {{ __('Settings') }}
             </x-responsive-nav-link>
         </div>
 
