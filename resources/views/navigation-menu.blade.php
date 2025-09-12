@@ -19,8 +19,8 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    <x-nav-link href="#">
-                        {{ __('Borrower Applications') }}
+                    <x-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
+                        {{ __('Borrowers') }}
                     </x-nav-link>
 
                     <x-nav-link href="{{ route('loan-programs.index') }}"
@@ -171,6 +171,9 @@
             <x-responsive-nav-link href="{{ route('loan-programs.index') }}"
                 :active="request()->routeIs('loan-programs.*')">
                 {{ __('Loan Programs Matrix') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
+                {{ __('Borrowers') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link href="{{ route('settings.index') }}" :active="request()->routeIs('settings.*')">
                 {{ __('Settings') }}

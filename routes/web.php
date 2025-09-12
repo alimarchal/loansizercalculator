@@ -5,6 +5,7 @@ use App\Http\Controllers\LoanProgramController;
 use App\Http\Controllers\LoanCalculatorController;
 use App\Http\Controllers\LoanTypeController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\BorrowersController;
 
 Route::get('/', function () {
     return to_route('login');
@@ -29,6 +30,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // Settings Routes
     Route::get('settings', [SettingsController::class, 'index'])
         ->name('settings.index');
+
+    // Borrowers Routes
+    Route::resource('borrowers', BorrowersController::class);
 
     // Loan Types Settings Routes
     Route::get('settings/loan-types', [LoanTypeController::class, 'index'])
