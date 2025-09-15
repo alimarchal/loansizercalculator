@@ -16,6 +16,10 @@
     <script src="{{ url('jsandcss/moment.min.js') }}"></script>
     <script src="{{ url('jsandcss/knockout-3.5.1.js') }}" defer></script>
     <script src="{{ url('jsandcss/daterangepicker.min.js') }}" defer></script>
+
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     @stack('header')
 
     <style>
@@ -749,7 +753,7 @@
 
                                 <!-- Action Buttons -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <button
+                                    <button onclick="downloadLoanPDF()"
                                         class="bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
                                         <i class="fas fa-file-pdf mr-2"></i>
                                         Download PDF
@@ -1459,6 +1463,9 @@
                 return;
             }
 
+            // Store selected program globally for PDF generation
+            window.selectedLoanProgram = programName;
+
             const selectedLoan = window.allLoansData[programName][0];
             console.log('Selected loan data:', selectedLoan);
             
@@ -2017,6 +2024,301 @@
                     interest_reserves: originalFees.interest_reserves // This might change but for now keep original
                 };
             };
+
+            // PDF Generation Function
+            window.downloadLoanPDF = function() {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                // PDF Header
+                pdf.setFontSize(16);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('LOAN CALCULATOR REPORT', 105, 20, { align: 'center' });
+                
+                pdf.setFontSize(10);
+                pdf.setFont(undefined, 'normal');
+                pdf.text('Generated on: ' + new Date().toLocaleDateString(), 105, 28, { align: 'center' });
+                pdf.text('Structure My Loan Calculator', 105, 35, { align: 'center' });
+                
+                let yPos = 50;
+                const margin = 15;
+                const pageWidth = 180;
+                
+                // Get form data
+                const formData = getFormDataForPDF();
+                
+                // Section 1: User Inputs
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('USER INPUTS', margin, yPos);
+                yPos += 8;
+                
+                pdf.setFontSize(9);
+                pdf.setFont(undefined, 'normal');
+                
+                // Create user inputs table
+                const inputsTable = createUserInputsTable(formData);
+                yPos = drawTable(pdf, inputsTable.headers, inputsTable.data, yPos, margin, pageWidth);
+                
+                yPos += 10;
+                
+                // Section 2: Selected Loan Program
+                if (window.selectedLoanProgram) {
+                    pdf.setFontSize(12);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('SELECTED LOAN PROGRAM', margin, yPos);
+                    yPos += 8;
+                    
+                    const loanTable = createSelectedLoanTable();
+                    yPos = drawTable(pdf, loanTable.headers, loanTable.data, yPos, margin, pageWidth);
+                    
+                    yPos += 10;
+                    
+                    // Section 3: Estimated Closing Statement
+                    if (yPos > 230) {
+                        pdf.addPage();
+                        yPos = 20;
+                    }
+                    
+                    pdf.setFontSize(12);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('ESTIMATED CLOSING STATEMENT', margin, yPos);
+                    yPos += 8;
+                    
+                    const closingTable = createClosingStatementTable();
+                    yPos = drawTable(pdf, closingTable.headers, closingTable.data, yPos, margin, pageWidth);
+                }
+                
+                // Save PDF
+                const timestamp = new Date().toISOString().split('T')[0];
+                const filename = `loan-calculator-report-${timestamp}.pdf`;
+                pdf.save(filename);
+            };
+            
+            // Helper function to get form data
+            function getFormDataForPDF() {
+                const form = document.getElementById('loanCalculatorForm');
+                const formData = new FormData(form);
+                const data = {};
+                
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+                
+                return data;
+            }
+            
+            // Helper function to create user inputs table
+            function createUserInputsTable(formData) {
+                const headers = ['Field', 'Value'];
+                const data = [];
+                
+                const fieldLabels = {
+                    'credit_score': 'Credit Score',
+                    'experience': 'Experience',
+                    'loan_type': 'Loan Type',
+                    'transaction_type': 'Transaction Type',
+                    'loan_term': 'Loan Term',
+                    'purchase_price': 'Purchase Price',
+                    'broker_points': 'Broker Points',
+                    'state': 'State',
+                    'property_type': 'Property Type',
+                    'occupancy_type': 'Occupancy Type',
+                    'monthly_market_rent': 'Monthly Market Rent',
+                    'annual_tax': 'Annual Tax',
+                    'annual_insurance': 'Annual Insurance',
+                    'annual_hoa': 'Annual HOA',
+                    'dscr': 'DSCR',
+                    'arv': 'ARV',
+                    'rehab_budget': 'Rehab Budget',
+                    'payoff_amount': 'Payoff Amount',
+                    'lender_points': 'Lender Points',
+                    'pre_pay_penalty': 'Pre Pay Penalty',
+                    'purchase_date': 'Purchase Date'
+                };
+                
+                Object.keys(fieldLabels).forEach(key => {
+                    if (formData[key] && formData[key] !== '') {
+                        let value = formData[key];
+                        
+                        // Format monetary values
+                        if (['purchase_price', 'arv', 'rehab_budget', 'monthly_market_rent', 'annual_tax', 'annual_insurance', 'annual_hoa', 'payoff_amount'].includes(key)) {
+                            value = '$' + numberWithCommas(value);
+                        }
+                        
+                        // Format percentage values
+                        if (['broker_points', 'lender_points', 'dscr'].includes(key)) {
+                            value = value + '%';
+                        }
+                        
+                        // Format loan term
+                        if (key === 'loan_term') {
+                            value = value + ' months';
+                        }
+                        
+                        data.push([fieldLabels[key], value]);
+                    }
+                });
+                
+                return { headers, data };
+            }
+            
+            // Helper function to create selected loan table
+            function createSelectedLoanTable() {
+                const headers = ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Purchase Loan', 'Rehab Loan', 'Total Loan'];
+                const data = [];
+                
+                if (window.selectedLoanProgram && window.allLoansData && window.allLoansData[window.selectedLoanProgram]) {
+                    const loan = window.allLoansData[window.selectedLoanProgram][0];
+                    const loanData = loan.loan_type_and_loan_program_table || loan.loan_program_values;
+                    
+                    if (loanData) {
+                        data.push([
+                            window.selectedLoanProgram,
+                            (loanData.loan_term || loanData.term || 'N/A') + ' months',
+                            (loanData.interest_rate || loanData.rate || 'N/A') + '%',
+                            (loanData.lender_points || loanData.points || 'N/A') + '%',
+                            (loanData.max_ltv || 'N/A') + '%',
+                            '$' + numberWithCommas(loanData.purchase_loan_up_to || 0),
+                            '$' + numberWithCommas(loanData.rehab_loan_up_to || 0),
+                            '$' + numberWithCommas(loanData.total_loan_up_to || (loanData.purchase_loan_up_to + loanData.rehab_loan_up_to) || 0)
+                        ]);
+                    }
+                }
+                
+                return { headers, data };
+            }
+            
+            // Helper function to create closing statement table
+            function createClosingStatementTable() {
+                const headers = ['Description', 'Amount'];
+                const data = [];
+                
+                if (window.selectedLoanProgram && window.allLoansData && window.allLoansData[window.selectedLoanProgram]) {
+                    const loan = window.allLoansData[window.selectedLoanProgram][0];
+                    const closingData = loan.estimated_closing_statement;
+                    
+                    if (closingData) {
+                        // Loan Amount Section
+                        data.push(['LOAN AMOUNT SECTION', '']);
+                        if (closingData.loan_amount_section) {
+                            data.push(['Purchase Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0)]);
+                            data.push(['Rehab Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0)]);
+                            data.push(['Total Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0)]);
+                        }
+                        
+                        data.push(['', '']); // Empty row
+                        
+                        // Buyer Related Charges
+                        data.push(['BUYER RELATED CHARGES', '']);
+                        if (closingData.buyer_related_charges) {
+                            data.push(['Purchase Price', '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0)]);
+                            data.push(['Rehab Budget', '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0)]);
+                            data.push(['Sub Total Buyer Charges', '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0)]);
+                        }
+                        
+                        data.push(['', '']); // Empty row
+                        
+                        // Lender Related Charges
+                        data.push(['LENDER RELATED CHARGES', '']);
+                        if (closingData.lender_related_charges) {
+                            data.push(['Lender Origination Fee', '$' + numberWithCommas(closingData.lender_related_charges.lender_origination_fee || 0)]);
+                            data.push(['Broker Fee', '$' + numberWithCommas(closingData.lender_related_charges.broker_fee || 0)]);
+                            data.push(['Underwriting Processing Fee', '$' + numberWithCommas(closingData.lender_related_charges.underwriting_processing_fee || 0)]);
+                            data.push(['Interest Reserves', '$' + numberWithCommas(closingData.lender_related_charges.interest_reserves || 0)]);
+                        }
+                        
+                        data.push(['', '']); // Empty row
+                        
+                        // Title & Other Charges
+                        data.push(['TITLE & OTHER CHARGES', '']);
+                        if (closingData.title_other_charges) {
+                            data.push(['Title Charges', '$' + numberWithCommas(closingData.title_other_charges.title_charges || 0)]);
+                            data.push(['Property Insurance', '$' + numberWithCommas(closingData.title_other_charges.property_insurance || 0)]);
+                            data.push(['Legal Doc Prep Fee', '$' + numberWithCommas(closingData.title_other_charges.legal_doc_prep_fee || 0)]);
+                            data.push(['Subtotal Closing Costs', '$' + numberWithCommas(closingData.title_other_charges.subtotal_closing_costs || 0)]);
+                        }
+                        
+                        data.push(['', '']); // Empty row
+                        data.push(['CASH DUE TO BUYER', '$' + numberWithCommas(closingData.cash_due_to_buyer || 0)]);
+                    }
+                }
+                
+                return { headers, data };
+            }
+            
+            // Helper function to draw tables in PDF
+            function drawTable(pdf, headers, data, startY, margin, pageWidth) {
+                const colWidth = (pageWidth - (margin * 2)) / headers.length;
+                let yPos = startY;
+                const pageHeight = 280;
+                
+                // Draw headers
+                pdf.setFontSize(8);
+                pdf.setFont(undefined, 'bold');
+                
+                let xPos = margin;
+                headers.forEach((header, index) => {
+                    pdf.rect(xPos, yPos, colWidth, 6);
+                    pdf.text(header, xPos + 2, yPos + 4);
+                    xPos += colWidth;
+                });
+                
+                yPos += 6;
+                pdf.setFont(undefined, 'normal');
+                
+                // Draw data rows
+                data.forEach((row, rowIndex) => {
+                    // Check for new page
+                    if (yPos > pageHeight - 20) {
+                        pdf.addPage();
+                        yPos = 20;
+                        
+                        // Re-add headers
+                        pdf.setFont(undefined, 'bold');
+                        xPos = margin;
+                        headers.forEach((header, index) => {
+                            pdf.rect(xPos, yPos, colWidth, 6);
+                            pdf.text(header, xPos + 2, yPos + 4);
+                            xPos += colWidth;
+                        });
+                        yPos += 6;
+                        pdf.setFont(undefined, 'normal');
+                    }
+                    
+                    xPos = margin;
+                    row.forEach((cell, cellIndex) => {
+                        let text = String(cell || '');
+                        
+                        // Truncate long text
+                        const maxLength = Math.floor(colWidth / 1.5);
+                        if (text.length > maxLength) {
+                            text = text.substring(0, maxLength - 3) + '...';
+                        }
+                        
+                        // Style section headers differently
+                        if (cellIndex === 0 && (text.includes('SECTION') || text.includes('CHARGES') || text.includes('CASH DUE'))) {
+                            pdf.setFont(undefined, 'bold');
+                        }
+                        
+                        pdf.rect(xPos, yPos, colWidth, 6);
+                        pdf.text(text, xPos + 2, yPos + 4);
+                        
+                        if (cellIndex === 0 && (text.includes('SECTION') || text.includes('CHARGES') || text.includes('CASH DUE'))) {
+                            pdf.setFont(undefined, 'normal');
+                        }
+                        
+                        xPos += colWidth;
+                    });
+                    
+                    yPos += 6;
+                });
+                
+                return yPos;
+            }
+            
+            // Store selected loan program globally
+            window.selectedLoanProgram = null;
 
             $('form').submit(function(){
                 // If x-button does not render as a traditional submit button, target it directly by ID or class
