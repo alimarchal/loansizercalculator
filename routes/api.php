@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoanMatrixApiController;
+use App\Http\Controllers\Api\LoanApplicationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,3 +28,6 @@ Route::get('/dscr-states', [LoanMatrixApiController::class, 'getDscrStates']);
 
 // API endpoint for DSCR loan terms
 Route::get('/dscr-loan-terms', [LoanMatrixApiController::class, 'getDscrLoanTerms']);
+
+// Loan Application API
+Route::post('/loan-application/submit', [LoanApplicationController::class, 'submitApplication']);

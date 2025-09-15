@@ -165,6 +165,24 @@ class BorrowersController extends Controller
     }
 
     /**
+     * Display loan applications from the calculator
+     */
+    public function loanApplications(Request $request)
+    {
+        try {
+            $applications = Borrower::with(['user', 'loanProgramResults'])
+                ->where('application_source', 'loan_calculator')
+                ->orderBy('created_at', 'desc')
+                ->paginate(20);
+
+            return view('loan-applications.index', compact('applications'));
+        } catch (\Exception $e) {
+            Log::error('Error loading loan applications: ' . $e->getMessage());
+            return back()->with('error', 'Error loading loan applications');
+        }
+    }
+
+    /**
      * Remove the specified borrower from storage.
      */
     public function destroy(Borrower $borrower)

@@ -34,6 +34,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // Borrowers Routes
     Route::resource('borrowers', BorrowersController::class);
 
+    // Loan Applications Routes
+    Route::get('loan-applications', [BorrowersController::class, 'loanApplications'])
+        ->name('loan-applications.index');
+
     // Loan Types Settings Routes
     Route::get('settings/loan-types', [LoanTypeController::class, 'index'])
         ->name('settings.loan-types.index');

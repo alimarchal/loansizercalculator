@@ -758,7 +758,7 @@
                                         <i class="fas fa-file-pdf mr-2"></i>
                                         Download PDF
                                     </button>
-                                    <button
+                                    <button onclick="startApplication()" id="startApplicationBtn"
                                         class="bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
                                         <i class="fas fa-paper-plane mr-2"></i>
                                         Start Application
@@ -2378,8 +2378,247 @@
                 return yPos;
             }
             
+            // Utility function for number formatting
+            function numberWithCommas(x) {
+                if (x === null || x === undefined || isNaN(x)) return '0';
+                return parseFloat(x).toLocaleString('en-US');
+            }
+
             // Store selected loan program globally
             window.selectedLoanProgram = null;
+
+            // Start Application Function
+            window.startApplication = async function() {
+                if (!window.selectedLoanProgram || !window.allLoansData) {
+                    alert('Please select a loan program first by clicking "Check Summary for This Program"');
+                    return;
+                }
+
+                // Show loading state
+                const button = document.getElementById('startApplicationBtn');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+                button.disabled = true;
+
+                try {
+                    // Get form data
+                    const formData = getFormDataForPDF();
+                    
+                    // Get selected loan program data
+                    const selectedLoanData = window.allLoansData[window.selectedLoanProgram][0];
+                    
+                    // Prepare loan programs array with selection status
+                    const loanPrograms = [];
+                    Object.keys(window.allLoansData).forEach(programName => {
+                        const loanData = window.allLoansData[programName][0];
+                        const loanTypeData = loanData.loan_type_and_loan_program_table || loanData.loan_program_values;
+                        
+                        loanPrograms.push({
+                            loan_type: loanData.loan_type,
+                            loan_program: programName,
+                            loan_term: loanTypeData?.loan_term || formData.loan_term,
+                            interest_rate: loanTypeData?.interest_rate || loanTypeData?.rate,
+                            lender_points: loanTypeData?.lender_points || loanTypeData?.points,
+                            max_ltv: loanTypeData?.max_ltv,
+                            max_ltc: loanTypeData?.max_ltc,
+                            max_ltfc: loanTypeData?.max_ltfc,
+                            purchase_loan_up_to: loanTypeData?.purchase_loan_up_to || 0,
+                            rehab_loan_up_to: loanTypeData?.rehab_loan_up_to || 0,
+                            total_loan_up_to: loanTypeData?.total_loan_up_to || 0,
+                            rehab_category: loanTypeData?.rehab_category,
+                            rehab_percentage: loanTypeData?.percentage_max_ltv_max_ltc,
+                            pricing_tier: loanTypeData?.pricing_tier,
+                            is_selected: programName === window.selectedLoanProgram
+                        });
+                    });
+
+                    // Get calculated values from the selected program
+                    const closingStatement = selectedLoanData.estimated_closing_statement;
+                    const calculatedValues = {
+                        purchase_loan_amount: closingStatement?.loan_amount_section?.purchase_loan_amount || 0,
+                        rehab_loan_amount: closingStatement?.loan_amount_section?.rehab_loan_amount || 0,
+                        total_loan_amount: closingStatement?.loan_amount_section?.total_loan_amount || 0,
+                        lender_origination_fee: closingStatement?.lender_related_charges?.lender_origination_fee || 0,
+                        broker_fee: closingStatement?.lender_related_charges?.broker_fee || 0,
+                        underwriting_processing_fee: closingStatement?.lender_related_charges?.underwriting_processing_fee || 0,
+                        interest_reserves: closingStatement?.lender_related_charges?.interest_reserves || 0,
+                        title_charges: closingStatement?.title_other_charges?.title_charges || 0,
+                        legal_doc_prep_fee: closingStatement?.title_other_charges?.legal_doc_prep_fee || 0,
+                        subtotal_closing_costs: closingStatement?.title_other_charges?.subtotal_closing_costs || 0,
+                        cash_due_to_buyer: closingStatement?.cash_due_to_buyer || 0
+                    };
+
+                    // Show user input modal
+                    showUserInputModal(formData, loanPrograms, calculatedValues, selectedLoanData);
+
+                } catch (error) {
+                    console.error('Error starting application:', error);
+                    alert('An error occurred while starting the application. Please try again.');
+                } finally {
+                    // Reset button state
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            };
+
+            // Show user input modal for collecting borrower information
+            function showUserInputModal(formData, loanPrograms, calculatedValues, selectedLoanData) {
+                // Create modal HTML
+                const modalHTML = `
+                    <div id="userInputModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                            <div class="mt-3">
+                                <h3 class="text-lg font-bold text-gray-900 mb-4">Complete Your Loan Application</h3>
+                                <form id="borrowerInfoForm">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                                            <input type="text" id="firstName" name="first_name" required 
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                                            <input type="text" id="lastName" name="last_name" required 
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                            <input type="email" id="email" name="email" required 
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                            <input type="tel" id="phone" name="phone" 
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                                        <h4 class="font-semibold text-gray-800 mb-2">Selected Loan Program</h4>
+                                        <p class="text-sm text-gray-600">${window.selectedLoanProgram}</p>
+                                        <p class="text-sm text-gray-600">Loan Amount: $${numberWithCommas(calculatedValues.total_loan_amount)}</p>
+                                    </div>
+                                    
+                                    <div class="flex justify-end space-x-3">
+                                        <button type="button" onclick="closeUserInputModal()" 
+                                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" 
+                                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                            Submit Application
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Add modal to DOM
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                // Handle form submission
+                document.getElementById('borrowerInfoForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    await submitApplicationData(formData, loanPrograms, calculatedValues, selectedLoanData);
+                });
+            }
+
+            // Close user input modal
+            window.closeUserInputModal = function() {
+                const modal = document.getElementById('userInputModal');
+                if (modal) {
+                    modal.remove();
+                }
+            };
+
+            // Submit application data to backend
+            async function submitApplicationData(formData, loanPrograms, calculatedValues, selectedLoanData) {
+                const borrowerForm = document.getElementById('borrowerInfoForm');
+                const borrowerData = new FormData(borrowerForm);
+                
+                const submitButton = borrowerForm.querySelector('button[type="submit"]');
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+                submitButton.disabled = true;
+
+                try {
+                    // Prepare the payload
+                    const payload = {
+                        // Borrower information
+                        first_name: borrowerData.get('first_name'),
+                        last_name: borrowerData.get('last_name'),
+                        email: borrowerData.get('email'),
+                        phone: borrowerData.get('phone'),
+                        
+                        // Calculator inputs
+                        credit_score: parseInt(formData.credit_score),
+                        experience: parseInt(formData.experience),
+                        loan_type: formData.loan_type,
+                        transaction_type: formData.transaction_type,
+                        loan_term: parseInt(formData.loan_term),
+                        purchase_price: parseFloat(formData.purchase_price),
+                        arv: parseFloat(formData.arv),
+                        rehab_budget: parseFloat(formData.rehab_budget),
+                        broker_points: parseFloat(formData.broker_points),
+                        state: formData.state,
+                        
+                        // Optional fields
+                        payoff_amount: formData.payoff_amount ? parseFloat(formData.payoff_amount) : null,
+                        lender_points: formData.lender_points ? parseFloat(formData.lender_points) : null,
+                        pre_pay_penalty: formData.pre_pay_penalty || null,
+                        occupancy_type: formData.occupancy_type || null,
+                        monthly_market_rent: formData.monthly_market_rent ? parseFloat(formData.monthly_market_rent) : null,
+                        annual_tax: formData.annual_tax ? parseFloat(formData.annual_tax) : null,
+                        annual_insurance: formData.annual_insurance ? parseFloat(formData.annual_insurance) : null,
+                        annual_hoa: formData.annual_hoa ? parseFloat(formData.annual_hoa) : null,
+                        dscr: formData.dscr ? parseFloat(formData.dscr) : null,
+                        purchase_date: formData.purchase_date || null,
+                        title_charges: formData.title_charges ? parseFloat(formData.title_charges) : null,
+                        property_insurance: formData.property_insurance ? parseFloat(formData.property_insurance) : null,
+                        
+                        // Selected loan program
+                        selected_loan_program: window.selectedLoanProgram,
+                        
+                        // All loan programs with selection status
+                        loan_programs: loanPrograms,
+                        
+                        // Calculated values
+                        calculated_values: calculatedValues,
+                        
+                        // API data
+                        api_url: window.lastApiUrl || 'Unknown',
+                        api_response: selectedLoanData
+                    };
+
+                    // Submit to backend
+                    const response = await fetch('/api/loan-application/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        closeUserInputModal();
+                        alert(result.message || 'Application submitted successfully!');
+                    } else {
+                        alert('Error submitting application: ' + (result.message || 'Unknown error'));
+                    }
+
+                } catch (error) {
+                    console.error('Error submitting application:', error);
+                    alert('An error occurred while submitting your application. Please try again.');
+                } finally {
+                    submitButton.innerHTML = originalText;
+                    submitButton.disabled = false;
+                }
+            }
 
             $('form').submit(function(){
                 // If x-button does not render as a traditional submit button, target it directly by ID or class
