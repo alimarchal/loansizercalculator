@@ -174,7 +174,9 @@
                     <!-- Main Form -->
                     <form id="loanCalculatorForm" method="POST" action="/calculate-loan">
                         @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                        <h1 class="mx-auto text-2xl text-center py-2 font-bold ">Borrower Information</h1>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
                             <!-- Credit Score -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="credit_score">
@@ -229,7 +231,12 @@
                                     type="tel" name="borrower_phone" id="borrower_phone" value=""
                                     placeholder="Enter phone number">
                             </div>
+                        </div>
 
+
+
+                        <h1 class="mx-auto text-2xl text-center py-2 font-bold ">Broker Information</h1>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                             <!-- Broker Name -->
                             <div>
                                 <label class="block font-medium text-sm text-gray-700" for="broker_name">
@@ -273,6 +280,12 @@
                                     type="number" name="broker_points" id="broker_points" min="0" max="10" step="0.1"
                                     value="" placeholder="Enter points percentage" required>
                             </div>
+
+                        </div>
+
+
+                        <h1 class="mx-auto text-2xl text-center py-2 font-bold ">Loan Summary </h1>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
                             <!-- Loan Type -->
                             <div>
