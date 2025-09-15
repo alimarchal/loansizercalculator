@@ -102,7 +102,7 @@ class LoanProgramResult extends Model
      */
     public function getFormattedInterestRateAttribute()
     {
-        return $this->interest_rate ? number_format($this->interest_rate, 2) . '%' : 'N/A';
+        return $this->interest_rate ? number_format((float) $this->interest_rate, 2) . '%' : 'N/A';
     }
 
     /**
@@ -110,7 +110,7 @@ class LoanProgramResult extends Model
      */
     public function getFormattedLenderPointsAttribute()
     {
-        return $this->lender_points ? number_format($this->lender_points, 2) . '%' : 'N/A';
+        return $this->lender_points ? number_format((float) $this->lender_points, 2) . '%' : 'N/A';
     }
 
     /**
@@ -118,17 +118,17 @@ class LoanProgramResult extends Model
      */
     public function getFormattedPurchaseLoanAttribute()
     {
-        return $this->purchase_loan_up_to ? '$' . number_format($this->purchase_loan_up_to, 2) : '$0.00';
+        return $this->purchase_loan_up_to ? '$' . number_format((float) $this->purchase_loan_up_to, 2) : '$0.00';
     }
 
     public function getFormattedRehabLoanAttribute()
     {
-        return $this->rehab_loan_up_to ? '$' . number_format($this->rehab_loan_up_to, 2) : '$0.00';
+        return $this->rehab_loan_up_to ? '$' . number_format((float) $this->rehab_loan_up_to, 2) : '$0.00';
     }
 
     public function getFormattedTotalLoanAttribute()
     {
-        return $this->total_loan_up_to ? '$' . number_format($this->total_loan_up_to, 2) : '$0.00';
+        return $this->total_loan_up_to ? '$' . number_format((float) $this->total_loan_up_to, 2) : '$0.00';
     }
 
     /**

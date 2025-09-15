@@ -147,6 +147,131 @@
                 font-size: 0.875rem;
             }
         }
+
+        /* Enhanced form section transitions and animations */
+        .form-section {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .form-section.hidden {
+            opacity: 0;
+            transform: translateX(20px);
+            display: none;
+        }
+
+        .form-section:not(.hidden) {
+            opacity: 1;
+            transform: translateX(0);
+            display: block;
+        }
+
+        /* Progress indicators */
+        .step-circle-active {
+            background-color: #2563eb !important;
+            color: white !important;
+        }
+
+        .step-circle-completed {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        .step-circle-inactive {
+            background-color: #e5e7eb !important;
+            color: #6b7280 !important;
+        }
+
+        /* Enhanced input hover effects */
+        input:hover,
+        select:hover {
+            border-color: #9ca3af !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+        }
+
+        /* Card hover effects */
+        .form-section .bg-white {
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .form-section .bg-white:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        /* Icon animations */
+        svg {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        label:hover svg {
+            transform: scale(1.1);
+        }
+
+        /* Button animations */
+        button {
+            transition: all 0.2s ease-in-out;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .grid.lg\\:grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .grid.lg\\:grid-cols-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .flex.items-center.space-x-4 {
+                flex-direction: column;
+                space-x: 0;
+                gap: 1rem;
+            }
+
+            .w-16 {
+                width: 100%;
+                height: 4px;
+                max-width: 100px;
+            }
+
+            .px-6.py-3 {
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+
+            .text-xl {
+                font-size: 1.125rem;
+            }
+
+            .p-6 {
+                padding: 1rem;
+            }
+        }
+
+        /* Extra small screen adjustments */
+        @media (max-width: 480px) {
+            .grid.md\\:grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .flex.space-x-4 {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .justify-between {
+                justify-content: center;
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
     </style>
 
     <!-- Scripts -->
@@ -171,386 +296,917 @@
                         <p class="text-gray-600 mt-2">Input your loan summary and request a Pre Approval!</p>
                     </div>
 
+                    <!-- Progress Steps -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-center">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center">
+                                    <div id="step1-circle"
+                                        class="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full font-semibold text-sm">
+                                        1
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-blue-600">Step 1</div>
+                                        <div class="text-xs text-gray-500">Basic Information</div>
+                                    </div>
+                                </div>
+                                <div class="w-16 h-1 bg-gray-200 rounded">
+                                    <div id="progress1-2" class="h-1 bg-blue-600 rounded transition-all duration-300"
+                                        style="width: 0%"></div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div id="step2-circle"
+                                        class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full font-semibold text-sm">
+                                        2
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-400">Step 2</div>
+                                        <div class="text-xs text-gray-400">Loan & Property</div>
+                                    </div>
+                                </div>
+                                <div class="w-16 h-1 bg-gray-200 rounded">
+                                    <div id="progress2-3" class="h-1 bg-blue-600 rounded transition-all duration-300"
+                                        style="width: 0%"></div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div id="step3-circle"
+                                        class="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-600 rounded-full font-semibold text-sm">
+                                        3
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-400">Step 3</div>
+                                        <div class="text-xs text-gray-400">Advanced Options</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Main Form -->
                     <form id="loanCalculatorForm" method="POST" action="/calculate-loan">
                         @csrf
 
-                        <h1 class="mx-auto text-2xl text-center py-2 font-bold ">Borrower Information</h1>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
-                            <!-- Credit Score -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="credit_score">
-                                    Credit Score <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="credit_score" id="credit_score" min="300" max="850" value="700"
-                                    placeholder="Enter credit score" required>
-                            </div>
+                        <!-- Section 1: Basic Information -->
+                        <div id="section1" class="form-section">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+                                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="bg-white bg-opacity-20 rounded-lg p-2 mr-4">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h2 class="text-xl font-bold text-white">Basic Information</h2>
+                                            <p class="text-blue-100 text-sm">Tell us about yourself and your broker</p>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <!-- Experience -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="experience">
-                                    Experience (Years) <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="experience" id="experience" min="0" max="50" value="4"
-                                    placeholder="Enter years of experience" required>
-                            </div>
+                                <div class="p-6">
+                                    <!-- Borrower Information -->
+                                    <div class="mb-8">
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                                </path>
+                                            </svg>
+                                            Borrower Information
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            <!-- Credit Score -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="credit_score">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                            </path>
+                                                        </svg>
+                                                        Credit Score <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="credit_score" id="credit_score" min="300"
+                                                    max="850" value="700" placeholder="Enter credit score" required>
+                                            </div>
 
-                            <!-- Borrower Name -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="borrower_name">
-                                    Borrower Name
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="text" name="borrower_name" id="borrower_name" value=""
-                                    placeholder="Enter full name">
-                            </div>
+                                            <!-- Experience -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="experience">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-purple-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                        Experience (Years) <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="experience" id="experience" min="0" max="50"
+                                                    value="4" placeholder="Enter years of experience" required>
+                                            </div>
 
-                            <!-- Borrower Email -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="borrower_email">
-                                    Borrower Email
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="email" name="borrower_email" id="borrower_email" value=""
-                                    placeholder="Enter email address">
-                            </div>
+                                            <!-- Borrower Name -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="borrower_name">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-indigo-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                                            </path>
+                                                        </svg>
+                                                        Full Name
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="text" name="borrower_name" id="borrower_name" value=""
+                                                    placeholder="Enter your full name">
+                                            </div>
 
-                            <!-- Borrower Phone -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="borrower_phone">
-                                    Borrower Phone
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="tel" name="borrower_phone" id="borrower_phone" value=""
-                                    placeholder="Enter phone number">
+                                            <!-- Borrower Email -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="borrower_email">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                                            </path>
+                                                        </svg>
+                                                        Email Address
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="email" name="borrower_email" id="borrower_email" value=""
+                                                    placeholder="Enter your email address">
+                                            </div>
+
+                                            <!-- Borrower Phone -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="borrower_phone">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                                            </path>
+                                                        </svg>
+                                                        Phone Number
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="tel" name="borrower_phone" id="borrower_phone" value=""
+                                                    placeholder="Enter your phone number">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Broker Information -->
+                                    <div class="border-t border-gray-200 pt-8">
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg class="w-5 h-5 text-orange-600 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 00-2 2H10a2 2 0 00-2-2V4">
+                                                </path>
+                                            </svg>
+                                            Broker Information
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                            <!-- Broker Name -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="broker_name">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-orange-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                                            </path>
+                                                        </svg>
+                                                        Broker Name
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="text" name="broker_name" id="broker_name" value=""
+                                                    placeholder="Enter broker name">
+                                            </div>
+
+                                            <!-- Broker Email -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="broker_email">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                                            </path>
+                                                        </svg>
+                                                        Broker Email
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="email" name="broker_email" id="broker_email" value=""
+                                                    placeholder="Enter broker email">
+                                            </div>
+
+                                            <!-- Broker Phone -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="broker_phone">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                                            </path>
+                                                        </svg>
+                                                        Broker Phone
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="tel" name="broker_phone" id="broker_phone" value=""
+                                                    placeholder="Enter broker phone">
+                                            </div>
+
+                                            <!-- Broker Points -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="broker_points">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-yellow-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                            </path>
+                                                        </svg>
+                                                        Broker Points (%) <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="broker_points" id="broker_points" min="0"
+                                                    max="10" step="0.1" value="" placeholder="Enter points percentage"
+                                                    required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Section Navigation -->
+                                    <div class="flex justify-end mt-8 pt-6 border-t border-gray-200">
+                                        <button type="button" onclick="nextSection(2)"
+                                            class="inline-flex items-center px-6 py-3 bg-blue-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            Continue to Loan Details
+                                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Section 2: Loan & Property Details -->
+                        <div id="section2" class="form-section hidden">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+                                <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="bg-white bg-opacity-20 rounded-lg p-2 mr-4">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h2 class="text-xl font-bold text-white">Loan & Property Details</h2>
+                                            <p class="text-green-100 text-sm">Configure your loan parameters and
+                                                property information</p>
+                                        </div>
+                                    </div>
+                                </div>
 
+                                <div class="p-6">
+                                    <!-- Loan Configuration -->
+                                    <div class="mb-8">
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                </path>
+                                            </svg>
+                                            Loan Configuration
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            <!-- Loan Type -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="loan_type">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-blue-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                                            </path>
+                                                        </svg>
+                                                        Loan Type <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <select name="loan_type" id="loan_type"
+                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200"
+                                                    required>
+                                                    <option value="">-- Select Loan Type --</option>
+                                                    @foreach($loanTypes as $loanType)
+                                                    <option value="{{ $loanType->name }}">{{ $loanType->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                        <h1 class="mx-auto text-2xl text-center py-2 font-bold ">Broker Information</h1>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                            <!-- Broker Name -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="broker_name">
-                                    Broker Name
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="text" name="broker_name" id="broker_name" value=""
-                                    placeholder="Enter broker name">
+                                            <!-- Transaction Type -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="transaction_type">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-purple-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4">
+                                                            </path>
+                                                        </svg>
+                                                        Transaction Type <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <select name="transaction_type" id="transaction_type"
+                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200"
+                                                    required>
+                                                    <option value="">-- Select Transaction Type --</option>
+                                                    @foreach($transactionTypes as $transactionType)
+                                                    <option value="{{ $transactionType->name }}">{{
+                                                        $transactionType->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <!-- Loan Term -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="loan_term">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-indigo-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                        Loan Term <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <select name="loan_term" id="loan_term"
+                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200"
+                                                    required>
+                                                    <option value="">-- Select Loan Term --</option>
+                                                    <option value="12">12 Months</option>
+                                                    <option value="18">18 Months</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Property Information -->
+                                    <div class="border-t border-gray-200 pt-8 mb-8">
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg class="w-5 h-5 text-cyan-600 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                                </path>
+                                            </svg>
+                                            Property Information
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                            <!-- Property Type -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="property_type">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-cyan-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2v2">
+                                                            </path>
+                                                        </svg>
+                                                        Property Type <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <select name="property_type" id="property_type"
+                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200"
+                                                    required>
+                                                    <option value="">-- Select Loan Type First --</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- State -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2" for="state">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                                            </path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                                                            </path>
+                                                        </svg>
+                                                        State <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <select name="state" id="state"
+                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200"
+                                                    required>
+                                                    <option value="">-- Select Loan Type First --</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Property Address -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="property_address">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-gray-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                                            </path>
+                                                        </svg>
+                                                        Property Address
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="text" name="property_address" id="property_address" value=""
+                                                    placeholder="Enter property address">
+                                            </div>
+
+                                            <!-- Zip Code -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="zip_code">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-gray-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17v4a2 2 0 002 2h4M13 13h4a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4a2 2 0 012-2z">
+                                                            </path>
+                                                        </svg>
+                                                        Zip Code
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="text" name="zip_code" id="zip_code" value=""
+                                                    placeholder="Enter zip code">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Financial Details -->
+                                    <div class="border-t border-gray-200 pt-8">
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                </path>
+                                            </svg>
+                                            Financial Details
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            <!-- Purchase Price -->
+                                            <div>
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="purchase_price">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                            </path>
+                                                        </svg>
+                                                        Purchase Price <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="purchase_price" id="purchase_price" min="0"
+                                                    value="90000" placeholder="Enter purchase price" required>
+                                            </div>
+
+                                            <!-- Rehab Budget -->
+                                            <div id="rehab_budget_field">
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="rehab_budget">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-orange-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                                                            </path>
+                                                        </svg>
+                                                        Rehab Budget <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="rehab_budget" id="rehab_budget" min="0"
+                                                    value="40000" placeholder="Enter rehab budget" required>
+                                            </div>
+
+                                            <!-- ARV -->
+                                            <div id="arv_field">
+                                                <label class="block font-medium text-sm text-gray-700 mb-2" for="arv">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-blue-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6">
+                                                            </path>
+                                                        </svg>
+                                                        ARV (After Repair Value) <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="arv" id="arv" min="0" value="250000"
+                                                    placeholder="Enter ARV amount" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Section Navigation -->
+                                    <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
+                                        <button type="button" onclick="previousSection(1)"
+                                            class="inline-flex items-center px-6 py-3 bg-gray-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+                                            </svg>
+                                            Back to Basic Info
+                                        </button>
+                                        <button type="button" onclick="nextSection(3)"
+                                            class="inline-flex items-center px-6 py-3 bg-green-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            Continue to Advanced Options
+                                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Broker Email -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="broker_email">
-                                    Broker Email
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="email" name="broker_email" id="broker_email" value=""
-                                    placeholder="Enter broker email">
-                            </div>
-
-                            <!-- Broker Phone -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="broker_phone">
-                                    Broker Phone
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="tel" name="broker_phone" id="broker_phone" value=""
-                                    placeholder="Enter broker phone">
-                            </div>
-
-                            <!-- Broker Points -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="broker_points">
-                                    Broker Points (%) <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="broker_points" id="broker_points" min="0" max="10" step="0.1"
-                                    value="" placeholder="Enter points percentage" required>
-                            </div>
-
                         </div>
 
+                        <!-- Section 3: Advanced Options -->
+                        <div id="section3" class="form-section hidden">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+                                <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="bg-white bg-opacity-20 rounded-lg p-2 mr-4">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                                </path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h2 class="text-xl font-bold text-white">Advanced Options</h2>
+                                            <p class="text-purple-100 text-sm">DSCR rental loan specific fields and
+                                                additional preferences</p>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <h1 class="mx-auto text-2xl text-center py-2 font-bold ">Loan Summary </h1>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="p-6">
+                                    <!-- DSCR Rental Loan Specific Fields -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <!-- Occupancy Type (DSCR only) -->
+                                        <div id="occupancy_type_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="occupancy_type">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-purple-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2v2">
+                                                        </path>
+                                                    </svg>
+                                                    Occupancy Type <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <select name="occupancy_type" id="occupancy_type"
+                                                class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 transition duration-200">
+                                                <option value="">-- Select Occupancy Type --</option>
+                                            </select>
+                                        </div>
 
-                            <!-- Loan Type -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="loan_type">
-                                    Loan Type <span class="text-red-500">*</span>
-                                </label>
-                                <select name="loan_type" id="loan_type"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    required>
-                                    <option value="">-- Select Loan Type --</option>
-                                    @foreach($loanTypes as $loanType)
-                                    <option value="{{ $loanType->name }}">{{ $loanType->name }}</option>
-                                    @endforeach
-                                </select>
+                                        <!-- Monthly Market Rent (DSCR only) -->
+                                        <div id="monthly_market_rent_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="monthly_market_rent">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                        </path>
+                                                    </svg>
+                                                    Monthly Market Rent <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <input
+                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                type="number" name="monthly_market_rent" id="monthly_market_rent"
+                                                min="0" value="" placeholder="Enter monthly market rent">
+                                        </div>
+
+                                        <!-- Annual Tax (DSCR only) -->
+                                        <div id="annual_tax_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="annual_tax">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                        </path>
+                                                    </svg>
+                                                    Annual Tax <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <input
+                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                type="number" name="annual_tax" id="annual_tax" min="0" value=""
+                                                placeholder="Enter annual tax amount">
+                                        </div>
+
+                                        <!-- Annual Insurance (DSCR only) -->
+                                        <div id="annual_insurance_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="annual_insurance">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-blue-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                                                        </path>
+                                                    </svg>
+                                                    Annual Insurance <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <input
+                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                type="number" name="annual_insurance" id="annual_insurance" min="0"
+                                                value="" placeholder="Enter annual insurance amount">
+                                        </div>
+
+                                        <!-- Annual HOA (DSCR only) -->
+                                        <div id="annual_hoa_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="annual_hoa">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-indigo-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                                        </path>
+                                                    </svg>
+                                                    Annual HOA <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <input
+                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                type="number" name="annual_hoa" id="annual_hoa" min="0" value=""
+                                                placeholder="Enter annual HOA amount">
+                                        </div>
+
+                                        <!-- DSCR (DSCR only) -->
+                                        <div id="dscr_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2" for="dscr">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-cyan-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                                    </svg>
+                                                    DSCR <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <input
+                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                type="number" name="dscr" id="dscr" min="0" step="0.01" value=""
+                                                placeholder="Enter DSCR value">
+                                        </div>
+
+                                        <!-- Purchase Date (DSCR only) -->
+                                        <div id="purchase_date_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="purchase_date">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-gray-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                        </path>
+                                                    </svg>
+                                                    Purchase Date
+                                                </span>
+                                            </label>
+                                            <input
+                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                type="date" name="purchase_date" id="purchase_date" value="">
+                                        </div>
+
+                                        <!-- Payoff Amount (DSCR only) -->
+                                        <div id="payoff_amount_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="payoff_amount">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-orange-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                        </path>
+                                                    </svg>
+                                                    Payoff Amount <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <input
+                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                type="number" name="payoff_amount" id="payoff_amount" min="0" value=""
+                                                placeholder="Enter payoff amount">
+                                        </div>
+
+                                        <!-- Lender Points (DSCR only) -->
+                                        <div id="lender_points_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="lender_points">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-yellow-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
+                                                        </path>
+                                                    </svg>
+                                                    Lender Points (%) <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <select name="lender_points" id="lender_points"
+                                                class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 transition duration-200">
+                                                <option value="1.000">1.000</option>
+                                                <option value="1.500">1.500</option>
+                                                <option value="2.000" selected>2.000</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Pre Pay Penalty (DSCR only) -->
+                                        <div id="pre_pay_penalty_field" class="hidden">
+                                            <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                for="pre_pay_penalty">
+                                                <span class="flex items-center">
+                                                    <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                                        </path>
+                                                    </svg>
+                                                    Pre Pay Penalty <span class="text-red-500">*</span>
+                                                </span>
+                                            </label>
+                                            <select name="pre_pay_penalty" id="pre_pay_penalty"
+                                                class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 transition duration-200">
+                                                <option value="">-- Select Pre Pay Penalty --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Additional Information -->
+                                    <div
+                                        class="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                                        <div class="flex items-center mb-3">
+                                            <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                </path>
+                                            </svg>
+                                            <h4 class="text-sm font-semibold text-gray-800">Information</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-600 leading-relaxed">
+                                            These advanced options are specifically for DSCR (Debt Service Coverage
+                                            Ratio) rental loans.
+                                            The fields will automatically appear when you select "DSCR Rental Loans" as
+                                            your loan type in the previous section.
+                                        </p>
+                                    </div>
+
+                                    <!-- Final Action Buttons -->
+                                    <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
+                                        <button type="button" onclick="previousSection(2)"
+                                            class="inline-flex items-center px-6 py-3 bg-gray-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+                                            </svg>
+                                            Back to Loan Details
+                                        </button>
+                                        <div class="flex space-x-4">
+                                            <button type="submit" id="calculateBtn"
+                                                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:from-blue-700 hover:to-blue-800 focus:from-blue-700 focus:to-blue-800 active:from-blue-900 active:to-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-lg">
+                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                    </path>
+                                                </svg>
+                                                Calculate Loan Options
+                                            </button>
+                                            <button type="reset"
+                                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:from-gray-700 hover:to-gray-800 focus:from-gray-700 focus:to-gray-800 active:from-gray-900 active:to-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-lg">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                                    </path>
+                                                </svg>
+                                                Clear All Fields
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Transaction Type -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="transaction_type">
-                                    Transaction Type <span class="text-red-500">*</span>
-                                </label>
-                                <select name="transaction_type" id="transaction_type"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    required>
-                                    <option value="">-- Select Transaction Type --</option>
-                                    @foreach($transactionTypes as $transactionType)
-                                    <option value="{{ $transactionType->name }}">{{ $transactionType->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Loan Term -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="loan_term">
-                                    Loan Term <span class="text-red-500">*</span>
-                                </label>
-                                <select name="loan_term" id="loan_term"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    required>
-                                    <option value="">-- Select Loan Term --</option>
-                                    <option value="12">12 Months</option>
-                                    <option value="18">18 Months</option>
-                                </select>
-                            </div>
-
-                            <!-- Property Type -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="property_type">
-                                    Property Type <span class="text-red-500">*</span>
-                                </label>
-                                <select name="property_type" id="property_type"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    required>
-                                    <option value="">-- Select Loan Type First --</option>
-                                </select>
-                            </div>
-
-
-                            <!-- Property Address -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="property_address">
-                                    Property Address
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="text" name="property_address" id="property_address" value=""
-                                    placeholder="Enter property address">
-                            </div>
-
-                            <!-- State -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="state">
-                                    State <span class="text-red-500">*</span>
-                                </label>
-                                <select name="state" id="state"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    required>
-                                    <option value="">-- Select Loan Type First --</option>
-                                </select>
-                            </div>
-
-                            <!-- Zip Code -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="zip_code">
-                                    Zip Code
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="text" name="zip_code" id="zip_code" value="" placeholder="Enter zip code">
-                            </div>
-
-
-
-                            <!-- Purchase Price -->
-                            <div>
-                                <label class="block font-medium text-sm text-gray-700" for="purchase_price">
-                                    Purchase Price <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="purchase_price" id="purchase_price" min="0" value="90000"
-                                    placeholder="Enter purchase price" required>
-                            </div>
-
-                            <!-- Rehab Budget -->
-                            <div id="rehab_budget_field">
-                                <label class="block font-medium text-sm text-gray-700" for="rehab_budget">
-                                    Rehab Budget <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="rehab_budget" id="rehab_budget" min="0" value="40000"
-                                    placeholder="Enter rehab budget" required>
-                            </div>
-
-                            <!-- ARV -->
-                            <div id="arv_field">
-                                <label class="block font-medium text-sm text-gray-700" for="arv">
-                                    ARV (After Repair Value) <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="arv" id="arv" min="0" value="250000"
-                                    placeholder="Enter ARV amount" required>
-                            </div>
-
-                            <!-- DSCR Rental Loan Specific Fields -->
-
-                            <!-- Occupancy Type (DSCR only) -->
-                            <div id="occupancy_type_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="occupancy_type">
-                                    Occupancy Type <span class="text-red-500">*</span>
-                                </label>
-                                <select name="occupancy_type" id="occupancy_type"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="">-- Select Occupancy Type --</option>
-                                </select>
-                            </div>
-
-                            <!-- Monthly Market Rent (DSCR only) -->
-                            <div id="monthly_market_rent_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="monthly_market_rent">
-                                    Monthly Market Rent <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="monthly_market_rent" id="monthly_market_rent" min="0" value=""
-                                    placeholder="Enter monthly market rent">
-                            </div>
-
-                            <!-- Annual Tax (DSCR only) -->
-                            <div id="annual_tax_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="annual_tax">
-                                    Annual Tax <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="annual_tax" id="annual_tax" min="0" value=""
-                                    placeholder="Enter annual tax amount">
-                            </div>
-
-                            <!-- Annual Insurance (DSCR only) -->
-                            <div id="annual_insurance_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="annual_insurance">
-                                    Annual Insurance <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="annual_insurance" id="annual_insurance" min="0" value=""
-                                    placeholder="Enter annual insurance amount">
-                            </div>
-
-                            <!-- Annual HOA (DSCR only) -->
-                            <div id="annual_hoa_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="annual_hoa">
-                                    Annual HOA <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="annual_hoa" id="annual_hoa" min="0" value=""
-                                    placeholder="Enter annual HOA amount">
-                            </div>
-
-                            <!-- DSCR (DSCR only) -->
-                            <div id="dscr_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="dscr">
-                                    DSCR <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="dscr" id="dscr" min="0" step="0.01" value=""
-                                    placeholder="Enter DSCR value">
-                            </div>
-
-                            <!-- Purchase Date (DSCR only) -->
-                            <div id="purchase_date_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="purchase_date">
-                                    Purchase Date
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="date" name="purchase_date" id="purchase_date" value="">
-                            </div>
-
-                            <!-- Payoff Amount (DSCR only) -->
-                            <div id="payoff_amount_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="payoff_amount">
-                                    Payoff Amount <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
-                                    type="number" name="payoff_amount" id="payoff_amount" min="0" value=""
-                                    placeholder="Enter payoff amount">
-                            </div>
-
-                            <!-- Lender Points (DSCR only) -->
-                            <div id="lender_points_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="lender_points">
-                                    Lender Points (%) <span class="text-red-500">*</span>
-                                </label>
-                                <select name="lender_points" id="lender_points"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="1.000">1.000</option>
-                                    <option value="1.500">1.500</option>
-                                    <option value="2.000" selected>2.000</option>
-                                </select>
-                            </div>
-
-                            <!-- Pre Pay Penalty (DSCR only) -->
-                            <div id="pre_pay_penalty_field" class="hidden">
-                                <label class="block font-medium text-sm text-gray-700" for="pre_pay_penalty">
-                                    Pre Pay Penalty <span class="text-red-500">*</span>
-                                </label>
-                                <select name="pre_pay_penalty" id="pre_pay_penalty"
-                                    class="block mt-1 w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="">-- Select Pre Pay Penalty --</option>
-                                </select>
-                            </div>
-
                         </div>
-
-                        <!-- Submit and Reset Buttons -->
-                        <div class="mt-6 flex space-x-4">
-                            <button type="submit" id="calculateBtn"
-                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Calculate Loan Options
-                            </button>
-                            <button type="reset"
-                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                                    </path>
-                                </svg>
-                                Clear All Fields
-                            </button>
-                        </div>
-                    </form>
-
-                    <!-- Results Section -->
+                    </form> <!-- Results Section -->
                     <div class="mt-8">
                         <!-- Loading Spinner -->
                         <div id="loadingSpinner" class="hidden text-center py-8">
@@ -782,7 +1438,135 @@
                         </div> <!-- End Results and Closing Section -->
 
                         <script>
-                            document.addEventListener('DOMContentLoaded', function() {
+                            // Section Navigation Functions
+                        let currentSection = 1;
+
+                        function showSection(sectionNumber) {
+                            // Hide all sections
+                            for(let i = 1; i <= 3; i++) {
+                                const section = document.getElementById(`section${i}`);
+                                if(section) {
+                                    section.classList.add('hidden');
+                                }
+                            }
+                            
+                            // Show target section
+                            const targetSection = document.getElementById(`section${sectionNumber}`);
+                            if(targetSection) {
+                                targetSection.classList.remove('hidden');
+                            }
+                            
+                            currentSection = sectionNumber;
+                            updateProgressIndicators();
+                        }
+
+                        function nextSection(sectionNumber) {
+                            // Basic validation before moving to next section
+                            if (currentSection === 1 && !validateSection1()) {
+                                return;
+                            }
+                            if (currentSection === 2 && !validateSection2()) {
+                                return;
+                            }
+                            
+                            showSection(sectionNumber);
+                            scrollToTop();
+                        }
+
+                        function previousSection(sectionNumber) {
+                            showSection(sectionNumber);
+                            scrollToTop();
+                        }
+
+                        function validateSection1() {
+                            const creditScore = document.getElementById('credit_score').value;
+                            const experience = document.getElementById('experience').value;
+                            const brokerPoints = document.getElementById('broker_points').value;
+                            
+                            if (!creditScore || !experience || !brokerPoints) {
+                                alert('Please fill in all required fields in the Basic Information section.');
+                                return false;
+                            }
+                            return true;
+                        }
+
+                        function validateSection2() {
+                            const loanType = document.getElementById('loan_type').value;
+                            const transactionType = document.getElementById('transaction_type').value;
+                            const loanTerm = document.getElementById('loan_term').value;
+                            const propertyType = document.getElementById('property_type').value;
+                            const state = document.getElementById('state').value;
+                            const purchasePrice = document.getElementById('purchase_price').value;
+                            
+                            if (!loanType || !transactionType || !loanTerm || !propertyType || !state || !purchasePrice) {
+                                alert('Please fill in all required fields in the Loan & Property Details section.');
+                                return false;
+                            }
+                            return true;
+                        }
+
+                        function updateProgressIndicators() {
+                            // Update step circles
+                            for(let i = 1; i <= 3; i++) {
+                                const circle = document.getElementById(`step${i}-circle`);
+                                const stepLabel = circle.nextElementSibling.firstElementChild;
+                                const stepDescription = circle.nextElementSibling.lastElementChild;
+                                
+                                if(i < currentSection) {
+                                    // Completed step
+                                    circle.className = circle.className.replace(/bg-\w+-\d+|text-\w+-\d+/g, '');
+                                    circle.classList.add('bg-green-600', 'text-white');
+                                    circle.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                    stepLabel.className = 'text-sm font-medium text-green-600';
+                                    stepDescription.className = 'text-xs text-green-500';
+                                } else if(i === currentSection) {
+                                    // Active step
+                                    circle.className = circle.className.replace(/bg-\w+-\d+|text-\w+-\d+/g, '');
+                                    circle.classList.add('bg-blue-600', 'text-white');
+                                    circle.innerHTML = i;
+                                    stepLabel.className = 'text-sm font-medium text-blue-600';
+                                    stepDescription.className = 'text-xs text-blue-500';
+                                } else {
+                                    // Inactive step
+                                    circle.className = circle.className.replace(/bg-\w+-\d+|text-\w+-\d+/g, '');
+                                    circle.classList.add('bg-gray-300', 'text-gray-600');
+                                    circle.innerHTML = i;
+                                    stepLabel.className = 'text-sm font-medium text-gray-400';
+                                    stepDescription.className = 'text-xs text-gray-400';
+                                }
+                            }
+                            
+                            // Update progress bars
+                            const progress1to2 = document.getElementById('progress1-2');
+                            const progress2to3 = document.getElementById('progress2-3');
+                            
+                            if(currentSection >= 2) {
+                                progress1to2.style.width = '100%';
+                            } else {
+                                progress1to2.style.width = '0%';
+                            }
+                            
+                            if(currentSection >= 3) {
+                                progress2to3.style.width = '100%';
+                            } else {
+                                progress2to3.style.width = '0%';
+                            }
+                        }
+
+                        function scrollToTop() {
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        }
+
+                        // Initialize form when page loads
+                        document.addEventListener('DOMContentLoaded', function() {
+                            showSection(1);
+                            updateProgressIndicators();
+                        });
+
+                        document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loanCalculatorForm');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const errorMessage = document.getElementById('errorMessage');
