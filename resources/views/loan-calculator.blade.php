@@ -808,8 +808,14 @@
                     if (!response.ok) {
                         const errorData = await response.json();
                         loadingSpinner.classList.add('hidden');
-                        const errorMsg = errorData.message || `HTTP Error: ${response.status}`;
-                        showError(errorMsg);
+                        
+                        // Check if this is a DSCR disqualifier response (status 400 with detailed notifications)
+                        if (response.status === 400 && errorData.disqualifier_notifications && Array.isArray(errorData.disqualifier_notifications) && errorData.disqualifier_notifications.length > 0) {
+                            showDetailedError(errorData.message || 'Loan application does not meet qualification criteria', errorData.disqualifier_notifications);
+                        } else {
+                            const errorMsg = errorData.message || `HTTP Error: ${response.status}`;
+                            showError(errorMsg);
+                        }
                         // Hide entire results and closing section
                         document.getElementById('resultsAndClosingSection').classList.add('hidden');
                         return;
@@ -827,9 +833,15 @@
                             populateResults(data.data);
                         }
                     } else {
-                        // Show specific API error message if available, otherwise show generic message
-                        const errorMsg = data.message || 'No loan programs found for the given criteria.';
-                        showError(errorMsg);
+                        // Check if there are detailed disqualifier notifications
+                        if (data.disqualifier_notifications && Array.isArray(data.disqualifier_notifications) && data.disqualifier_notifications.length > 0) {
+                            // Show detailed error messages
+                            showDetailedError(data.message || 'DSCR loan application does not meet qualification criteria', data.disqualifier_notifications);
+                        } else {
+                            // Show generic API error message if available, otherwise show generic message
+                            const errorMsg = data.message || 'No loan programs found for the given criteria.';
+                            showError(errorMsg);
+                        }
                         // Hide entire results and closing section
                         document.getElementById('resultsAndClosingSection').classList.add('hidden');
                     }
@@ -1366,6 +1378,25 @@
             
             function showError(message) {
                 document.getElementById('errorText').textContent = message;
+                errorMessage.classList.remove('hidden');
+            }
+            
+            function showDetailedError(mainMessage, notifications) {
+                const errorTextElement = document.getElementById('errorText');
+                
+                // Create detailed error content with main message and bullet points
+                let errorContent = `<div class="font-semibold mb-2">${mainMessage}</div>`;
+                
+                if (notifications && notifications.length > 0) {
+                    errorContent += '<div class="text-sm"><strong>Specific Issues:</strong></div>';
+                    errorContent += '<ul class="list-disc list-inside text-sm mt-1 ml-2">';
+                    notifications.forEach(notification => {
+                        errorContent += `<li>${notification}</li>`;
+                    });
+                    errorContent += '</ul>';
+                }
+                
+                errorTextElement.innerHTML = errorContent;
                 errorMessage.classList.remove('hidden');
             }
 

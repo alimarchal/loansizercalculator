@@ -17,7 +17,9 @@ class LoanTypePropertyTypeSeeder extends Seeder
         $fixFlipDesktop = \App\Models\LoanType::where('name', 'Fix and Flip')->where('loan_program', 'DESKTOP APPRAISAL')->first();
         $experiencedBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'EXPERIENCED BUILDER')->first();
         $newBuilder = \App\Models\LoanType::where('name', 'New Construction')->where('loan_program', 'NEW BUILDER')->first();
-        $dscrRental = \App\Models\LoanType::where('name', 'DSCR Rental')->first();
+
+        // Get all DSCR Rental loan programs
+        $dscrRentalPrograms = \App\Models\LoanType::where('name', 'DSCR Rental Loans')->get();
 
         // Full Appraisal property types: Single Family, Condo, 2-4 Unit, Townhome
         $fullAppraisalPropertyTypes = \App\Models\PropertyType::whereIn('name', [
@@ -51,8 +53,13 @@ class LoanTypePropertyTypeSeeder extends Seeder
             'Townhome'
         ])->get();
 
-        // DSCR property types: all property types that exist in database
-        $dscrPropertyTypes = \App\Models\PropertyType::all();
+        // DSCR property types: Single Family, Townhome, Condo, 2-4 Unit
+        $dscrPropertyTypes = \App\Models\PropertyType::whereIn('name', [
+            'Single Family',
+            'Townhome',
+            'Condo',
+            '2-4 Unit'
+        ])->get();
 
         // Full Appraisal Fix & Flip - Single Family, Condo, 2-4 Unit, Townhome
         if ($fixFlipFull) {
@@ -78,10 +85,13 @@ class LoanTypePropertyTypeSeeder extends Seeder
             $newBuilder->propertyTypes()->sync($propertyTypeIds);
         }
 
-        // DSCR Rental - all property types that exist in database
-        if ($dscrRental) {
-            $propertyTypeIds = $dscrPropertyTypes->pluck('id')->toArray();
-            $dscrRental->propertyTypes()->sync($propertyTypeIds);
+        // DSCR Rental Programs (Loan Program #1, #2, #3) - Single Family, Townhome, Condo, 2-4 Unit
+        foreach ($dscrRentalPrograms as $dscrRental) {
+            if ($dscrRental) {
+                $propertyTypeIds = $dscrPropertyTypes->pluck('id')->toArray();
+                $dscrRental->propertyTypes()->sync($propertyTypeIds);
+                echo "Synced " . count($propertyTypeIds) . " property types for DSCR Rental Loans - " . $dscrRental->loan_program . "\n";
+            }
         }
     }
 }

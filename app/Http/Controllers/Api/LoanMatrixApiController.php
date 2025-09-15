@@ -1926,11 +1926,12 @@ class LoanMatrixApiController extends Controller
         $eligiblePropertyTypes = \App\Models\PropertyType::whereIn('name', [
             'Single Family',
             'Townhome',
-            'Condo'
+            'Condo',
+            '2-4 Unit'
         ])->pluck('name')->toArray();
 
         if (!in_array($propertyType, $eligiblePropertyTypes)) {
-            $notifications[] = 'Property Type: Eligible property type for DSCR is Single Family, Townhome, Condo';
+            $notifications[] = 'Property Type: Property type "' . $propertyType . '" is not eligible for DSCR loans. Eligible property types are: ' . implode(', ', $eligiblePropertyTypes);
             $valid = false;
         }
 
