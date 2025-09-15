@@ -2075,4 +2075,38 @@ class LoanMatrixApiController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get DSCR loan terms from loan_types_dscrs table
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDscrLoanTerms()
+    {
+        try {
+            $loanTerms = \App\Models\LoanTypesDscr::select('id', 'loan_type_dscr_name')
+                ->orderBy('display_order')
+                ->get()
+                ->map(function ($loanTerm) {
+                    return [
+                        'id' => $loanTerm->id,
+                        'name' => $loanTerm->loan_type_dscr_name,
+                        'value' => $loanTerm->loan_type_dscr_name,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'DSCR loan terms retrieved successfully',
+                'data' => $loanTerms
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving DSCR loan terms',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

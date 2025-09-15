@@ -24,3 +24,6 @@ Route::get('/prepay-periods', [LoanMatrixApiController::class, 'getPrepayPeriods
 // Optional DSCR-specific endpoints (if you want separate from regular loan-type-options)
 Route::get('/dscr-property-types', [LoanMatrixApiController::class, 'getDscrPropertyTypes']);
 Route::get('/dscr-states', [LoanMatrixApiController::class, 'getDscrStates']);
+
+// API endpoint for DSCR loan terms
+Route::get('/dscr-loan-terms', [LoanMatrixApiController::class, 'getDscrLoanTerms']);

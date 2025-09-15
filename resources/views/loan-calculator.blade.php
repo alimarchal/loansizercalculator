@@ -1543,10 +1543,31 @@
                     loanTermSelect.append('<option value="">-- Select Loan Term --</option>');
                     
                     if (isDscrLoan) {
-                        // DSCR loan terms (30 Year Fixed based on your API example)
-                        loanTermSelect.append('<option value="30 Year Fixed">30 Year Fixed</option>');
-                        loanTermSelect.append('<option value="15 Year Fixed">15 Year Fixed</option>');
-                        loanTermSelect.append('<option value="10 Year Fixed">10 Year Fixed</option>');
+                        // DSCR loan terms - fetch from database
+                        fetch('/api/dscr-loan-terms')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success && data.data) {
+                                    data.data.forEach(loanTerm => {
+                                        loanTermSelect.append(`<option value="${loanTerm.value}">${loanTerm.name}</option>`);
+                                    });
+                                } else {
+                                    console.error('Failed to load DSCR loan terms:', data.message);
+                                    // Fallback to hardcoded options if API fails
+                                    loanTermSelect.append('<option value="30 Year Fixed">30 Year Fixed</option>');
+                                    loanTermSelect.append('<option value="10 Year IO">10 Year IO</option>');
+                                    loanTermSelect.append('<option value="5/1 ARM">5/1 ARM</option>');
+                                }
+                                loanTermSelect.trigger('change');
+                            })
+                            .catch(error => {
+                                console.error('Error fetching DSCR loan terms:', error);
+                                // Fallback to hardcoded options if API fails
+                                loanTermSelect.append('<option value="30 Year Fixed">30 Year Fixed</option>');
+                                loanTermSelect.append('<option value="10 Year IO">10 Year IO</option>');
+                                loanTermSelect.append('<option value="5/1 ARM">5/1 ARM</option>');
+                                loanTermSelect.trigger('change');
+                            });
                     } else {
                         // Regular loan terms (months)
                         loanTermSelect.append('<option value="12">12 Months</option>');
