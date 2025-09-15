@@ -69,6 +69,36 @@
             background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
         }
 
+        /* Editable Loan Amount Input Styles */
+        .loan-amount-input {
+            background-color: #f8fafc;
+            transition: all 0.2s ease-in-out;
+            border: 2px dashed #3b82f6;
+            cursor: pointer;
+        }
+
+        .loan-amount-input:hover {
+            background-color: #ffffff;
+            border-color: #2563eb;
+            border-style: solid;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: scale(1.02);
+        }
+
+        .loan-amount-input:focus {
+            background-color: #ffffff;
+            border-color: #2563eb;
+            border-style: solid;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            outline: none;
+            transform: scale(1.02);
+        }
+
+        .loan-amount-input:invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
         #closingStatementSection table td {
             vertical-align: middle;
         }
@@ -1095,7 +1125,7 @@
                             </span>
                         </td>
                         <td class="px-4 py-4 text-center">
-                            <span class="text-xl font-bold text-purple-600">
+                            <span class="text-xl font-bold text-purple-600" id="total_loan_${index}">
                                 $${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}
                             </span>
                         </td>
@@ -1174,8 +1204,25 @@
                         <div class="p-6">
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center border-b pb-2">
-                                    <span class="font-medium text-gray-700">You qualify for a Purchase Loan up to:</span>
-                                    <span class="font-bold text-blue-600">$${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}</span>
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-700">You qualify for a Purchase Loan up to:</span>
+                                        <span class="text-xs text-blue-600 italic">✏️ Click amount below to edit</span>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <input type="number" 
+                                               id="card_purchase_loan_${programName.replace(/\s+/g, '_')}" 
+                                               class="loan-amount-input w-24 px-2 py-1 text-right font-bold text-blue-600 rounded focus:outline-none"
+                                               value="${loanData?.purchase_loan_up_to || 0}"
+                                               max="${loanData?.purchase_loan_up_to || 0}"
+                                               min="0"
+                                               step="1000"
+                                               data-program="${programName}"
+                                               data-max-amount="${loanData?.purchase_loan_up_to || 0}"
+                                               onchange="handleCardLoanAmountChange(this, '${programName}')"
+                                               onblur="handleCardLoanAmountChange(this, '${programName}')"
+                                               title="Enter desired loan amount (up to $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : '0'})">
+                                        <span class="text-xs text-gray-500 mt-1">Max: $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}</span>
+                                    </div>
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-2">
                                     <span class="font-medium text-gray-700">You qualify for a Rehab Loan up to:</span>
@@ -1183,7 +1230,7 @@
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-2">
                                     <span class="font-medium text-gray-700">You qualify for Total Loan up to:</span>
-                                    <span class="font-bold text-purple-600">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</span>
+                                    <span class="font-bold text-purple-600" id="card_total_loan_${programName.replace(/\s+/g, '_')}">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</span>
                                 </div>
                             </div>
                             <div class="mt-6">
@@ -1862,6 +1909,114 @@
                     }
                 }
             });
+
+            // Function to handle loan amount changes in the cards
+            window.handleCardLoanAmountChange = function(input, programName) {
+                const newAmount = parseFloat(input.value) || 0;
+                const maxAmount = parseFloat(input.dataset.maxAmount) || 0;
+                
+                // Validate amount doesn't exceed maximum
+                if (newAmount > maxAmount) {
+                    input.value = maxAmount;
+                    alert(`Loan amount cannot exceed the maximum qualified amount of $${numberWithCommas(maxAmount)}`);
+                    return;
+                }
+                
+                // Update the loan data and recalculate
+                updateLoanCalculations(programName, newAmount);
+            };
+
+            // Function to update loan calculations with new purchase loan amount
+            window.updateLoanCalculations = async function(programName, newPurchaseLoanAmount, rowIndex = null) {
+                try {
+                    // Get the original loan data for this program
+                    const originalLoanData = window.allLoansData[programName][0];
+                    if (!originalLoanData) {
+                        console.error('Original loan data not found for program:', programName);
+                        return;
+                    }
+                    
+                    // Calculate new total loan amount
+                    const rehabLoanAmount = originalLoanData.loan_type_and_loan_program_table.rehab_loan_up_to || 0;
+                    const newTotalLoanAmount = newPurchaseLoanAmount + rehabLoanAmount;
+                    
+                    // Update the total loan display in table
+                    if (rowIndex !== null) {
+                        const totalLoanElement = document.getElementById(`total_loan_${rowIndex}`);
+                        if (totalLoanElement) {
+                            totalLoanElement.textContent = `$${numberWithCommas(newTotalLoanAmount)}`;
+                        }
+                    }
+                    
+                    // Update the total loan display in card
+                    const cardTotalElement = document.getElementById(`card_total_loan_${programName.replace(/\s+/g, '_')}`);
+                    if (cardTotalElement) {
+                        cardTotalElement.textContent = `$${numberWithCommas(newTotalLoanAmount)}`;
+                    }
+                    
+                    // Calculate new lender fees based on the new total loan amount
+                    const newLenderFees = calculateLenderFees(newTotalLoanAmount, originalLoanData);
+                    
+                    // Update the loan data with new values
+                    const updatedLoanData = JSON.parse(JSON.stringify(originalLoanData)); // Deep copy
+                    updatedLoanData.loan_type_and_loan_program_table.purchase_loan_up_to = newPurchaseLoanAmount;
+                    updatedLoanData.loan_type_and_loan_program_table.total_loan_up_to = newTotalLoanAmount;
+                    
+                    // Update closing statement with new fees
+                    if (updatedLoanData.estimated_closing_statement) {
+                        updatedLoanData.estimated_closing_statement.loan_amount_section.purchase_loan_amount = newPurchaseLoanAmount;
+                        updatedLoanData.estimated_closing_statement.loan_amount_section.total_loan_amount = newTotalLoanAmount;
+                        updatedLoanData.estimated_closing_statement.lender_related_charges = newLenderFees;
+                        
+                        // Recalculate subtotal closing costs
+                        const lenderCharges = newLenderFees;
+                        const titleCharges = updatedLoanData.estimated_closing_statement.title_other_charges;
+                        const newSubtotal = (lenderCharges.lender_origination_fee || 0) + 
+                                          (lenderCharges.broker_fee || 0) + 
+                                          (lenderCharges.underwriting_processing_fee || 0) + 
+                                          (lenderCharges.interest_reserves || 0) +
+                                          (titleCharges.title_charges || 0) + 
+                                          (titleCharges.property_insurance || 0) + 
+                                          (titleCharges.legal_doc_prep_fee || 0);
+                        
+                        updatedLoanData.estimated_closing_statement.title_other_charges.subtotal_closing_costs = newSubtotal;
+                        updatedLoanData.estimated_closing_statement.cash_due_to_buyer = newSubtotal;
+                    }
+                    
+                    // Update the global loan data
+                    window.allLoansData[programName][0] = updatedLoanData;
+                    
+                    // If this program is currently selected, update the closing statement
+                    const closingSection = document.getElementById('closingStatementSection');
+                    if (!closingSection.classList.contains('hidden')) {
+                        populateClosingStatement(updatedLoanData.estimated_closing_statement);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error updating loan calculations:', error);
+                }
+            };
+            
+            // Function to calculate lender fees based on loan amount
+            window.calculateLenderFees = function(totalLoanAmount, originalLoanData) {
+                const userInputs = originalLoanData.user_inputs;
+                const originalFees = originalLoanData.estimated_closing_statement.lender_related_charges;
+                
+                // Get rates from the loan data (these are percentages)
+                const lenderPointsRate = originalLoanData.loan_type_and_loan_program_table.lender_points; // e.g., 2.5%
+                const brokerPointsRate = parseFloat(userInputs.broker_points); // e.g., 1%
+                
+                // Calculate new fees based on the new total loan amount
+                const newOriginationFee = (totalLoanAmount * lenderPointsRate) / 100;
+                const newBrokerFee = (totalLoanAmount * brokerPointsRate) / 100;
+                
+                return {
+                    lender_origination_fee: newOriginationFee,
+                    broker_fee: newBrokerFee,
+                    underwriting_processing_fee: originalFees.underwriting_processing_fee, // This usually stays constant
+                    interest_reserves: originalFees.interest_reserves // This might change but for now keep original
+                };
+            };
 
             $('form').submit(function(){
                 // If x-button does not render as a traditional submit button, target it directly by ID or class
