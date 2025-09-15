@@ -759,11 +759,6 @@
                                         Download PDF
                                     </button>
                                     <button
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
-                                        <i class="fas fa-save mr-2"></i>
-                                        Save Term Sheet
-                                    </button>
-                                    <button
                                         class="bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
                                         <i class="fas fa-paper-plane mr-2"></i>
                                         Start Application
