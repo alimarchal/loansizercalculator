@@ -17,6 +17,12 @@ class TransactionTypeSeeder extends Seeder
             ['name' => 'Purchase'],
             ['name' => 'Refinance No Cash Out'],
             ['name' => 'Refinance Cash Out'],
+
+            // ['name' => 'Cash Out Refi 660-679 FICO'],
+            // ['name' => 'Cash Out Refi 680-699 FICO'],
+            // ['name' => 'Cash Out Refi 700-720 FICO'],
+            // ['name' => 'Cash Out Refi 720+ FICO'],
+
         ];
 
         TransactionType::upsert($types, ['name']);

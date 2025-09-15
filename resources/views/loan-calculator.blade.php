@@ -777,6 +777,17 @@
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
+                // Reset view - hide closing statement when recalculating
+                document.getElementById('closingStatementSection').classList.add('hidden');
+                window.selectedLoanProgram = null;
+                
+                // Reset all button states
+                const allButtons = document.querySelectorAll('#loanProgramCardsContainer button');
+                allButtons.forEach(button => {
+                    button.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Check Summary for This Program';
+                    button.classList.remove('ring-4', 'ring-offset-2', 'ring-blue-300', 'ring-green-300');
+                });
+                
                 // Hide previous errors
                 errorMessage.classList.add('hidden');
                 
@@ -940,8 +951,8 @@
                             <i class="fas fa-hammer mr-2"></i>Max LTC
                         </th>
                     `;
-                } else if (loanType === 'New Construction' || loanType === 'DSCR Rental') {
-                    // For New Construction and DSCR Rental: show only Max LTFC
+                } else if (loanType === 'New Construction' || loanType === 'DSCR Rental Loans') {
+                    // For New Construction and DSCR Rental Loans: show only Max LTFC
                     headerHTML += `
                         <th class="px-4 py-4 text-center font-bold text-white bg-gradient-to-r from-pink-600 to-pink-700 border-r border-pink-500">
                             <i class="fas fa-tools mr-2"></i>Max LTFC
@@ -1086,8 +1097,8 @@
                                 </span>
                             </td>
                         `;
-                    } else if (loan.loan_type === 'New Construction' || loan.loan_type === 'DSCR Rental') {
-                        // For New Construction and DSCR Rental: show only Max LTFC
+                    } else if (loan.loan_type === 'New Construction' || loan.loan_type === 'DSCR Rental Loans') {
+                        // For New Construction and DSCR Rental Loans: show only Max LTFC
                         rowHTML += `
                             <td class="px-4 py-4 text-center border-r border-gray-200">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
@@ -1152,6 +1163,11 @@
             function createLoanProgramCards(loansByProgram) {
                 const cardsContainer = document.getElementById('loanProgramCardsContainer');
                 cardsContainer.innerHTML = '';
+                
+                // Reset view state - ensure cards are shown and closing statement is hidden
+                document.getElementById('resultsSection').classList.remove('hidden');
+                document.getElementById('closingStatementSection').classList.add('hidden');
+                window.selectedLoanProgram = null;
 
                 // Store loans data globally for later use
                 window.allLoansData = loansByProgram;
@@ -1164,12 +1180,29 @@
                     const loan = loansByProgram[programName][0];
                     const loanData = loan.loan_type_and_loan_program_table;
                     
+                    // Check if this is a DSCR loan - if so, skip validation
+                    const isDscrLoan = loan.loan_type === 'DSCR Rental Loans';
+                    
+                    // Check if this loan program has zero loan amounts (skip for DSCR loans)
+                    const purchaseLoan = parseFloat(loanData?.purchase_loan_up_to || 0);
+                    const rehabLoan = parseFloat(loanData?.rehab_loan_up_to || 0);
+                    const totalLoan = parseFloat(loanData?.total_loan_up_to || 0);
+                    const hasZeroLoanAmount = isDscrLoan ? false : (purchaseLoan === 0 && rehabLoan === 0 && totalLoan === 0);
+                    
                     // Determine program display name and styling
                     let displayName = programName;
                     let iconClass = 'fas fa-calculator';
                     let cardColorClass = index === 0 ? 'border-blue-500 bg-blue-50' : 'border-green-500 bg-green-50';
                     let headerColorClass = index === 0 ? 'bg-blue-600' : 'bg-green-600';
                     let buttonColorClass = index === 0 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700';
+                    
+                    // If loan amounts are zero, use different styling
+                    if (hasZeroLoanAmount) {
+                        cardColorClass = 'border-gray-400 bg-gray-50';
+                        headerColorClass = 'bg-gray-500';
+                        buttonColorClass = 'bg-gray-400 cursor-not-allowed';
+                        iconClass = 'fas fa-exclamation-triangle';
+                    }
                     
                     if (isNewConstruction) {
                         if (programName === 'EXPERIENCED BUILDER') {
@@ -1233,10 +1266,11 @@
                                 </div>
                             </div>
                             <div class="mt-6">
-                                <button onclick="selectLoanProgram('${programName}')" 
-                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 hover:shadow-lg">
-                                    <i class="fas fa-check-circle mr-2"></i>
-                                    Check Summary for This Program
+                                <button onclick="${hasZeroLoanAmount ? '' : `selectLoanProgram('${programName}')`}" 
+                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 ${hasZeroLoanAmount ? '' : 'hover:shadow-lg'}"
+                                        ${hasZeroLoanAmount ? 'disabled title="This loan program shows zero loan amount based on your inputs"' : ''}>
+                                    <i class="fas ${hasZeroLoanAmount ? 'fa-ban' : 'fa-check-circle'} mr-2"></i>
+                                    ${hasZeroLoanAmount ? 'Not Available - Zero Loan Amount' : 'Check Summary for This Program'}
                                 </button>
                             </div>
                         </div>
@@ -1368,6 +1402,11 @@
             function createDscrLoanProgramCards(loans) {
                 const cardsContainer = document.getElementById('loanProgramCardsContainer');
                 cardsContainer.innerHTML = '';
+                
+                // Reset view state - ensure cards are shown and closing statement is hidden
+                document.getElementById('resultsSection').classList.remove('hidden');
+                document.getElementById('closingStatementSection').classList.add('hidden');
+                window.selectedLoanProgram = null;
 
                 // Store DSCR loans data globally for later use
                 window.allLoansData = {};
@@ -1378,9 +1417,19 @@
                     
                     const loanData = loan.loan_program_values;
                     
+                    // For DSCR loans, always show as valid (no validation needed)
+                    let hasValidLoanAmount = true;
+                    
                     let cardColorClass = index === 0 ? 'border-blue-500 bg-blue-50' : index === 1 ? 'border-green-500 bg-green-50' : 'border-purple-500 bg-purple-50';
                     let headerColorClass = index === 0 ? 'bg-blue-600' : index === 1 ? 'bg-green-600' : 'bg-purple-600';
                     let buttonColorClass = index === 0 ? 'bg-blue-600 hover:bg-blue-700' : index === 1 ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700';
+                    
+                    // If loan amounts are zero, use different styling
+                    if (!hasValidLoanAmount) {
+                        cardColorClass = 'border-gray-400 bg-gray-50';
+                        headerColorClass = 'bg-gray-500';
+                        buttonColorClass = 'bg-gray-400 cursor-not-allowed';
+                    }
                     
                     const card = document.createElement('div');
                     card.className = `bg-white rounded-lg shadow-lg border-2 ${cardColorClass} overflow-hidden`;
@@ -1410,10 +1459,11 @@
                                 </div>
                             </div>
                             <div class="mt-6">
-                                <button onclick="selectLoanProgram('${programName}')" 
-                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 hover:shadow-lg">
-                                    <i class="fas fa-check-circle mr-2"></i>
-                                    Check Summary for This Program
+                                <button onclick="${hasValidLoanAmount ? `selectLoanProgram('${programName}')` : ''}" 
+                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 ${hasValidLoanAmount ? 'hover:shadow-lg' : ''}"
+                                        ${hasValidLoanAmount ? '' : 'disabled title="This loan program shows zero loan amount based on your inputs"'}>
+                                    <i class="fas ${hasValidLoanAmount ? 'fa-check-circle' : 'fa-ban'} mr-2"></i>
+                                    ${hasValidLoanAmount ? 'Check Summary for This Program' : 'Not Available - Zero Loan Amount'}
                                 </button>
                             </div>
                         </div>
@@ -1464,7 +1514,47 @@
             const selectedLoan = window.allLoansData[programName][0];
             console.log('Selected loan data:', selectedLoan);
             
-            // Show closing statement section
+            // Check if loan has zero amounts - if so, don't show closing statement
+            let hasValidLoanAmount = false;
+            
+            // Determine loan type to use appropriate validation
+            const loanType = selectedLoan.loan_type;
+            const isDscrLoan = loanType === 'DSCR Rental Loans';
+            
+            if (isDscrLoan) {
+                // For DSCR loans, always show closing statement - no validation needed
+                hasValidLoanAmount = true;
+                console.log('DSCR loan detected - skipping validation, always showing closing statement');
+            } else if (selectedLoan.estimated_closing_statement && selectedLoan.estimated_closing_statement.loan_amount_section) {
+                const loanAmounts = selectedLoan.estimated_closing_statement.loan_amount_section;
+                const totalLoan = parseFloat(loanAmounts.total_loan_amount || 0);
+                const purchaseLoan = parseFloat(loanAmounts.purchase_loan_amount || 0);
+                const rehabLoan = parseFloat(loanAmounts.rehab_loan_amount || 0);
+                
+                // For Fix & Flip and New Construction loans, consider valid if total loan > 0 OR if either purchase or rehab loan > 0
+                hasValidLoanAmount = totalLoan > 0 || purchaseLoan > 0 || rehabLoan > 0;
+                
+                console.log('Loan amount validation:', {
+                    loanType,
+                    isDscrLoan,
+                    totalLoan,
+                    purchaseLoan, 
+                    rehabLoan,
+                    hasValidLoanAmount
+                });
+            } else {
+                // If no closing statement data exists, assume valid for non-DSCR loans
+                hasValidLoanAmount = true;
+            }
+            
+            if (!hasValidLoanAmount) {
+                // Don't show closing statement for zero loan amounts
+                console.log('Skipping closing statement display - loan amount is zero');
+                alert('This loan program shows zero loan amount based on your inputs. Please try different parameters or another loan program.');
+                return;
+            }
+            
+            // Show closing statement section only if loan amount is valid
             document.getElementById('closingStatementSection').classList.remove('hidden');
             
             // Populate closing statement with selected loan data
@@ -2025,26 +2115,34 @@
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 
-                // PDF Header
+                // Company Header
                 pdf.setFontSize(16);
                 pdf.setFont(undefined, 'bold');
-                pdf.text('LOAN CALCULATOR REPORT', 105, 15, { align: 'center' });
-                
-                pdf.setFontSize(12);
-                pdf.setFont(undefined, 'normal');
-                pdf.text('Loan Status: Not Submitted', 105, 25, { align: 'center' });
+                pdf.text('GOLDMAN FUNDING', 105, 15, { align: 'center' });
                 
                 pdf.setFontSize(10);
-                pdf.text('Generated on: ' + new Date().toLocaleDateString(), 105, 32, { align: 'center' });
-                pdf.text('Structure My Loan Calculator', 105, 38, { align: 'center' });
+                pdf.setFont(undefined, 'normal');
+                pdf.text('200 Broadhollow rd Suite 207', 105, 22, { align: 'center' });
+                pdf.text('Melville NY, 11747', 105, 27, { align: 'center' });
+                pdf.text('T: 631-602-0460', 105, 32, { align: 'center' });
+                pdf.text('www.goldman-funding.com', 105, 37, { align: 'center' });
                 
-                pdf.setFontSize(12);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('Speak to a Loan Officer (631) 602-0460', 105, 48, { align: 'center' });
-                
-                let yPos = 60;
+                let yPos = 50;
                 const margin = 10;
                 const pageWidth = 190; // Use full width
+                
+                // Loan Terms Summary Section
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('LOAN TERMS SUMMARY', margin, yPos);
+                yPos += 8;
+                
+                pdf.setFontSize(9);
+                pdf.setFont(undefined, 'normal');
+                const summaryText = 'Congratulations! You are Pre Approved based on our preliminary review of your information provided to Goldman Funding. The terms of your prequalification are described below. Note: This is preliminary term sheet and not a binding agreement. Terms are only valid for 30 days after issue.';
+                const splitSummary = pdf.splitTextToSize(summaryText, pageWidth - (margin * 2));
+                pdf.text(splitSummary, margin, yPos);
+                yPos += splitSummary.length * 4 + 10;
                 
                 // Get form data
                 const formData = getFormDataForPDF();
@@ -2076,6 +2174,24 @@
                     
                     yPos += 10;
                     
+                    // Title and Settlement Section (before Estimated Closing Statement)
+                    if (yPos > 200) {
+                        pdf.addPage();
+                        yPos = 20;
+                    }
+                    
+                    pdf.setFontSize(12);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('TITLE AND SETTLEMENT', margin, yPos);
+                    yPos += 8;
+                    
+                    pdf.setFontSize(9);
+                    pdf.setFont(undefined, 'normal');
+                    const titleText = 'Borrowers to provide their own Title and Settlement Company. If none available, Goldman Funding will assign a preferred title company to handle the Title report and settlement. Loan Documents may be signed remotely from borrowers location. Closing Agent requires at least 48 Hours Notice to schedule closing with borrower.';
+                    const splitTitleText = pdf.splitTextToSize(titleText, pageWidth - (margin * 2));
+                    pdf.text(splitTitleText, margin, yPos);
+                    yPos += splitTitleText.length * 4 + 15;
+                    
                     // Section 3: Estimated Closing Statement
                     if (yPos > 200) {
                         pdf.addPage();
@@ -2085,17 +2201,38 @@
                     if (window.selectedLoanProgram) {
                         pdf.setFontSize(12);
                         pdf.setFont(undefined, 'bold');
-                        pdf.text('ESTIMATED CLOSING STATEMENT', margin, yPos);
-                        yPos += 8;
+                        pdf.text('ESTIMATED CLOSING COSTS', margin, yPos);
+                        yPos += 3;
+                        
+                        pdf.setFontSize(9);
+                        pdf.setFont(undefined, 'normal');
+                        const closingCostsText = 'Closing costs are calculated by adding all buyer related charges such as purchase price, construction costs and closing costs. These costs are offset against the approved loan amount, as outlined in your loan terms. "Due from buyer at closing" represents the required funds due "from" the buyer at closing. For refinance transactions, a negative number represents the net funds (or cash out) "due to" the borrower at closing.';
+                        const splitClosingText = pdf.splitTextToSize(closingCostsText, pageWidth - (margin * 2));
+                        pdf.text(splitClosingText, margin, yPos);
+                        yPos += splitClosingText.length * 4 + 8;
                         
                         const closingTable = createClosingStatementTable();
                         yPos = drawTable(pdf, closingTable.headers, closingTable.data, yPos, margin, pageWidth);
                     }
                 }
                 
+                // Footer Note - add at the end
+                if (yPos > 220) {
+                    pdf.addPage();
+                    yPos = 20;
+                } else {
+                    yPos += 15;
+                }
+                
+                pdf.setFontSize(9);
+                pdf.setFont(undefined, 'normal');
+                const footerText = '(1) Buyer related charges represent the costs incurred by borrower to purchase and rehab the subject property. For refinance transactions, the buyer related charges = current mortgage payoff + rehab costs. Please be advised Title and Property Insurance charges are estimates and subject to change. Borrower may shop for these services. All lender based charges will be accurate and solely based on borrower stated credentials and transaction details. With any questions regarding your closing costs contact your loan officer.';
+                const splitFooterText = pdf.splitTextToSize(footerText, pageWidth - (margin * 2));
+                pdf.text(splitFooterText, margin, yPos);
+                
                 // Save PDF
                 const timestamp = new Date().toISOString().split('T')[0];
-                const filename = `loan-calculator-report-${timestamp}.pdf`;
+                const filename = `goldman-funding-loan-report-${timestamp}.pdf`;
                 pdf.save(filename);
             };
             
