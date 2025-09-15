@@ -2033,16 +2033,23 @@
                 // PDF Header
                 pdf.setFontSize(16);
                 pdf.setFont(undefined, 'bold');
-                pdf.text('LOAN CALCULATOR REPORT', 105, 20, { align: 'center' });
+                pdf.text('LOAN CALCULATOR REPORT', 105, 15, { align: 'center' });
+                
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'normal');
+                pdf.text('Loan Status: Not Submitted', 105, 25, { align: 'center' });
                 
                 pdf.setFontSize(10);
-                pdf.setFont(undefined, 'normal');
-                pdf.text('Generated on: ' + new Date().toLocaleDateString(), 105, 28, { align: 'center' });
-                pdf.text('Structure My Loan Calculator', 105, 35, { align: 'center' });
+                pdf.text('Generated on: ' + new Date().toLocaleDateString(), 105, 32, { align: 'center' });
+                pdf.text('Structure My Loan Calculator', 105, 38, { align: 'center' });
                 
-                let yPos = 50;
-                const margin = 15;
-                const pageWidth = 180;
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Speak to a Loan Officer (631) 602-0460', 105, 48, { align: 'center' });
+                
+                let yPos = 60;
+                const margin = 10;
+                const pageWidth = 190; // Use full width
                 
                 // Get form data
                 const formData = getFormDataForPDF();
@@ -2062,31 +2069,33 @@
                 
                 yPos += 10;
                 
-                // Section 2: Selected Loan Program
-                if (window.selectedLoanProgram) {
+                // Section 2: All Loan Programs with Selected Column
+                if (window.allLoansData && Object.keys(window.allLoansData).length > 0) {
                     pdf.setFontSize(12);
                     pdf.setFont(undefined, 'bold');
-                    pdf.text('SELECTED LOAN PROGRAM', margin, yPos);
+                    pdf.text('LOAN PROGRAMS', margin, yPos);
                     yPos += 8;
                     
-                    const loanTable = createSelectedLoanTable();
+                    const loanTable = createAllLoanProgramsTable();
                     yPos = drawTable(pdf, loanTable.headers, loanTable.data, yPos, margin, pageWidth);
                     
                     yPos += 10;
                     
                     // Section 3: Estimated Closing Statement
-                    if (yPos > 230) {
+                    if (yPos > 200) {
                         pdf.addPage();
                         yPos = 20;
                     }
                     
-                    pdf.setFontSize(12);
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text('ESTIMATED CLOSING STATEMENT', margin, yPos);
-                    yPos += 8;
-                    
-                    const closingTable = createClosingStatementTable();
-                    yPos = drawTable(pdf, closingTable.headers, closingTable.data, yPos, margin, pageWidth);
+                    if (window.selectedLoanProgram) {
+                        pdf.setFontSize(12);
+                        pdf.setFont(undefined, 'bold');
+                        pdf.text('ESTIMATED CLOSING STATEMENT', margin, yPos);
+                        yPos += 8;
+                        
+                        const closingTable = createClosingStatementTable();
+                        yPos = drawTable(pdf, closingTable.headers, closingTable.data, yPos, margin, pageWidth);
+                    }
                 }
                 
                 // Save PDF
@@ -2189,6 +2198,37 @@
                 return { headers, data };
             }
             
+            // Helper function to create all loan programs table with selected column
+            function createAllLoanProgramsTable() {
+                const headers = ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Purchase Loan', 'Rehab Loan', 'Total Loan', 'Selected'];
+                const data = [];
+                
+                if (window.allLoansData && Object.keys(window.allLoansData).length > 0) {
+                    Object.keys(window.allLoansData).forEach(programName => {
+                        const loan = window.allLoansData[programName][0];
+                        const loanData = loan.loan_type_and_loan_program_table || loan.loan_program_values;
+                        
+                        if (loanData) {
+                            const isSelected = window.selectedLoanProgram === programName;
+                            
+                            data.push([
+                                programName,
+                                (loanData.loan_term || loanData.term || 'N/A') + ' months',
+                                (loanData.interest_rate || loanData.rate || 'N/A') + '%',
+                                (loanData.lender_points || loanData.points || 'N/A') + '%',
+                                (loanData.max_ltv || 'N/A') + '%',
+                                '$' + numberWithCommas(loanData.purchase_loan_up_to || 0),
+                                '$' + numberWithCommas(loanData.rehab_loan_up_to || 0),
+                                '$' + numberWithCommas(loanData.total_loan_up_to || (loanData.purchase_loan_up_to + loanData.rehab_loan_up_to) || 0),
+                                isSelected ? 'YES' : 'NO'
+                            ]);
+                        }
+                    });
+                }
+                
+                return { headers, data };
+            }
+            
             // Helper function to create closing statement table
             function createClosingStatementTable() {
                 const headers = ['Description', 'Amount'];
@@ -2286,6 +2326,9 @@
                         pdf.setFont(undefined, 'normal');
                     }
                     
+                    // Check if this row has a "Selected" column with "YES"
+                    const isSelectedRow = row[row.length - 1] === 'YES' && headers[headers.length - 1] === 'Selected';
+                    
                     xPos = margin;
                     row.forEach((cell, cellIndex) => {
                         let text = String(cell || '');
@@ -2301,11 +2344,34 @@
                             pdf.setFont(undefined, 'bold');
                         }
                         
+                        // Highlight selected row
+                        if (isSelectedRow) {
+                            pdf.setFillColor(220, 220, 220); // Light gray background
+                            pdf.rect(xPos, yPos, colWidth, 6, 'F');
+                        }
+                        
+                        // Draw cell border
                         pdf.rect(xPos, yPos, colWidth, 6);
+                        
+                        // Special styling for "Selected" column
+                        if (cellIndex === row.length - 1 && headers[headers.length - 1] === 'Selected') {
+                            if (text === 'YES') {
+                                pdf.setFont(undefined, 'bold');
+                                pdf.setTextColor(0, 128, 0); // Green color for YES
+                            } else {
+                                pdf.setTextColor(128, 128, 128); // Gray color for NO
+                            }
+                        }
+                        
                         pdf.text(text, xPos + 2, yPos + 4);
                         
+                        // Reset font and color
                         if (cellIndex === 0 && (text.includes('SECTION') || text.includes('CHARGES') || text.includes('CASH DUE'))) {
                             pdf.setFont(undefined, 'normal');
+                        }
+                        if (cellIndex === row.length - 1 && headers[headers.length - 1] === 'Selected') {
+                            pdf.setFont(undefined, 'normal');
+                            pdf.setTextColor(0, 0, 0); // Reset to black
                         }
                         
                         xPos += colWidth;
