@@ -872,8 +872,36 @@ class LoanMatrixApiController extends Controller
      * @param \Illuminate\Support\Collection $transactionData
      * @return int
      */
-    private function calculateTransactionTypeMaxLtv($transactionType, $transactionData)
+    private function calculateTransactionTypeMaxLtv($transactionType, $transactionData, $creditScore = null)
     {
+        // Special handling for "Refinance Cash Out" transaction types
+        if ($transactionType === 'Refinance Cash Out' && $creditScore !== null) {
+            // Get base transaction type max LTV
+            $baseMaxLtv = 0;
+            foreach ($transactionData as $row) {
+                if ($row->row_label === $transactionType) {
+                    $baseMaxLtv = $this->findMaxLtvFromRow($row);
+                    break;
+                }
+            }
+
+            // Get FICO-based transaction type max LTV
+            $ficoBasedType = $this->getFicoBasedCashOutRefiType($creditScore);
+            $ficoMaxLtv = 0;
+            if ($ficoBasedType) {
+                foreach ($transactionData as $row) {
+                    if ($row->row_label === $ficoBasedType) {
+                        $ficoMaxLtv = $this->findMaxLtvFromRow($row);
+                        break;
+                    }
+                }
+            }
+
+            // Return maximum (most lenient) of the two max LTV values
+            return max($baseMaxLtv, $ficoMaxLtv);
+        }
+
+        // Regular logic for other transaction types
         foreach ($transactionData as $row) {
             if ($row->row_label === $transactionType) {
                 return $this->findMaxLtvFromRow($row);
@@ -1396,7 +1424,7 @@ class LoanMatrixApiController extends Controller
 
                 // Calculate max LTV for each category based on user inputs
                 $ficoMaxLtv = $this->calculateFicoMaxLtv($creditScore, $programData->get('FICO', collect()));
-                $transactionTypeMaxLtv = $this->calculateTransactionTypeMaxLtv($transactionType, $programData->get('Transaction Type', collect()));
+                $transactionTypeMaxLtv = $this->calculateTransactionTypeMaxLtv($transactionType, $programData->get('Transaction Type', collect()), $creditScore);
                 $initialLoanAmount = ($transactionTypeMaxLtv * $purchasePrice) / 100; // Initial Loan Amount = Purchase Price × TransactionTypeMaxLtv / 100 (used in loan amount calculation) the amount 
                 $loanAmountMaxLtv = $this->calculateLoanAmountMaxLtv($purchasePrice, $programData->get('Loan Amount', collect()));
                 $dscrMaxLtv = $this->calculateDscrMaxLtv($dscr, $programData->get('DSCR', collect()));
