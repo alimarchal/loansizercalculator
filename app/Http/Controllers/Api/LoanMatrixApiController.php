@@ -1008,6 +1008,24 @@ class LoanMatrixApiController extends Controller
     public function getLoanMatrixDscr(Request $request)
     {
         // Enhanced validation for DSCR loan inputs
+        // First, validate basic parameters to get transaction_type
+        $basicValidator = Validator::make($request->all(), [
+            'transaction_type' => 'required|string',
+        ]);
+
+        if ($basicValidator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $basicValidator->errors()
+            ], 400);
+        }
+
+        // Determine payoff_amount validation based on transaction_type
+        $transactionType = $request->transaction_type;
+        $isRefinance = in_array($transactionType, ['Refinance No Cash Out', 'Refinance Cash Out']);
+        $payoffValidation = $isRefinance ? 'required|numeric|min:0' : 'nullable|numeric|min:0';
+
         $validator = Validator::make($request->all(), [
             // Optional filter parameter
             'loan_program' => 'nullable|string|in:Loan Program #1,Loan Program #2,Loan Program #3',
@@ -1024,13 +1042,13 @@ class LoanMatrixApiController extends Controller
             'monthly_market_rent' => 'required|numeric|min:0',
             'annual_tax' => 'required|numeric|min:0',
             'annual_insurance' => 'required|numeric|min:0',
-            'annual_hoa' => 'required|numeric|min:0',
-            'dscr' => 'required|numeric|min:0.01',
+            'annual_hoa' => 'nullable|numeric|min:0',
+            'dscr' => 'nullable|numeric|min:0.01',
             'purchase_date' => 'nullable|date',
-            'payoff_amount' => 'required|numeric|min:0',
-            'loan_term' => 'required|string|in:' . implode(',', \App\Models\LoanTypesDscr::pluck('loan_type_dscr_name')->toArray()),
-            'lender_points' => 'required|numeric|in:1.00,1.000,1.5000,2.000',
-            'pre_pay_penalty' => 'required|string|in:' . implode(',', \App\Models\PrepayPeriods::pluck('prepay_name')->toArray()),
+            'payoff_amount' => $payoffValidation,
+            'loan_term' => 'nullable|string|in:' . implode(',', \App\Models\LoanTypesDscr::pluck('loan_type_dscr_name')->toArray()),
+            'lender_points' => 'nullable|numeric|in:1.00,1.000,1.5000,2.000',
+            'pre_pay_penalty' => 'nullable|string|in:' . implode(',', \App\Models\PrepayPeriods::pluck('prepay_name')->toArray()),
         ]);
 
         if ($validator->fails()) {
@@ -1041,6 +1059,14 @@ class LoanMatrixApiController extends Controller
             ], 400);
         }
 
+        // Apply default values for optional parameters
+        $dscr = $request->get('dscr', 1.5); // Default to 1.5 if not provided
+        $loanTerm = $request->get('loan_term', '30 Year Fixed'); // Default to '30 Year Fixed' if not provided
+        $lenderPoints = $request->get('lender_points', 2.000); // Default to 2.000 if not provided
+        $prePay = $request->get('pre_pay_penalty', '3 Year Prepay'); // Default to '3 Year Prepay' if not provided
+        $annualHoa = $request->get('annual_hoa', 0); // Default to 0 if not provided
+        $payoffAmount = $request->get('payoff_amount', 0); // Default to 0 if not provided for non-refinance transactions
+
         try {
             // Extract parameters
             $creditScore = $request->credit_score;
@@ -1049,7 +1075,6 @@ class LoanMatrixApiController extends Controller
             $propertyType = $request->property_type;
             $purchasePrice = $request->purchase_price;
             $occupancyType = $request->occupancy_type;
-            $dscr = $request->dscr;
 
             // Validate transaction type exists in database
             $transactionTypeModel = \App\Models\TransactionType::where('name', $transactionType)->first();
@@ -1108,13 +1133,13 @@ class LoanMatrixApiController extends Controller
                         'monthly_market_rent' => $request->monthly_market_rent,
                         'annual_tax' => $request->annual_tax,
                         'annual_insurance' => $request->annual_insurance,
-                        'annual_hoa' => $request->annual_hoa,
-                        'dscr' => $dscr,
+                        'annual_hoa' => $annualHoa, // Use default value
+                        'dscr' => $dscr, // Use default value
                         'purchase_date' => $request->purchase_date,
-                        'payoff_amount' => $request->payoff_amount,
-                        'loan_term' => $request->loan_term,
-                        'lender_points' => $request->lender_points,
-                        'pre_pay_penalty' => $request->pre_pay_penalty,
+                        'payoff_amount' => $payoffAmount, // Use default value
+                        'loan_term' => $loanTerm, // Use default value
+                        'lender_points' => $lenderPoints, // Use default value
+                        'pre_pay_penalty' => $prePay, // Use default value
                     ]
                 ], 400);
             }
@@ -1327,12 +1352,19 @@ class LoanMatrixApiController extends Controller
             foreach ($loanPrograms as $program) {
                 $programData = $groupedByProgram->get($program, collect());
 
+
                 // Calculate max LTV for each category based on user inputs
                 $ficoMaxLtv = $this->calculateFicoMaxLtv($creditScore, $programData->get('FICO', collect()));
                 $transactionTypeMaxLtv = $this->calculateTransactionTypeMaxLtv($transactionType, $programData->get('Transaction Type', collect()));
+                $initialLoanAmount = ($transactionTypeMaxLtv * $purchasePrice) / 100; // Initial Loan Amount = Purchase Price × TransactionTypeMaxLtv / 100 (used in loan amount calculation) the amount 
                 $loanAmountMaxLtv = $this->calculateLoanAmountMaxLtv($purchasePrice, $programData->get('Loan Amount', collect()));
                 $dscrMaxLtv = $this->calculateDscrMaxLtv($dscr, $programData->get('DSCR', collect()));
                 $occupancyMaxLtv = $this->calculateOccupancyMaxLtv($occupancyType, $programData->get('Occupancy', collect()));
+
+
+
+                // $creditScore (FICO INPUT) ,  $transactionType (INPUT),  purchasePrice (INPUT),  dscr (INPUT),  occupancyType (INPUT)
+
 
                 // Calculate approved max LTV as minimum of all
                 $approvedMaxLtv = min(
@@ -1343,42 +1375,50 @@ class LoanMatrixApiController extends Controller
                     $occupancyMaxLtv
                 );
 
+
+
                 // Calculate interest rate formula components
                 $startingRate = $this->getStartingRate($program);
                 $ltvFicoAdjustment = $this->calculateFicoInterestAdjustment($creditScore, $approvedMaxLtv, $programData->get('FICO', collect()));
-                $loanAmountAdjustment = $this->calculateLoanAmountInterestAdjustment($purchasePrice, $approvedMaxLtv, $programData->get('Loan Amount', collect()));
+                $loanAmountAdjustment = $this->calculateLoanAmountInterestAdjustment($initialLoanAmount, $approvedMaxLtv, $programData->get('Loan Amount', collect()));
                 $propertyTypeAdjustment = $this->calculatePropertyTypeInterestAdjustment($propertyType, $approvedMaxLtv, $programData->get('Property Type', collect()));
                 $occupancyAdjustment = $this->calculateOccupancyInterestAdjustment($occupancyType, $approvedMaxLtv, $programData->get('Occupancy', collect()));
                 $transactionTypeAdjustment = $this->calculateTransactionTypeInterestAdjustment($transactionType, $approvedMaxLtv, $programData->get('Transaction Type', collect()));
                 $dscrAdjustment = $this->calculateDscrInterestAdjustment($dscr, $approvedMaxLtv, $programData->get('DSCR', collect()));
-                $prePayAdjustment = $this->calculatePrePayInterestAdjustment('No Prepay', $approvedMaxLtv, $programData->get('Pre Pay', collect()));
-                $loanTypeAdjustment = $this->calculateLoanTypeInterestAdjustment('30 Year Fixed', $approvedMaxLtv, $programData->get('Loan Type', collect()));
+                $prePayAdjustment = $this->calculatePrePayInterestAdjustment($prePay, $approvedMaxLtv, $programData->get('Pre Pay', collect()));
+                $loanTypeAdjustment = $this->calculateLoanTypeInterestAdjustment($loanTerm, $approvedMaxLtv, $programData->get('Loan Type', collect()));
 
                 // Calculate final interest rate as sum of all components
                 $calculatedInterestRate = $startingRate + $ltvFicoAdjustment + $loanAmountAdjustment + $propertyTypeAdjustment +
                     $occupancyAdjustment + $transactionTypeAdjustment + $dscrAdjustment + $prePayAdjustment + $loanTypeAdjustment;
 
+                $calculateDSCR = $request->monthly_market_rent;
+
+
                 // Adjust interest rate based on lender points
                 $adjustedInterestRate = $calculatedInterestRate;
-                $lenderPoints = (float) $request->lender_points;
+                $lenderPointsFloat = (float) $lenderPoints; // Use default value
 
-                if ($lenderPoints == 1.5 || $lenderPoints == 1.5000) {
+                if ($lenderPointsFloat == 1.5 || $lenderPointsFloat == 1.5000) {
                     // 1.5 points: add 0.5% to the rate
                     $adjustedInterestRate = $calculatedInterestRate + 0.5;
-                } elseif ($lenderPoints == 1.0 || $lenderPoints == 1.000) {
+                } elseif ($lenderPointsFloat == 1.0 || $lenderPointsFloat == 1.000) {
                     // 1.0 points: add 1.0% to the rate  
                     $adjustedInterestRate = $calculatedInterestRate + 1.0;
                 }
                 // 2.0 points: no adjustment needed (rate stays the same)
+
+
+
 
                 // Calculate monthly payment based on loan term
                 $monthlyPayment = 0;
                 // TODO: Review this calculation - Changed from hardcoded $380,000 to calculated loan amount
                 // Initial Loan Amount = Purchase Price × Approved Max LTV / 100
                 // Example: $300,000 × 80% = $240,000 (instead of hardcoded $380,000)
-                $initialLoanAmount = ($purchasePrice * $approvedMaxLtv) / 100;
 
-                if ($request->loan_term === '10 Year IO') {
+
+                if ($loanTerm === '10 Year IO') {
                     // Interest Only formula: (Loan Amount × Interest Rate / 12) + (Tax / 12) + (Insurance / 12)
                     $monthlyInterest = ($initialLoanAmount * ($adjustedInterestRate / 100)) / 12;
                     $monthlyTax = $request->annual_tax / 12;
@@ -1408,14 +1448,6 @@ class LoanMatrixApiController extends Controller
                 $formattedProgramData = [
                     'loan_program' => $program,
                     'categories' => [],
-                    'loan_program_values' => [
-                        'loan_term' => $request->loan_term ?: 0,
-                        'max_ltv' => $approvedMaxLtv,
-                        'monthly_payment' => round($monthlyPayment, 2),
-                        'interest_rate' => $adjustedInterestRate,
-                        'lender_points' => $request->lender_points ?: 0,
-                        'pre_pay_penalty' => $request->pre_pay_penalty ?: '',
-                    ],
                     'interest_rate_formula' => [
                         'starting_rate' => $startingRate,
                         'ltv_fico' => $ltvFicoAdjustment,
@@ -1430,15 +1462,15 @@ class LoanMatrixApiController extends Controller
                     ],
                     'ltv_formula' => [
                         'fico' => [
-                            'input' => $request->credit_score ?: 0,
+                            'input' => $creditScore,
                             'max_ltv' => $ficoMaxLtv,
                         ],
                         'transaction_type' => [
-                            'input' => $request->transaction_type ?: '',
+                            'input' => $transactionType,
                             'max_ltv' => $transactionTypeMaxLtv,
                         ],
                         'loan_amount' => [
-                            'input' => $request->purchase_price ? ($request->purchase_price * ($transactionTypeMaxLtv / 100)) : 0,
+                            'input' => $initialLoanAmount,
                             'max_ltv' => $loanAmountMaxLtv,
                         ],
                         'dscr' => [
@@ -1453,6 +1485,17 @@ class LoanMatrixApiController extends Controller
                             'max_ltv' => $approvedMaxLtv,
                         ],
                     ],
+
+                    'loan_program_values' => [
+                        'loan_term' => $loanTerm, // Use default value
+                        'max_ltv' => $approvedMaxLtv,
+                        'monthly_payment' => round($monthlyPayment, 2),
+                        'interest_rate' => $adjustedInterestRate,
+                        'lender_points' => $lenderPoints, // Use default value
+                        'pre_pay_penalty' => $prePay, // Use default value
+                    ],
+
+
                 ];
 
                 foreach ($programData as $category => $rows) {
