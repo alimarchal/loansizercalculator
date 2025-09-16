@@ -684,16 +684,57 @@ class LoanMatrixApiController extends Controller
      * @param string $transactionType
      * @param int $ltv
      * @param \Illuminate\Support\Collection $transactionData
+     * @param float $creditScore
      * @return float
      */
-    private function calculateTransactionTypeInterestAdjustment($transactionType, $ltv, $transactionData)
+    private function calculateTransactionTypeInterestAdjustment($transactionType, $ltv, $transactionData, $creditScore = null)
     {
+        $baseAdjustment = 0;
+        $ficoBasedAdjustment = 0;
+
+        // Calculate base transaction type adjustment
         foreach ($transactionData as $row) {
             if ($row->row_label === $transactionType) {
-                return $this->findAdjustmentValueByLtv($row, $ltv);
+                $baseAdjustment = $this->findAdjustmentValueByLtv($row, $ltv);
+                break;
             }
         }
-        return 0;
+
+        // Special case for "Refinance Cash Out" - also apply FICO-based Cash Out Refi adjustment
+        if ($transactionType === 'Refinance Cash Out' && $creditScore !== null) {
+            $ficoBasedTransactionType = $this->getFicoBasedCashOutRefiType($creditScore);
+
+            foreach ($transactionData as $row) {
+                if ($row->row_label === $ficoBasedTransactionType) {
+                    $ficoBasedAdjustment = $this->findAdjustmentValueByLtv($row, $ltv);
+                    break;
+                }
+            }
+        }
+
+        return $baseAdjustment + $ficoBasedAdjustment;
+    }
+
+    /**
+     * Get FICO-based Cash Out Refi transaction type based on credit score
+     * 
+     * @param float $creditScore
+     * @return string
+     */
+    private function getFicoBasedCashOutRefiType($creditScore)
+    {
+        if ($creditScore >= 720) {
+            return 'Cash Out Refi 720+ FICO';
+        } elseif ($creditScore >= 700) {
+            return 'Cash Out Refi 700-720 FICO';
+        } elseif ($creditScore >= 680) {
+            return 'Cash Out Refi 680-699 FICO';
+        } elseif ($creditScore >= 660) {
+            return 'Cash Out Refi 660-679 FICO';
+        }
+
+        // Default fallback (though this shouldn't happen given DSCR validation)
+        return 'Cash Out Refi 660-679 FICO';
     }
 
     /**
@@ -1383,7 +1424,7 @@ class LoanMatrixApiController extends Controller
                 $loanAmountAdjustment = $this->calculateLoanAmountInterestAdjustment($initialLoanAmount, $approvedMaxLtv, $programData->get('Loan Amount', collect()));
                 $propertyTypeAdjustment = $this->calculatePropertyTypeInterestAdjustment($propertyType, $approvedMaxLtv, $programData->get('Property Type', collect()));
                 $occupancyAdjustment = $this->calculateOccupancyInterestAdjustment($occupancyType, $approvedMaxLtv, $programData->get('Occupancy', collect()));
-                $transactionTypeAdjustment = $this->calculateTransactionTypeInterestAdjustment($transactionType, $approvedMaxLtv, $programData->get('Transaction Type', collect()));
+                $transactionTypeAdjustment = $this->calculateTransactionTypeInterestAdjustment($transactionType, $approvedMaxLtv, $programData->get('Transaction Type', collect()), $creditScore);
                 $dscrAdjustment = $this->calculateDscrInterestAdjustment($dscr, $approvedMaxLtv, $programData->get('DSCR', collect()));
                 $prePayAdjustment = $this->calculatePrePayInterestAdjustment($prePay, $approvedMaxLtv, $programData->get('Pre Pay', collect()));
                 $loanTypeAdjustment = $this->calculateLoanTypeInterestAdjustment($loanTerm, $approvedMaxLtv, $programData->get('Loan Type', collect()));
