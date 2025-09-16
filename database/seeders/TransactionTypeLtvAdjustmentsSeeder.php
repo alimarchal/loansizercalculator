@@ -62,6 +62,43 @@ class TransactionTypeLtvAdjustmentsSeeder extends Seeder
                 '75% LTV' => null,
                 '80% LTV' => null,
             ],
+
+            'Cash Out Refi 660-679 FICO' => [
+                '50% LTV or less' => 0.000,
+                '55% LTV' => 0.000,
+                '60% LTV' => 0.000,
+                '65% LTV' => 0.000,
+                '70% LTV' => null,
+                '75% LTV' => null,
+                '80% LTV' => null,
+            ],
+            'Cash Out Refi 680-699 FICO' => [
+                '50% LTV or less' => 0.000,
+                '55% LTV' => 0.000,
+                '60% LTV' => 0.000,
+                '65% LTV' => 0.000,
+                '70% LTV' => 0.250,
+                '75% LTV' => null,
+                '80% LTV' => null,
+            ],
+            'Cash Out Refi 700-720 FICO' => [
+                '50% LTV or less' => 0.000,
+                '55% LTV' => 0.000,
+                '60% LTV' => 0.000,
+                '65% LTV' => 0.000,
+                '70% LTV' => 0.000,
+                '75% LTV' => 0.375,
+                '80% LTV' => null,
+            ],
+            'Cash Out Refi 720+ FICO' => [
+                '50% LTV or less' => 0.000,
+                '55% LTV' => 0.000,
+                '60% LTV' => 0.000,
+                '65% LTV' => 0.000,
+                '70% LTV' => 0.000,
+                '75% LTV' => 0.250,
+                '80% LTV' => null,
+            ],
         ];
 
         $rows = [];

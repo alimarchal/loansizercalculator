@@ -1392,9 +1392,6 @@ class LoanMatrixApiController extends Controller
                 $calculatedInterestRate = $startingRate + $ltvFicoAdjustment + $loanAmountAdjustment + $propertyTypeAdjustment +
                     $occupancyAdjustment + $transactionTypeAdjustment + $dscrAdjustment + $prePayAdjustment + $loanTypeAdjustment;
 
-                $calculateDSCR = $request->monthly_market_rent;
-
-
                 // Adjust interest rate based on lender points
                 $adjustedInterestRate = $calculatedInterestRate;
                 $lenderPointsFloat = (float) $lenderPoints; // Use default value
@@ -1444,6 +1441,21 @@ class LoanMatrixApiController extends Controller
                     $monthlyPayment = $pmt + $monthlyTax + $monthlyInsurance;
                 }
 
+                // Calculate correct DSCR: monthly_market_rent / monthlyPayment
+                $calculatedDSCR = $monthlyPayment > 0 ? $request->monthly_market_rent / $monthlyPayment : 0;
+
+                // Recalculate DSCR max LTV using the calculated DSCR
+                $calculatedDscrMaxLtv = $this->calculateDscrMaxLtv($calculatedDSCR, $programData->get('DSCR', collect()));
+
+                // Recalculate approved max LTV with the new calculated DSCR max LTV
+                $approvedMaxLtvWithCalculatedDscr = min(
+                    $ficoMaxLtv,
+                    $transactionTypeMaxLtv,
+                    $loanAmountMaxLtv,
+                    $calculatedDscrMaxLtv, // Use calculated DSCR max LTV
+                    $occupancyMaxLtv
+                );
+
                 // Format each category for this program
                 $formattedProgramData = [
                     'loan_program' => $program,
@@ -1474,25 +1486,26 @@ class LoanMatrixApiController extends Controller
                             'max_ltv' => $loanAmountMaxLtv,
                         ],
                         'dscr' => [
-                            'input' => $request->dscr ?: 0,
-                            'max_ltv' => $dscrMaxLtv,
+                            'input' => $calculatedDSCR, // Use calculated DSCR instead of request input
+                            'max_ltv' => $calculatedDscrMaxLtv, // Use calculated DSCR max LTV
                         ],
                         'occupancy' => [
                             'input' => $request->occupancy_type ?: '',
                             'max_ltv' => $occupancyMaxLtv,
                         ],
                         'approved_max_ltv' => [
-                            'max_ltv' => $approvedMaxLtv,
+                            'max_ltv' => $approvedMaxLtvWithCalculatedDscr, // Use recalculated approved max LTV
                         ],
                     ],
 
                     'loan_program_values' => [
                         'loan_term' => $loanTerm, // Use default value
-                        'max_ltv' => $approvedMaxLtv,
+                        'max_ltv' => $approvedMaxLtvWithCalculatedDscr, // Use recalculated approved max LTV
                         'monthly_payment' => round($monthlyPayment, 2),
                         'interest_rate' => $adjustedInterestRate,
                         'lender_points' => $lenderPoints, // Use default value
                         'pre_pay_penalty' => $prePay, // Use default value
+                        'calculated_dscr' => round($calculatedDSCR, 4), // Add calculated DSCR
                     ],
 
 
