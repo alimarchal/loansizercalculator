@@ -809,6 +809,7 @@ class LoanMatrixApiController extends Controller
 
     /**
      * Find the adjustment value for a specific LTV percentage from a matrix row
+     * Uses tier-based logic where borrowers are placed into specific LTV bands
      * 
      * @param object $row
      * @param int $ltv
@@ -826,12 +827,28 @@ class LoanMatrixApiController extends Controller
             80 => '80% LTV'
         ];
 
-        // Find the exact LTV column or the closest lower one
+        // Apply tier-based logic for LTV column selection
         $targetColumn = null;
-        foreach ($ltvColumns as $ltvPercentage => $column) {
-            if ($ltv >= $ltvPercentage) {
-                $targetColumn = $column;
-            }
+
+        if ($ltv <= 50) {
+            $targetColumn = '50% LTV or less';
+        } elseif ($ltv > 50 && $ltv <= 55) {
+            $targetColumn = '55% LTV';
+        } elseif ($ltv > 55 && $ltv <= 60) {
+            $targetColumn = '60% LTV';
+        } elseif ($ltv > 60 && $ltv <= 65) {
+            $targetColumn = '65% LTV';
+        } elseif ($ltv > 65 && $ltv <= 70) {
+            // If borrower LTV is 65.01% - 70% LTV, use 70% LTV column
+            $targetColumn = '70% LTV';
+        } elseif ($ltv > 70 && $ltv <= 75) {
+            // If borrower LTV is 70.01% - 75% LTV, use 75% LTV column
+            $targetColumn = '75% LTV';
+        } elseif ($ltv > 75 && $ltv <= 80) {
+            $targetColumn = '80% LTV';
+        } else {
+            // For LTV > 80%, use the highest available column (80% LTV)
+            $targetColumn = '80% LTV';
         }
 
         if ($targetColumn && isset($row->{$targetColumn}) && $row->{$targetColumn} !== null) {
@@ -1132,7 +1149,7 @@ class LoanMatrixApiController extends Controller
         $dscr = $request->get('dscr', 1.5); // Default to 1.5 if not provided
         $loanTerm = $request->get('loan_term', '30 Year Fixed'); // Default to '30 Year Fixed' if not provided
         $lenderPoints = $request->get('lender_points', 2.000); // Default to 2.000 if not provided
-        $prePay = $request->get('pre_pay_penalty', '3 Year Prepay'); // Default to '3 Year Prepay' if not provided
+        $prePay = $request->get('pre_pay_penalty', '5 Year Prepay'); // Default to '3 Year Prepay' if not provided
         $annualHoa = $request->get('annual_hoa', 0); // Default to 0 if not provided
         $payoffAmount = $request->get('payoff_amount', 0); // Default to 0 if not provided for non-refinance transactions
 
@@ -1426,7 +1443,8 @@ class LoanMatrixApiController extends Controller
                 $ficoMaxLtv = $this->calculateFicoMaxLtv($creditScore, $programData->get('FICO', collect()));
                 $transactionTypeMaxLtv = $this->calculateTransactionTypeMaxLtv($transactionType, $programData->get('Transaction Type', collect()), $creditScore);
                 $initialLoanAmount = ($transactionTypeMaxLtv * $purchasePrice) / 100; // Initial Loan Amount = Purchase Price × TransactionTypeMaxLtv / 100 (used in loan amount calculation) the amount 
-                $loanAmountMaxLtv = $this->calculateLoanAmountMaxLtv($purchasePrice, $programData->get('Loan Amount', collect()));
+                $loan_amount_max_transaction_limit = $initialLoanAmount;
+                $loanAmountMaxLtv = $this->calculateLoanAmountMaxLtv($loan_amount_max_transaction_limit, $programData->get('Loan Amount', collect()));
                 $dscrMaxLtv = $this->calculateDscrMaxLtv($dscr, $programData->get('DSCR', collect()));
                 $occupancyMaxLtv = $this->calculateOccupancyMaxLtv($occupancyType, $programData->get('Occupancy', collect()));
 
@@ -1484,30 +1502,60 @@ class LoanMatrixApiController extends Controller
                 // Example: $300,000 × 80% = $240,000 (instead of hardcoded $380,000)
 
 
+
                 if ($loanTerm === '10 Year IO') {
-                    // Interest Only formula: (Loan Amount × Interest Rate / 12) + (Tax / 12) + (Insurance / 12)
+
+                    /**
+                     * Calculates the monthly payment for a 10 Year Interest Only (IO) loan term.
+                     *
+                     * The calculation uses the following formula:
+                     *   (Loan Amount × Interest Rate / 12) + (Annual Tax / 12) + (Annual Insurance / 12)
+                     *
+                     * - $monthlyInterest: The monthly interest-only payment based on the initial loan amount and adjusted interest rate.
+                     * - $monthlyTax: The monthly portion of the annual property tax.
+                     * - $monthlyInsurance: The monthly portion of the annual insurance.
+                     * - $monthlyPayment: The total monthly payment including interest, tax, and insurance.
+                     *
+                     * @param float $initialLoanAmount The principal loan amount.
+                     * @param float $adjustedInterestRate The annual interest rate (percentage).
+                     * @param float $request->annual_tax The annual property tax.
+                     * @param float $request->annual_insurance The annual insurance cost.
+                     * @return float $monthlyPayment The calculated monthly payment for the 10 Year IO loan.
+                     */
+
                     $monthlyInterest = ($initialLoanAmount * ($adjustedInterestRate / 100)) / 12;
                     $monthlyTax = $request->annual_tax / 12;
                     $monthlyInsurance = $request->annual_insurance / 12;
-
                     $monthlyPayment = $monthlyInterest + $monthlyTax + $monthlyInsurance;
+
                 } else {
-                    // For other loan terms (like 30 Year Fixed), use PMT formula equivalent
-                    // PMT(rate, nper, pv, fv, type) - equivalent to Excel PMT function
-                    $monthlyRate = ($adjustedInterestRate / 100) / 12;
-                    $numberOfPayments = 360; // 30 years * 12 months
 
-                    if ($monthlyRate > 0) {
-                        // PMT formula: PV * (rate * (1 + rate)^nper) / ((1 + rate)^nper - 1)
-                        $pmt = $initialLoanAmount * ($monthlyRate * pow(1 + $monthlyRate, $numberOfPayments)) / (pow(1 + $monthlyRate, $numberOfPayments) - 1);
-                    } else {
-                        $pmt = $initialLoanAmount / $numberOfPayments;
-                    }
-
+                    /**
+                     * Calculates the total monthly payment for a loan, including principal & interest,
+                     * property tax, insurance, and optionally HOA fees.
+                     *
+                     * Steps:
+                     * - Computes the monthly principal & interest payment using the PMT formula.
+                     * - Calculates monthly property tax and insurance from their annual values.
+                     * - Sums up principal & interest, tax, and insurance to get the base monthly payment.
+                     * - If annual HOA fees are provided, calculates monthly HOA and adds it to the payment.
+                     *
+                     * @param float $adjustedInterestRate The annual interest rate (percentage).
+                     * @param float $initialLoanAmount The initial amount of the loan.
+                     * @param float $annualHoa The annual HOA fee (optional).
+                     * @param \Illuminate\Http\Request $request The HTTP request containing 'annual_tax' and 'annual_insurance'.
+                     * @return float The total monthly payment including all components.
+                     */
+                    $pmt = $this->pmt($adjustedInterestRate / 100 / 12, 360, $initialLoanAmount) * -1;
                     $monthlyTax = $request->annual_tax / 12;
                     $monthlyInsurance = $request->annual_insurance / 12;
-
                     $monthlyPayment = $pmt + $monthlyTax + $monthlyInsurance;
+
+                    if ($annualHoa > 0) {
+                        $monthlyHoa = $annualHoa / 12;
+                        $monthlyPayment += $monthlyHoa;
+                    }
+
                 }
 
                 // Calculate correct DSCR: monthly_market_rent / monthlyPayment
@@ -1650,6 +1698,17 @@ class LoanMatrixApiController extends Controller
             default:
                 return [];
         }
+    }
+
+
+    public function pmt($rate, $nper, $pv, $fv = 0, $type = 0)
+    {
+        if ($rate == 0) {
+            return -($pv + $fv) / $nper;
+        }
+
+        $pvif = pow(1 + $rate, $nper);
+        return -($rate * ($pv * $pvif + $fv)) / (($pvif - 1) * (1 + $rate * $type));
     }
 
     /**
