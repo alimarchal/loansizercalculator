@@ -679,8 +679,11 @@
                                                     required>
                                                     <option value="">-- Select Transaction Type --</option>
                                                     @foreach($transactionTypes as $transactionType)
+                                                    @if(in_array($transactionType->name, ['Purchase', 'Refinance Cash
+                                                    Out', 'Refinance No Cash Out']))
                                                     <option value="{{ $transactionType->name }}">{{
                                                         $transactionType->name }}</option>
+                                                    @endif
                                                     @endforeach
                                                 </select>
                                             </div>
