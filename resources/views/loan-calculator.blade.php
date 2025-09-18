@@ -2080,7 +2080,13 @@
                 // Initialize global dropdown values from the first loan program
                 if (loans.length > 0 && loans[0].loan_program_values) {
                     window.currentDscrValues.loanTerm = loans[0].loan_program_values.loan_term || '30 Year Fixed';
-                    window.currentDscrValues.lenderPoints = loans[0].loan_program_values.lender_points || '2.000';
+                    // Convert lender_points to proper format with 3 decimal places
+                    const lenderPointsValue = loans[0].loan_program_values.lender_points;
+                    if (lenderPointsValue !== null && lenderPointsValue !== undefined) {
+                        window.currentDscrValues.lenderPoints = parseFloat(lenderPointsValue).toFixed(3);
+                    } else {
+                        window.currentDscrValues.lenderPoints = '2.000'; // fallback only if API doesn't provide value
+                    }
                     window.currentDscrValues.prepayPenalty = loans[0].loan_program_values.pre_pay_penalty || '5 Year Prepay';
                 }
                 
@@ -2135,7 +2141,11 @@
                             </td>
                             <td class="px-4 py-4 text-center border-r border-gray-200">
                                 <select class="lender-points-dropdown bg-cyan-50 border border-cyan-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" data-program-index="${index}">
-                                    ${generateLenderPointsOptions(window.currentDscrValues.lenderPoints || loanData?.lender_points || '2.000')}
+                                    ${generateLenderPointsOptions(
+                                        loanData?.lender_points !== null && loanData?.lender_points !== undefined 
+                                            ? parseFloat(loanData.lender_points).toFixed(3) 
+                                            : window.currentDscrValues.lenderPoints || '2.000'
+                                    )}
                                 </select>
                             </td>
                             <td class="px-4 py-4 text-center">
@@ -2310,7 +2320,7 @@
             // Store current DSCR dropdown values globally to persist across table rebuilds
             window.currentDscrValues = {
                 loanTerm: '30 Year Fixed',
-                lenderPoints: '2.000',
+                lenderPoints: null, // Will be set from API response
                 prepayPenalty: '5 Year Prepay'
             };
             
