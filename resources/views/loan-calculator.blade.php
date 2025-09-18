@@ -2074,82 +2074,97 @@
                     return;
                 }
                 
-                // Generate DSCR-specific table header
-                generateDscrTableHeader();
+                // Store loans data globally for dropdown changes
+                window.dscrLoansData = loans;
                 
-                // Create table rows for each DSCR loan program
-                loans.forEach((loan, index) => {
-                    const loanData = loan.loan_program_values;
-                    const programName = loan.loan_program || `Loan Program #${index + 1}`;
+                // Initialize global dropdown values from the first loan program
+                if (loans.length > 0 && loans[0].loan_program_values) {
+                    window.currentDscrValues.loanTerm = loans[0].loan_program_values.loan_term || '30 Year Fixed';
+                    window.currentDscrValues.lenderPoints = loans[0].loan_program_values.lender_points || '2.000';
+                    window.currentDscrValues.prepayPenalty = loans[0].loan_program_values.pre_pay_penalty || '5 Year Prepay';
+                }
+                
+                // Load dropdown options before generating table
+                loadDscrDropdownOptions().then(() => {
+                    // Generate DSCR-specific table header
+                    generateDscrTableHeader();
                     
-                    // Create enhanced table row for DSCR loans
-                    const row = document.createElement('tr');
-                    row.className = `hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`;
-                    
-                    let colorClass = index === 0 ? 'blue' : index === 1 ? 'green' : 'purple';
-                    let iconClass = 'fas fa-home';
-                    
-                    row.innerHTML = `
-                        <td class="px-6 py-4 border-r border-gray-200">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 w-10 h-10 bg-${colorClass}-100 rounded-full flex items-center justify-center mr-3">
-                                    <i class="${iconClass} text-${colorClass}-600"></i>
+                    // Create table rows for each DSCR loan program
+                    loans.forEach((loan, index) => {
+                        const loanData = loan.loan_program_values;
+                        const programName = loan.loan_program || `Loan Program #${index + 1}`;
+                        
+                        // Create enhanced table row for DSCR loans
+                        const row = document.createElement('tr');
+                        row.className = `hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`;
+                        
+                        let colorClass = index === 0 ? 'blue' : index === 1 ? 'green' : 'purple';
+                        let iconClass = 'fas fa-home';
+                        
+                        row.innerHTML = `
+                            <td class="px-6 py-4 border-r border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-${colorClass}-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="${iconClass} text-${colorClass}-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-900">${programName}</div>
+                                        <div class="text-sm text-gray-500">DSCR Rental Loan</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="font-semibold text-gray-900">${programName}</div>
-                                    <div class="text-sm text-gray-500">DSCR Rental Loan</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-4 py-4 text-center border-r border-gray-200">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                <i class="fas fa-calendar-alt mr-1"></i>
-                                ${loanData?.loan_term || 'N/A'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-center border-r border-gray-200">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                ${loanData?.max_ltv ? loanData.max_ltv + '%' : '0%'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-center border-r border-gray-200">
-                            <span class="text-lg font-bold text-green-600">
-                                $${loanData?.monthly_payment ? numberWithCommas(loanData.monthly_payment) : 'N/A'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-center border-r border-gray-200">
-                            <span class="text-lg font-bold text-orange-600">
-                                ${loanData?.interest_rate ? loanData.interest_rate + '%' : '0.00%'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-center border-r border-gray-200">
-                            <span class="text-lg font-bold text-indigo-600">
-                                ${loanData?.lender_points ? loanData.lender_points + '%' : '0.00%'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-center">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                ${loanData?.pre_pay_penalty || 'None'}
-                            </span>
-                        </td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                });
-
-                // Create DSCR loan program selection cards (simplified for DSCR)
-                createDscrLoanProgramCards(loans);
-                
-                // Show results section
-                document.getElementById('resultsAndClosingSection').classList.remove('hidden');
-                
-                // Smooth scroll to results section after calculation
-                setTimeout(() => {
-                    document.getElementById('resultsSection').scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                            </td>
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <select class="loan-term-dropdown bg-blue-50 border border-blue-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" data-program-index="${index}">
+                                    ${generateLoanTermOptions(window.currentDscrValues.loanTerm || loanData?.loan_term || '30 Year Fixed')}
+                                </select>
+                            </td>
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    ${loanData?.max_ltv ? loanData.max_ltv + '%' : '0%'}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <span class="text-lg font-bold text-green-600">
+                                    $${loanData?.monthly_payment ? numberWithCommas(loanData.monthly_payment) : 'N/A'}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <span class="text-lg font-bold text-orange-600">
+                                    ${loanData?.interest_rate ? loanData.interest_rate + '%' : '0.00%'}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-center border-r border-gray-200">
+                                <select class="lender-points-dropdown bg-cyan-50 border border-cyan-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" data-program-index="${index}">
+                                    ${generateLenderPointsOptions(window.currentDscrValues.lenderPoints || loanData?.lender_points || '2.000')}
+                                </select>
+                            </td>
+                            <td class="px-4 py-4 text-center">
+                                <select class="prepay-penalty-dropdown bg-violet-50 border border-violet-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" data-program-index="${index}">
+                                    ${generatePrepayPenaltyOptions(window.currentDscrValues.prepayPenalty || loanData?.pre_pay_penalty || '5 Year Prepay')}
+                                </select>
+                            </td>
+                        `;
+                        
+                        tableBody.appendChild(row);
                     });
-                }, 300);
+
+                    // Add event listeners for dropdowns
+                    addDscrDropdownEventListeners();
+
+                    // Create DSCR loan program selection cards (simplified for DSCR)
+                    createDscrLoanProgramCards(loans);
+                    
+                    // Show results section
+                    document.getElementById('resultsAndClosingSection').classList.remove('hidden');
+                    
+                    // Smooth scroll to results section after calculation
+                    setTimeout(() => {
+                        document.getElementById('resultsSection').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 300);
+                });
             }
             
             function generateDscrTableHeader() {
@@ -2277,6 +2292,196 @@
                 
                 errorTextElement.innerHTML = errorContent;
                 errorMessage.classList.remove('hidden');
+            }
+
+            // DSCR Dropdown Helper Functions
+            
+            // Store dropdown options globally
+            window.dscrDropdownOptions = {
+                loanTerms: [],
+                prepayPeriods: [],
+                lenderPoints: [
+                    { value: '1.000', label: '1.000%' },
+                    { value: '1.500', label: '1.500%' }, 
+                    { value: '2.000', label: '2.000%' }
+                ]
+            };
+            
+            // Store current DSCR dropdown values globally to persist across table rebuilds
+            window.currentDscrValues = {
+                loanTerm: '30 Year Fixed',
+                lenderPoints: '2.000',
+                prepayPenalty: '5 Year Prepay'
+            };
+            
+            // Load dropdown options from API
+            async function loadDscrDropdownOptions() {
+                try {
+                    // Load loan terms
+                    const loanTermsResponse = await fetch('/api/dscr-loan-terms');
+                    if (loanTermsResponse.ok) {
+                        const loanTermsData = await loanTermsResponse.json();
+                        if (loanTermsData.success) {
+                            window.dscrDropdownOptions.loanTerms = loanTermsData.data;
+                        }
+                    }
+                    
+                    // Load prepay periods
+                    const prepayResponse = await fetch('/api/prepay-periods');
+                    if (prepayResponse.ok) {
+                        const prepayData = await prepayResponse.json();
+                        if (prepayData.success) {
+                            window.dscrDropdownOptions.prepayPeriods = prepayData.data;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading DSCR dropdown options:', error);
+                }
+            }
+            
+            // Generate loan term dropdown options
+            function generateLoanTermOptions(selectedValue) {
+                const options = window.dscrDropdownOptions.loanTerms.map(term => 
+                    `<option value="${term.value}" ${term.value === selectedValue ? 'selected' : ''}>${term.name}</option>`
+                ).join('');
+                return options;
+            }
+            
+            // Generate lender points dropdown options
+            function generateLenderPointsOptions(selectedValue) {
+                const options = window.dscrDropdownOptions.lenderPoints.map(point => 
+                    `<option value="${point.value}" ${point.value === selectedValue ? 'selected' : ''}>${point.label}</option>`
+                ).join('');
+                return options;
+            }
+            
+            // Generate prepay penalty dropdown options
+            function generatePrepayPenaltyOptions(selectedValue) {
+                const options = window.dscrDropdownOptions.prepayPeriods.map(period => 
+                    `<option value="${period.name}" ${period.name === selectedValue ? 'selected' : ''}>${period.name}</option>`
+                ).join('');
+                return options;
+            }
+            
+            // Add event listeners for DSCR dropdowns
+            function addDscrDropdownEventListeners() {
+                // Loan term dropdown change handler
+                document.querySelectorAll('.loan-term-dropdown').forEach(dropdown => {
+                    dropdown.addEventListener('change', function() {
+                        const programIndex = this.getAttribute('data-program-index');
+                        handleDscrDropdownChange(programIndex, 'loan_term', this.value);
+                    });
+                });
+                
+                // Lender points dropdown change handler
+                document.querySelectorAll('.lender-points-dropdown').forEach(dropdown => {
+                    dropdown.addEventListener('change', function() {
+                        const programIndex = this.getAttribute('data-program-index');
+                        handleDscrDropdownChange(programIndex, 'lender_points', this.value);
+                    });
+                });
+                
+                // Prepay penalty dropdown change handler
+                document.querySelectorAll('.prepay-penalty-dropdown').forEach(dropdown => {
+                    dropdown.addEventListener('change', function() {
+                        const programIndex = this.getAttribute('data-program-index');
+                        handleDscrDropdownChange(programIndex, 'pre_pay_penalty', this.value);
+                    });
+                });
+            }
+            
+            // Handle DSCR dropdown changes
+            async function handleDscrDropdownChange(programIndex, parameterType, newValue) {
+                try {
+                    // Update global values
+                    if (parameterType === 'loan_term') {
+                        window.currentDscrValues.loanTerm = newValue;
+                    } else if (parameterType === 'lender_points') {
+                        window.currentDscrValues.lenderPoints = newValue;
+                    } else if (parameterType === 'pre_pay_penalty') {
+                        window.currentDscrValues.prepayPenalty = newValue;
+                    }
+                    
+                    // Show loading indicator
+                    showDscrLoadingIndicator();
+                    
+                    // Get current form data
+                    const form = document.getElementById('loanCalculatorForm');
+                    const formData = new FormData(form);
+                    
+                    // Build API URL with current parameters
+                    const apiParams = new URLSearchParams();
+                    apiParams.append('credit_score', formData.get('credit_score'));
+                    apiParams.append('experience', formData.get('experience'));
+                    apiParams.append('loan_type', formData.get('loan_type'));
+                    apiParams.append('transaction_type', formData.get('transaction_type'));
+                    apiParams.append('purchase_price', formData.get('purchase_price'));
+                    apiParams.append('broker_points', formData.get('broker_points'));
+                    apiParams.append('state', formData.get('state'));
+                    apiParams.append('property_type', formData.get('property_type'));
+                    apiParams.append('occupancy_type', formData.get('occupancy_type'));
+                    apiParams.append('monthly_market_rent', formData.get('monthly_market_rent'));
+                    apiParams.append('annual_tax', formData.get('annual_tax'));
+                    apiParams.append('annual_insurance', formData.get('annual_insurance'));
+                    apiParams.append('annual_hoa', formData.get('annual_hoa') || '0');
+                    
+                    // Add payoff_amount for refinance transactions
+                    const transactionType = formData.get('transaction_type');
+                    if (transactionType === 'Refinance Cash Out' || transactionType === 'Refinance No Cash Out') {
+                        apiParams.append('payoff_amount', formData.get('payoff_amount') || '0');
+                    }
+                    
+                    // Use global values for API parameters
+                    apiParams.append('loan_term', window.currentDscrValues.loanTerm);
+                    apiParams.append('lender_points', window.currentDscrValues.lenderPoints);
+                    apiParams.append('pre_pay_penalty', window.currentDscrValues.prepayPenalty);
+                    
+                    const apiUrl = `/api/loan-matrix-dscr?${apiParams.toString()}`;
+                    console.log('Making DSCR API call:', apiUrl); // Debug log
+                    
+                    // Make API call
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        throw new Error(`API request failed: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        // Update the results with new data
+                        populateDscrResults(data.data);
+                        console.log('DSCR dropdown change processed successfully');
+                    } else {
+                        console.error('No data returned from DSCR API');
+                        showError('No loan data available for the selected options');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error handling DSCR dropdown change:', error);
+                    showError('An error occurred while updating loan data. Please try again.');
+                } finally {
+                    hideDscrLoadingIndicator();
+                }
+            }
+            
+            // Show loading indicator for DSCR updates
+            function showDscrLoadingIndicator() {
+                const tableBody = document.getElementById('loanResultsTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-spinner fa-spin text-blue-500 mr-2"></i>
+                                <span class="text-gray-600">Updating loan data...</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            // Hide loading indicator
+            function hideDscrLoadingIndicator() {
+                // The loading indicator will be replaced by the new results
             }
 
             // Tab functionality
