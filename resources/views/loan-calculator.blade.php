@@ -679,11 +679,8 @@
                                                     required>
                                                     <option value="">-- Select Transaction Type --</option>
                                                     @foreach($transactionTypes as $transactionType)
-                                                    @if(in_array($transactionType->name, ['Purchase', 'Refinance Cash
-                                                    Out', 'Refinance No Cash Out']))
                                                     <option value="{{ $transactionType->name }}">{{
                                                         $transactionType->name }}</option>
-                                                    @endif
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -932,8 +929,8 @@
                                         </div>
                                         <div>
                                             <h2 class="text-xl font-bold text-white">Advanced Options</h2>
-                                            <p class="text-purple-100 text-sm">DSCR rental loan specific fields and
-                                                additional preferences</p>
+                                            <p class="text-purple-100 text-sm">Additional loan parameters and property
+                                                details</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1046,24 +1043,6 @@
                                                 placeholder="Enter annual HOA amount">
                                         </div>
 
-                                        <!-- DSCR (DSCR only) -->
-                                        <div id="dscr_field" class="hidden">
-                                            <label class="block font-medium text-sm text-gray-700 mb-2" for="dscr">
-                                                <span class="flex items-center">
-                                                    <svg class="w-4 h-4 text-cyan-600 mr-1" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                                    </svg>
-                                                    DSCR <span class="text-red-500">*</span>
-                                                </span>
-                                            </label>
-                                            <input
-                                                class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
-                                                type="number" name="dscr" id="dscr" min="0" step="0.01" value=""
-                                                placeholder="Enter DSCR value">
-                                        </div>
-
                                         <!-- Purchase Date (DSCR only) -->
                                         <div id="purchase_date_field" class="hidden">
                                             <label class="block font-medium text-sm text-gray-700 mb-2"
@@ -1103,50 +1082,6 @@
                                                 class="border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
                                                 type="number" name="payoff_amount" id="payoff_amount" min="0" value=""
                                                 placeholder="Enter payoff amount">
-                                        </div>
-
-                                        <!-- Lender Points (DSCR only) -->
-                                        <div id="lender_points_field" class="hidden">
-                                            <label class="block font-medium text-sm text-gray-700 mb-2"
-                                                for="lender_points">
-                                                <span class="flex items-center">
-                                                    <svg class="w-4 h-4 text-yellow-600 mr-1" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
-                                                        </path>
-                                                    </svg>
-                                                    Lender Points (%) <span class="text-red-500">*</span>
-                                                </span>
-                                            </label>
-                                            <select name="lender_points" id="lender_points"
-                                                class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 transition duration-200">
-                                                <option value="1.000">1.000</option>
-                                                <option value="1.500">1.500</option>
-                                                <option value="2.000" selected>2.000</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Pre Pay Penalty (DSCR only) -->
-                                        <div id="pre_pay_penalty_field" class="hidden">
-                                            <label class="block font-medium text-sm text-gray-700 mb-2"
-                                                for="pre_pay_penalty">
-                                                <span class="flex items-center">
-                                                    <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                                                        </path>
-                                                    </svg>
-                                                    Pre Pay Penalty <span class="text-red-500">*</span>
-                                                </span>
-                                            </label>
-                                            <select name="pre_pay_penalty" id="pre_pay_penalty"
-                                                class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 transition duration-200">
-                                                <option value="">-- Select Pre Pay Penalty --</option>
-                                            </select>
                                         </div>
                                     </div>
 
@@ -1501,10 +1436,50 @@
                             const state = document.getElementById('state').value;
                             const purchasePrice = document.getElementById('purchase_price').value;
                             
-                            if (!loanType || !transactionType || !loanTerm || !propertyType || !state || !purchasePrice) {
-                                alert('Please fill in all required fields in the Loan & Property Details section.');
-                                return false;
+                            // Check if it's a DSCR loan (loan term not required for DSCR)
+                            const isDscrLoan = loanType === 'DSCR Rental Loans';
+                            
+                            console.log('Validation Debug:', {
+                                loanType,
+                                transactionType, 
+                                loanTerm,
+                                propertyType,
+                                state,
+                                purchasePrice,
+                                isDscrLoan
+                            });
+                            
+                            // For DSCR loans, validate basic fields + DSCR-specific required fields
+                            if (isDscrLoan) {
+                                // Basic fields required for DSCR
+                                if (!loanType || !transactionType || !propertyType || !state || !purchasePrice) {
+                                    console.log('DSCR validation failed - missing basic fields');
+                                    alert('Please fill in all required fields in the Loan & Property Details section.');
+                                    return false;
+                                }
+                                
+                                // DSCR specific required fields (from Advanced Options section)
+                                const occupancyType = document.getElementById('occupancy_type').value;
+                                const monthlyMarketRent = document.getElementById('monthly_market_rent').value;
+                                const annualTax = document.getElementById('annual_tax').value;
+                                const annualInsurance = document.getElementById('annual_insurance').value;
+                                const annualHoa = document.getElementById('annual_hoa').value;
+                                
+                                // Note: For section 2 validation, we only check basic fields
+                                // DSCR-specific fields will be validated in section 3
+                                
+                            } else {
+                                // For regular loans, require all fields including loan term
+                                const rehabBudget = document.getElementById('rehab_budget').value;
+                                const arv = document.getElementById('arv').value;
+                                
+                                if (!loanType || !transactionType || !loanTerm || !propertyType || !state || !purchasePrice || !rehabBudget || !arv) {
+                                    console.log('Regular loan validation failed - missing fields');
+                                    alert('Please fill in all required fields in the Loan & Property Details section.');
+                                    return false;
+                                }
                             }
+                            console.log('Validation passed');
                             return true;
                         }
 
@@ -1607,10 +1582,14 @@
                     apiParams.append('experience', formData.get('experience'));
                     apiParams.append('loan_type', loanType);
                     apiParams.append('transaction_type', formData.get('transaction_type'));
-                    apiParams.append('loan_term', formData.get('loan_term'));
                     apiParams.append('purchase_price', formData.get('purchase_price'));
                     apiParams.append('broker_points', formData.get('broker_points'));
                     apiParams.append('state', formData.get('state'));
+                    
+                    // Add loan_term only for non-DSCR loans
+                    if (loanType !== 'DSCR Rental Loans') {
+                        apiParams.append('loan_term', formData.get('loan_term'));
+                    }
                     
                     if (loanType === 'DSCR Rental Loans') {
                         // Use DSCR-specific API endpoint and parameters
@@ -1623,10 +1602,11 @@
                         apiParams.append('annual_tax', formData.get('annual_tax'));
                         apiParams.append('annual_insurance', formData.get('annual_insurance'));
                         apiParams.append('annual_hoa', formData.get('annual_hoa'));
-                        apiParams.append('dscr', formData.get('dscr'));
-                        apiParams.append('payoff_amount', formData.get('payoff_amount'));
-                        apiParams.append('lender_points', formData.get('lender_points'));
-                        apiParams.append('pre_pay_penalty', formData.get('pre_pay_penalty'));
+                        
+                        // Add payoff_amount only for Refinance Cash Out transactions
+                        if (formData.get('transaction_type') === 'Refinance Cash Out') {
+                            apiParams.append('payoff_amount', formData.get('payoff_amount'));
+                        }
                         
                         // Add purchase date if provided
                         if (formData.get('purchase_date')) {
@@ -1714,7 +1694,6 @@
                     $('#property_type').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
                     $('#state').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
                     $('#occupancy_type').empty().append('<option value="">-- Select Occupancy Type --</option>').trigger('change');
-                    $('#pre_pay_penalty').empty().append('<option value="">-- Select Pre Pay Penalty --</option>').trigger('change');
                     
                     // Reset field visibility to default state (show regular fields, hide DSCR fields)
                     handleLoanTypeFieldVisibility('');
@@ -2501,49 +2480,62 @@
                     }
                 });
                 
+                // Add transaction type change event listener for handling payoff amount visibility
+                $('#transaction_type').on('change', function() {
+                    const selectedTransactionType = this.value;
+                    const selectedLoanType = $('#loan_type').value;
+                    const isDscrLoan = selectedLoanType === 'DSCR Rental Loans';
+                    
+                    // Handle payoff_amount_field visibility - only show for DSCR + Refinance Cash Out
+                    const payoffField = document.querySelector('#payoff_amount_field');
+                    if (payoffField) {
+                        if (isDscrLoan && selectedTransactionType === 'Refinance Cash Out') {
+                            payoffField.classList.remove('hidden');
+                            const input = payoffField.querySelector('input');
+                            if (input) input.setAttribute('required', 'required');
+                        } else {
+                            payoffField.classList.add('hidden');
+                            const input = payoffField.querySelector('input');
+                            if (input) input.removeAttribute('required');
+                        }
+                    }
+                });
+                
                 // Function to handle field visibility based on loan type
                 function handleLoanTypeFieldVisibility(loanType) {
                     const isDscrLoan = loanType === 'DSCR Rental Loans';
                     
                     console.log('handleLoanTypeFieldVisibility called with:', loanType, 'isDscrLoan:', isDscrLoan); // Debug log
                     
-                    // Update loan term options based on loan type
-                    const loanTermSelect = $('#loan_term');
-                    loanTermSelect.empty();
-                    loanTermSelect.append('<option value="">-- Select Loan Term --</option>');
-                    
-                    if (isDscrLoan) {
-                        // DSCR loan terms - fetch from database
-                        fetch('/api/dscr-loan-terms')
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success && data.data) {
-                                    data.data.forEach(loanTerm => {
-                                        loanTermSelect.append(`<option value="${loanTerm.value}">${loanTerm.name}</option>`);
-                                    });
-                                } else {
-                                    console.error('Failed to load DSCR loan terms:', data.message);
-                                    // Fallback to hardcoded options if API fails
-                                    loanTermSelect.append('<option value="30 Year Fixed">30 Year Fixed</option>');
-                                    loanTermSelect.append('<option value="10 Year IO">10 Year IO</option>');
-                                    loanTermSelect.append('<option value="5/1 ARM">5/1 ARM</option>');
-                                }
-                                loanTermSelect.trigger('change');
-                            })
-                            .catch(error => {
-                                console.error('Error fetching DSCR loan terms:', error);
-                                // Fallback to hardcoded options if API fails
-                                loanTermSelect.append('<option value="30 Year Fixed">30 Year Fixed</option>');
-                                loanTermSelect.append('<option value="10 Year IO">10 Year IO</option>');
-                                loanTermSelect.append('<option value="5/1 ARM">5/1 ARM</option>');
-                                loanTermSelect.trigger('change');
-                            });
-                    } else {
-                        // Regular loan terms (months)
-                        loanTermSelect.append('<option value="12">12 Months</option>');
-                        loanTermSelect.append('<option value="18">18 Months</option>');
+                    // Handle loan term field visibility - hide for DSCR loans
+                    const loanTermField = document.querySelector('#loan_term').closest('div');
+                    if (loanTermField) {
+                        if (isDscrLoan) {
+                            loanTermField.style.display = 'none';
+                            const loanTermSelect = document.getElementById('loan_term');
+                            if (loanTermSelect) {
+                                loanTermSelect.removeAttribute('required');
+                                loanTermSelect.disabled = true;
+                                loanTermSelect.value = ''; // Clear any selected value
+                            }
+                        } else {
+                            loanTermField.style.display = 'block';
+                            const loanTermSelect = document.getElementById('loan_term');
+                            if (loanTermSelect) {
+                                loanTermSelect.setAttribute('required', 'required');
+                                loanTermSelect.disabled = false;
+                            }
+                            
+                            // Update loan term options for regular loans
+                            const loanTermSelectJQ = $('#loan_term');
+                            loanTermSelectJQ.empty();
+                            loanTermSelectJQ.append('<option value="">-- Select Loan Term --</option>');
+                            // Regular loan terms (months)
+                            loanTermSelectJQ.append('<option value="12">12 Months</option>');
+                            loanTermSelectJQ.append('<option value="18">18 Months</option>');
+                            loanTermSelectJQ.trigger('change');
+                        }
                     }
-                    loanTermSelect.trigger('change');
                     
                     // Regular loan fields - hide for DSCR
                     const regularFields = ['#rehab_budget_field', '#arv_field'];
@@ -2569,9 +2561,8 @@
                     // DSCR specific fields - show only for DSCR
                     const dscrFields = [
                         '#occupancy_type_field', '#monthly_market_rent_field', '#annual_tax_field',
-                        '#annual_insurance_field', '#annual_hoa_field', '#dscr_field',
-                        '#purchase_date_field', '#payoff_amount_field', '#lender_points_field',
-                        '#pre_pay_penalty_field'
+                        '#annual_insurance_field', '#annual_hoa_field',
+                        '#purchase_date_field'
                     ];
                     dscrFields.forEach(fieldId => {
                         const field = document.querySelector(fieldId);
@@ -2584,8 +2575,7 @@
                                 const input = field.querySelector('input, select');
                                 if (input && [
                                     '#occupancy_type_field', '#monthly_market_rent_field', '#annual_tax_field',
-                                    '#annual_insurance_field', '#annual_hoa_field', '#dscr_field',
-                                    '#payoff_amount_field', '#lender_points_field', '#pre_pay_penalty_field'
+                                    '#annual_insurance_field', '#annual_hoa_field'
                                 ].includes(fieldId)) {
                                     input.setAttribute('required', 'required');
                                 }
@@ -2609,6 +2599,21 @@
                             }
                         }
                     });
+
+                    // Handle payoff_amount_field separately - only show for DSCR + Refinance Cash Out
+                    const payoffField = document.querySelector('#payoff_amount_field');
+                    if (payoffField) {
+                        const currentTransactionType = document.getElementById('transaction_type').value;
+                        if (isDscrLoan && currentTransactionType === 'Refinance Cash Out') {
+                            payoffField.classList.remove('hidden');
+                            const input = payoffField.querySelector('input');
+                            if (input) input.setAttribute('required', 'required');
+                        } else {
+                            payoffField.classList.add('hidden');
+                            const input = payoffField.querySelector('input');
+                            if (input) input.removeAttribute('required');
+                        }
+                    }
                 }
                 
                 // Function to load DSCR-specific data (property types, states, occupancy types, prepay penalties)
@@ -2701,10 +2706,6 @@
                         console.log('Loading occupancy types...'); // Debug log
                         await loadOccupancyTypes();
                         
-                        // Load prepay penalty options from prepay_periods table
-                        console.log('Loading prepay penalties...'); // Debug log
-                        await loadDscrPrepayPenalties();
-                        
                     } catch (error) {
                         console.error('Error loading DSCR loan data:', error);
                     }
@@ -2750,54 +2751,6 @@
                         occupancySelect.append('<option value="Investment Property">Investment Property</option>');
                         occupancySelect.append('<option value="Second Home">Second Home</option>');
                         occupancySelect.trigger('change');
-                    }
-                }
-                
-                // Function to load prepay penalty options from prepay_periods table
-                async function loadDscrPrepayPenalties() {
-                    console.log('loadDscrPrepayPenalties called'); // Debug log
-                    try {
-                        const response = await fetch('/api/prepay-periods');
-                        console.log('Prepay penalties API response status:', response.status); // Debug log
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log('Prepay penalties data:', data); // Debug log
-                            if (data.success) {
-                                const prepaySelect = $('#pre_pay_penalty');
-                                console.log('Prepay select element found:', prepaySelect.length > 0); // Debug log
-                                prepaySelect.empty().append('<option value="">-- Select Pre Pay Penalty --</option>');
-                                data.data.forEach(prepay => {
-                                    // Use 'name' field from API response (which maps to prepay_name from database)
-                                    prepaySelect.append(`<option value="${prepay.name}">${prepay.name}</option>`);
-                                });
-                                prepaySelect.trigger('change');
-                                console.log('Prepay penalties loaded successfully, total options:', data.data.length); // Debug log
-                            }
-                        } else {
-                            console.error('Failed to load prepay penalties, status:', response.status);
-                            // Add some default options for testing
-                            console.log('Adding default prepay penalty options for testing');
-                            const prepaySelect = $('#pre_pay_penalty');
-                            prepaySelect.empty().append('<option value="">-- Select Pre Pay Penalty --</option>');
-                            prepaySelect.append('<option value="None">None</option>');
-                            prepaySelect.append('<option value="1 Year">1 Year</option>');
-                            prepaySelect.append('<option value="2 Year">2 Year</option>');
-                            prepaySelect.append('<option value="3 Year">3 Year</option>');
-                            prepaySelect.append('<option value="5 Year">5 Year</option>');
-                            prepaySelect.trigger('change');
-                        }
-                    } catch (error) {
-                        console.error('Error loading prepay penalties:', error);
-                        // Add some default options for testing
-                        console.log('Adding default prepay penalty options due to error');
-                        const prepaySelect = $('#pre_pay_penalty');
-                        prepaySelect.empty().append('<option value="">-- Select Pre Pay Penalty --</option>');
-                        prepaySelect.append('<option value="None">None</option>');
-                        prepaySelect.append('<option value="1 Year">1 Year</option>');
-                        prepaySelect.append('<option value="2 Year">2 Year</option>');
-                        prepaySelect.append('<option value="3 Year">3 Year</option>');
-                        prepaySelect.append('<option value="5 Year">5 Year</option>');
-                        prepaySelect.trigger('change');
                     }
                 }
             });
