@@ -679,9 +679,13 @@
                                                     required>
                                                     <option value="">-- Select Transaction Type --</option>
                                                     @foreach($transactionTypes as $transactionType)
-                                                    <option value="{{ $transactionType->name }}">{{
-                                                        $transactionType->name }}</option>
+                                                    @if(in_array($transactionType->id, [1,2,3]))
+                                                    <option value="{{ $transactionType->name }}">
+                                                        {{ $transactionType->name }}
+                                                    </option>
+                                                    @endif
                                                     @endforeach
+
                                                 </select>
                                             </div>
 
