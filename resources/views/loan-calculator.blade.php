@@ -2120,7 +2120,9 @@
                                 </div>
                             </td>
                             <td class="px-4 py-4 text-center border-r border-gray-200">
-                                <select class="loan-term-dropdown bg-blue-50 border border-blue-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" data-program-index="${index}">
+                                <select class="loan-term-dropdown bg-blue-50 border border-blue-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-no-repeat bg-right pr-4" 
+                                        style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 4 5&quot;><path fill=&quot;%23666&quot; d=&quot;M2 0L0 2h4zm0 5L0 3h4z&quot;/></svg>'); background-size: 12px;" 
+                                        data-program-index="${index}">
                                     ${generateLoanTermOptions(window.currentDscrValues.loanTerm || loanData?.loan_term || '30 Year Fixed')}
                                 </select>
                             </td>
@@ -2140,7 +2142,9 @@
                                 </span>
                             </td>
                             <td class="px-4 py-4 text-center border-r border-gray-200">
-                                <select class="lender-points-dropdown bg-cyan-50 border border-cyan-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" data-program-index="${index}">
+                                <select class="lender-points-dropdown bg-cyan-50 border border-cyan-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none bg-no-repeat bg-right pr-4" 
+                                        style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 4 5&quot;><path fill=&quot;%23666&quot; d=&quot;M2 0L0 2h4zm0 5L0 3h4z&quot;/></svg>'); background-size: 12px;" 
+                                        data-program-index="${index}">
                                     ${generateLenderPointsOptions(
                                         loanData?.lender_points !== null && loanData?.lender_points !== undefined 
                                             ? parseFloat(loanData.lender_points).toFixed(3) 
@@ -2149,7 +2153,9 @@
                                 </select>
                             </td>
                             <td class="px-4 py-4 text-center">
-                                <select class="prepay-penalty-dropdown bg-violet-50 border border-violet-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" data-program-index="${index}">
+                                <select class="prepay-penalty-dropdown bg-violet-50 border border-violet-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 appearance-none bg-no-repeat bg-right pr-4" 
+                                        style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 4 5&quot;><path fill=&quot;%23666&quot; d=&quot;M2 0L0 2h4zm0 5L0 3h4z&quot;/></svg>'); background-size: 12px;" 
+                                        data-program-index="${index}">
                                     ${generatePrepayPenaltyOptions(window.currentDscrValues.prepayPenalty || loanData?.pre_pay_penalty || '5 Year Prepay')}
                                 </select>
                             </td>
