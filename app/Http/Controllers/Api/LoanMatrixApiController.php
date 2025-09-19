@@ -1152,6 +1152,7 @@ class LoanMatrixApiController extends Controller
         $prePay = $request->get('pre_pay_penalty', '5 Year Prepay'); // Default to '3 Year Prepay' if not provided
         $annualHoa = $request->get('annual_hoa', 0); // Default to 0 if not provided
         $payoffAmount = $request->get('payoff_amount', 0); // Default to 0 if not provided for non-refinance transactions
+        $userInputLoanAmount = $request->get('user_input_loan_amount', 0);
 
         try {
             // Extract parameters

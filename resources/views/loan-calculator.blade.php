@@ -2260,6 +2260,27 @@
                         <div class="p-6">
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center border-b pb-2">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-700">You qualify for a DSCR Loan up to:</span>
+                                        <span class="text-xs text-blue-600 italic">✏️ Click amount below to edit</span>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <input type="number" 
+                                               id="card_dscr_loan_${programName.replace(/\s+/g, '_')}" 
+                                               class="loan-amount-input w-24 px-2 py-1 text-right font-bold text-blue-600 rounded focus:outline-none"
+                                               value="${loan?.ltv_formula?.loan_amount?.input || 0}"
+                                               max="${loan?.ltv_formula?.loan_amount?.input || 0}"
+                                               min="0"
+                                               step="1000"
+                                               data-program="${programName}"
+                                               data-max-amount="${loan?.ltv_formula?.loan_amount?.input || 0}"
+                                               onchange="handleCardDscrLoanAmountChange(this, '${programName}')"
+                                               onblur="handleCardDscrLoanAmountChange(this, '${programName}')"
+                                               title="Enter desired loan amount (up to $${loan?.ltv_formula?.loan_amount?.input ? numberWithCommas(loan.ltv_formula.loan_amount.input) : '0'})">
+                                        <span class="text-xs text-gray-500 mt-1">Max: $${loan?.ltv_formula?.loan_amount?.input ? numberWithCommas(loan.ltv_formula.loan_amount.input) : 'N/A'}</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-2">
                                     <span class="font-medium text-gray-700">Monthly Payment:</span>
                                     <span class="font-bold text-green-600">$${loanData?.monthly_payment ? numberWithCommas(loanData.monthly_payment) : 'N/A'}</span>
                                 </div>
@@ -3065,6 +3086,26 @@
                 } catch (error) {
                     console.error('Error updating loan calculations:', error);
                 }
+            };
+
+            // Function to handle DSCR loan amount changes
+            window.handleCardDscrLoanAmountChange = function(input, programName) {
+                const newAmount = parseFloat(input.value) || 0;
+                const maxAmount = parseFloat(input.dataset.maxAmount) || 0;
+                
+                // Validate amount doesn't exceed maximum
+                if (newAmount > maxAmount) {
+                    input.value = maxAmount;
+                    alert(`DSCR loan amount cannot exceed the maximum qualified amount of $${numberWithCommas(maxAmount)}`);
+                    return;
+                }
+                
+                // For DSCR loans, we can potentially recalculate the monthly payment and other values
+                // based on the new loan amount, but for now we'll just update the display
+                console.log(`DSCR loan amount updated for ${programName}: $${numberWithCommas(newAmount)}`);
+                
+                // You can add additional logic here to recalculate DSCR-specific values
+                // such as monthly payment, DSCR ratio, etc. based on the new loan amount
             };
             
             // Function to calculate lender fees based on loan amount
