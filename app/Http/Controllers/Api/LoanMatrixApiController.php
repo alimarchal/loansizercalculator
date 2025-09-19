@@ -1130,11 +1130,14 @@ class LoanMatrixApiController extends Controller
             'annual_insurance' => 'required|numeric|min:0',
             'annual_hoa' => 'nullable|numeric|min:0',
             'dscr' => 'nullable|numeric|min:0.01',
+            'user_input_loan_amount' => 'nullable|numeric|min:0',
             'purchase_date' => 'nullable|date',
             'payoff_amount' => $payoffValidation,
             'loan_term' => 'nullable|string|in:' . implode(',', \App\Models\LoanTypesDscr::pluck('loan_type_dscr_name')->toArray()),
             'lender_points' => 'nullable|numeric|in:1.00,1.000,1.5000,2.000',
             'pre_pay_penalty' => 'nullable|string|in:' . implode(',', \App\Models\PrepayPeriods::pluck('prepay_name')->toArray()),
+            'title_charges' => 'nullable|numeric|min:0|max:10000000',
+            'property_insurance' => 'nullable|numeric|min:0|max:10000000',
         ]);
 
         if ($validator->fails()) {
@@ -1153,6 +1156,10 @@ class LoanMatrixApiController extends Controller
         $annualHoa = $request->get('annual_hoa', 0); // Default to 0 if not provided
         $payoffAmount = $request->get('payoff_amount', 0); // Default to 0 if not provided for non-refinance transactions
         $userInputLoanAmount = $request->get('user_input_loan_amount', 0);
+        $titleCharges = $request->get('title_charges', 0);
+        $propertyInsurance = $request->get('property_insurance', 0);
+
+        // Ensure annual_hoa is numeric
 
         try {
             // Extract parameters
@@ -1574,6 +1581,12 @@ class LoanMatrixApiController extends Controller
                     $occupancyMaxLtv
                 );
 
+
+                $totalLoanAmount = $userInputLoanAmount > 0 ? $userInputLoanAmount : $initialLoanAmount;
+                $brokerPoint = $request->broker_points;
+                $loan_type = \App\Models\LoanType::where('loan_program', $program)->first();
+
+
                 // Format each category for this program
                 $formattedProgramData = [
                     'loan_program' => $program,
@@ -1624,6 +1637,32 @@ class LoanMatrixApiController extends Controller
                         'lender_points' => $lenderPoints, // Use default value
                         'pre_pay_penalty' => $prePay, // Use default value
                         'calculated_dscr' => round($calculatedDSCR, 4), // Add calculated DSCR
+                    ],
+
+
+                    'estimated_closing_statement' => [
+                        'loan_amount_section' => [
+                            'initial_loan_amount' => $userInputLoanAmount > 0 ? $userInputLoanAmount : $initialLoanAmount,
+                        ],
+                        'buyer_related_charges' => [
+                            ($transactionType === 'Refinance' ? 'loan_payoff' : 'purchase_price') => $transactionType === 'Refinance'
+                                ? ($payoffAmount ? (float) number_format((float) $payoffAmount, 2, '.', '') : 0.00)
+                                : ($purchasePrice ? (float) number_format((float) $purchasePrice, 2, '.', '') : 0.00),
+                        ],
+                        'lender_related_charges' => [
+                            'lender_origination_fee' => $totalLoanAmount * ($lenderPoints / 100),
+                            'broker_fee' => $totalLoanAmount * ($brokerPoint / 100),
+                            'underwriting_processing_fee' => $loan_type?->underwritting_fee ? (float) number_format((float) $loan_type->underwritting_fee, 2, '.', '') : 0.00,
+                            'interest_reserves' => 0,
+                        ],
+                        'title_other_charges' => [
+                            'title_charges' => (float) $titleCharges,
+                            'property_insurance' => (float) $propertyInsurance,
+                            'legal_doc_prep_fee' => $loan_type->legal_doc_prep_fee ? (float) number_format((float) $loan_type->legal_doc_prep_fee, 2, '.', '') : 0.00,
+                            'subtotal_closing_costs' => ($totalLoanAmount * ($lenderPoints / 100)) + ($totalLoanAmount * ($brokerPoint / 100)) + ($loan_type?->underwritting_fee) + (0) + ($titleCharges) + ($propertyInsurance) + ($loan_type->legal_doc_prep_fee),
+                        ],
+
+                        'cash_due_to_buyer' => (float) $purchasePrice - ($userInputLoanAmount > 0 ? $userInputLoanAmount : $initialLoanAmount) + (($totalLoanAmount * ($lenderPoints / 100)) + ($totalLoanAmount * ($brokerPoint / 100)) + ($loan_type?->underwritting_fee) + (0) + ($titleCharges) + ($propertyInsurance) + ($loan_type->legal_doc_prep_fee)),
                     ],
 
 
