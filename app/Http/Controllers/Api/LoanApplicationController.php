@@ -18,6 +18,13 @@ class LoanApplicationController extends Controller
 {
     /**
      * Submit loan application and create borrower record
+     * 
+     * Features:
+     * - Creates new user accounts with auto-generated passwords
+     * - Assigns 'borrower' role to all new users (using Spatie Laravel Permission)
+     * - Ensures existing users without roles get 'borrower' role assigned
+     * - Sends welcome emails with login credentials for new users
+     * - Handles both DSCR and Fix & Flip loan applications
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -146,7 +153,7 @@ class LoanApplicationController extends Controller
             $temporaryPassword = null;
 
             if (!$user) {
-                // Create new user account
+                // Create new user account with borrower role
                 $temporaryPassword = Str::random(12);
 
                 $user = User::create([
@@ -161,10 +168,28 @@ class LoanApplicationController extends Controller
                     'email_verified_at' => now(), // Auto-verify for loan calculator users
                 ]);
 
+                // Assign the 'borrower' role to the new user (using Spatie Laravel Permission)
+                try {
+                    $user->assignRole('borrower');
+                    \Log::info('Successfully assigned borrower role to new user: ' . $user->email);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to assign borrower role to new user ' . $user->email . ': ' . $e->getMessage());
+                }
+
                 $isNewUser = true;
             } else {
-                // Existing user - send password reset link
+                // Existing user - ensure they have borrower role if no roles assigned
                 $isNewUser = false;
+
+                // Check if existing user has any roles, if not assign borrower role
+                if ($user->getRoleNames()->isEmpty()) {
+                    try {
+                        $user->assignRole('borrower');
+                        \Log::info('Assigned borrower role to existing user without roles: ' . $user->email);
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to assign borrower role to existing user ' . $user->email . ': ' . $e->getMessage());
+                    }
+                }
             }
 
             // Check if borrower already exists with this email - NO LONGER NEEDED

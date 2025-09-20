@@ -51,6 +51,10 @@ class User extends Authenticatable
         'is_super_admin',
         'is_active',
         'profile_photo_path',
+        'is_auto_generated',
+        'account_source',
+        'temp_password',
+        'password_sent_at',
     ];
 
     /**
