@@ -1227,7 +1227,8 @@
                                         </div>
                                         <div class="space-y-3">
                                             <div class="flex justify-between items-center">
-                                                <span class="text-sm text-gray-600">Purchase Loan:</span>
+                                                <span id="closingPurchaseLoanLabel"
+                                                    class="text-sm text-gray-600">Purchase Loan:</span>
                                                 <span id="closingPurchaseLoan" class="font-bold text-blue-700">$0</span>
                                             </div>
                                             <div class="flex justify-between items-center">
@@ -2651,12 +2652,13 @@
             // Loan Amount Section
             if (closingData.loan_amount_section) {
                 if (isDscrLoan) {
-                    // For DSCR loans: Purchase Loan = purchase_price from buyer_related_charges
-                    // Total Loan = initial_loan_amount from loan_amount_section
-                    const purchasePrice = closingData.buyer_related_charges?.purchase_price || 0;
+                    // For DSCR loans: Show Initial Loan Amount instead of Purchase Loan
+                    const initialLoanAmount = closingData.loan_amount_section.initial_loan_amount || 0;
                     const totalLoan = closingData.loan_amount_section.initial_loan_amount || 0;
                     
-                    document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(purchasePrice);
+                    // Update label and value for DSCR loans
+                    document.getElementById('closingPurchaseLoanLabel').textContent = 'Initial Loan Amount:';
+                    document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(initialLoanAmount);
                     document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(totalLoan);
                     
                     // Hide Rehab Loan row for DSCR loans
@@ -2666,6 +2668,7 @@
                     }
                 } else {
                     // For Fix & Flip and New Construction loans: use existing logic
+                    document.getElementById('closingPurchaseLoanLabel').textContent = 'Purchase Loan:';
                     document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0);
                     document.getElementById('closingRehabLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0);
                     document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0);
@@ -3531,7 +3534,14 @@
             
             // Helper function to create selected loan table
             function createSelectedLoanTable() {
-                const headers = ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Purchase Loan', 'Rehab Loan', 'Total Loan'];
+                // Check if current loan is DSCR
+                const isDscrLoan = window.selectedLoanProgram && window.allLoansData && 
+                                   window.allLoansData[window.selectedLoanProgram] && 
+                                   window.allLoansData[window.selectedLoanProgram][0].loan_type === 'DSCR Rental Loans';
+                
+                const headers = isDscrLoan 
+                    ? ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Initial Loan', 'Total Loan']
+                    : ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Purchase Loan', 'Rehab Loan', 'Total Loan'];
                 const data = [];
                 
                 if (window.selectedLoanProgram && window.allLoansData && window.allLoansData[window.selectedLoanProgram]) {
@@ -3539,16 +3549,30 @@
                     const loanData = loan.loan_type_and_loan_program_table || loan.loan_program_values;
                     
                     if (loanData) {
-                        data.push([
-                            window.selectedLoanProgram,
-                            (loanData.loan_term || loanData.term || 'N/A') + ' months',
-                            (loanData.interest_rate || loanData.rate || 'N/A') + '%',
-                            (loanData.lender_points || loanData.points || 'N/A') + '%',
-                            (loanData.max_ltv || 'N/A') + '%',
-                            '$' + numberWithCommas(loanData.purchase_loan_up_to || 0),
-                            '$' + numberWithCommas(loanData.rehab_loan_up_to || 0),
-                            '$' + numberWithCommas(loanData.total_loan_up_to || (loanData.purchase_loan_up_to + loanData.rehab_loan_up_to) || 0)
-                        ]);
+                        if (isDscrLoan) {
+                            // DSCR loan table row - exclude rehab loan column
+                            data.push([
+                                window.selectedLoanProgram,
+                                (loanData.loan_term || loanData.term || 'N/A') + ' months',
+                                (loanData.interest_rate || loanData.rate || 'N/A') + '%',
+                                (loanData.lender_points || loanData.points || 'N/A') + '%',
+                                (loanData.max_ltv || 'N/A') + '%',
+                                '$' + numberWithCommas(loanData.purchase_loan_up_to || loanData.loan_amount || 0),
+                                '$' + numberWithCommas(loanData.total_loan_up_to || loanData.loan_amount || 0)
+                            ]);
+                        } else {
+                            // Fix & Flip / New Construction loan table row
+                            data.push([
+                                window.selectedLoanProgram,
+                                (loanData.loan_term || loanData.term || 'N/A') + ' months',
+                                (loanData.interest_rate || loanData.rate || 'N/A') + '%',
+                                (loanData.lender_points || loanData.points || 'N/A') + '%',
+                                (loanData.max_ltv || 'N/A') + '%',
+                                '$' + numberWithCommas(loanData.purchase_loan_up_to || 0),
+                                '$' + numberWithCommas(loanData.rehab_loan_up_to || 0),
+                                '$' + numberWithCommas(loanData.total_loan_up_to || (loanData.purchase_loan_up_to + loanData.rehab_loan_up_to) || 0)
+                            ]);
+                        }
                     }
                 }
                 
@@ -3557,7 +3581,17 @@
             
             // Helper function to create all loan programs table with selected column
             function createAllLoanProgramsTable() {
-                const headers = ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Purchase Loan', 'Rehab Loan', 'Total Loan', 'Selected'];
+                // Check if we have any DSCR loans in the data
+                let hasDscrLoans = false;
+                if (window.allLoansData && Object.keys(window.allLoansData).length > 0) {
+                    hasDscrLoans = Object.values(window.allLoansData).some(loanArray => 
+                        loanArray[0].loan_type === 'DSCR Rental Loans'
+                    );
+                }
+                
+                const headers = hasDscrLoans 
+                    ? ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Initial Loan', 'Total Loan', 'Selected']
+                    : ['Program', 'Term', 'Rate', 'Points', 'Max LTV', 'Purchase Loan', 'Rehab Loan', 'Total Loan', 'Selected'];
                 const data = [];
                 
                 if (window.allLoansData && Object.keys(window.allLoansData).length > 0) {
@@ -3567,18 +3601,34 @@
                         
                         if (loanData) {
                             const isSelected = window.selectedLoanProgram === programName;
+                            const isDscrLoan = loan.loan_type === 'DSCR Rental Loans';
                             
-                            data.push([
-                                programName,
-                                (loanData.loan_term || loanData.term || 'N/A') + ' months',
-                                (loanData.interest_rate || loanData.rate || 'N/A') + '%',
-                                (loanData.lender_points || loanData.points || 'N/A') + '%',
-                                (loanData.max_ltv || 'N/A') + '%',
-                                '$' + numberWithCommas(loanData.purchase_loan_up_to || 0),
-                                '$' + numberWithCommas(loanData.rehab_loan_up_to || 0),
-                                '$' + numberWithCommas(loanData.total_loan_up_to || (loanData.purchase_loan_up_to + loanData.rehab_loan_up_to) || 0),
-                                isSelected ? 'YES' : 'NO'
-                            ]);
+                            if (hasDscrLoans) {
+                                // When any DSCR loans exist, use DSCR format for all (simplified view)
+                                data.push([
+                                    programName,
+                                    (loanData.loan_term || loanData.term || 'N/A') + ' months',
+                                    (loanData.interest_rate || loanData.rate || 'N/A') + '%',
+                                    (loanData.lender_points || loanData.points || 'N/A') + '%',
+                                    (loanData.max_ltv || 'N/A') + '%',
+                                    '$' + numberWithCommas(isDscrLoan ? (loanData.loan_amount || 0) : (loanData.purchase_loan_up_to || 0)),
+                                    '$' + numberWithCommas(isDscrLoan ? (loanData.loan_amount || 0) : (loanData.total_loan_up_to || (loanData.purchase_loan_up_to + loanData.rehab_loan_up_to) || 0)),
+                                    isSelected ? 'YES' : 'NO'
+                                ]);
+                            } else {
+                                // Standard Fix & Flip / New Construction format
+                                data.push([
+                                    programName,
+                                    (loanData.loan_term || loanData.term || 'N/A') + ' months',
+                                    (loanData.interest_rate || loanData.rate || 'N/A') + '%',
+                                    (loanData.lender_points || loanData.points || 'N/A') + '%',
+                                    (loanData.max_ltv || 'N/A') + '%',
+                                    '$' + numberWithCommas(loanData.purchase_loan_up_to || 0),
+                                    '$' + numberWithCommas(loanData.rehab_loan_up_to || 0),
+                                    '$' + numberWithCommas(loanData.total_loan_up_to || (loanData.purchase_loan_up_to + loanData.rehab_loan_up_to) || 0),
+                                    isSelected ? 'YES' : 'NO'
+                                ]);
+                            }
                         }
                     });
                 }
@@ -3594,14 +3644,22 @@
                 if (window.selectedLoanProgram && window.allLoansData && window.allLoansData[window.selectedLoanProgram]) {
                     const loan = window.allLoansData[window.selectedLoanProgram][0];
                     const closingData = loan.estimated_closing_statement;
+                    const isDscrLoan = loan.loan_type === 'DSCR Rental Loans';
                     
                     if (closingData) {
                         // Loan Amount Section
                         data.push(['LOAN AMOUNT SECTION', '']);
                         if (closingData.loan_amount_section) {
-                            data.push(['Purchase Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0)]);
-                            data.push(['Rehab Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0)]);
-                            data.push(['Total Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0)]);
+                            if (isDscrLoan) {
+                                // For DSCR loans: Show Initial Loan Amount instead of Purchase Loan
+                                data.push(['Initial Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.initial_loan_amount || 0)]);
+                                data.push(['Total Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.initial_loan_amount || 0)]);
+                            } else {
+                                // For Fix & Flip and New Construction loans
+                                data.push(['Purchase Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0)]);
+                                data.push(['Rehab Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0)]);
+                                data.push(['Total Loan Amount', '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0)]);
+                            }
                         }
                         
                         data.push(['', '']); // Empty row
