@@ -2543,13 +2543,34 @@
             let hasValidLoanAmount = false;
             
             // Determine loan type to use appropriate validation
+            // For DSCR loans, check multiple possible indicators
             const loanType = selectedLoan.loan_type;
-            const isDscrLoan = loanType === 'DSCR Rental Loans';
+            const isDscrLoan = loanType === 'DSCR Rental Loans' || 
+                             programName.includes('DSCR') || 
+                             selectedLoan.loan_program?.includes('DSCR') ||
+                             (selectedLoan.estimated_closing_statement && !selectedLoan.estimated_closing_statement.loan_amount_section?.total_loan_amount);
+            
+            console.log('Loan type detection:', {
+                loanType,
+                programName,
+                selectedLoan_loan_program: selectedLoan.loan_program,
+                isDscrLoan
+            });
             
             if (isDscrLoan) {
-                // For DSCR loans, always show closing statement - no validation needed
-                hasValidLoanAmount = true;
-                console.log('DSCR loan detected - skipping validation, always showing closing statement');
+                // For DSCR loans, check if there's a valid loan amount in the DSCR structure
+                if (selectedLoan.estimated_closing_statement && selectedLoan.estimated_closing_statement.loan_amount_section) {
+                    const dscrLoanAmount = parseFloat(selectedLoan.estimated_closing_statement.loan_amount_section.initial_loan_amount || 0);
+                    hasValidLoanAmount = dscrLoanAmount > 0;
+                    console.log('DSCR loan amount validation:', {
+                        dscrLoanAmount,
+                        hasValidLoanAmount
+                    });
+                } else {
+                    // If no loan amount section, assume valid for DSCR loans
+                    hasValidLoanAmount = true;
+                    console.log('DSCR loan detected - no loan amount section, assuming valid');
+                }
             } else if (selectedLoan.estimated_closing_statement && selectedLoan.estimated_closing_statement.loan_amount_section) {
                 const loanAmounts = selectedLoan.estimated_closing_statement.loan_amount_section;
                 const totalLoan = parseFloat(loanAmounts.total_loan_amount || 0);
@@ -2559,7 +2580,7 @@
                 // For Fix & Flip and New Construction loans, consider valid if total loan > 0 OR if either purchase or rehab loan > 0
                 hasValidLoanAmount = totalLoan > 0 || purchaseLoan > 0 || rehabLoan > 0;
                 
-                console.log('Loan amount validation:', {
+                console.log('Non-DSCR loan amount validation:', {
                     loanType,
                     isDscrLoan,
                     totalLoan,
@@ -2617,17 +2638,65 @@
         }
 
         function populateClosingStatement(closingData) {
+            console.log('Populating closing statement with data:', closingData);
+            
+            // Determine if this is a DSCR loan by checking the data structure
+            const isDscrLoan = closingData.loan_amount_section && 
+                             closingData.loan_amount_section.initial_loan_amount !== undefined &&
+                             closingData.buyer_related_charges &&
+                             closingData.buyer_related_charges.purchase_price !== undefined;
+            
+            console.log('Is DSCR Loan:', isDscrLoan);
+            
             // Loan Amount Section
             if (closingData.loan_amount_section) {
-                document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0);
-                document.getElementById('closingRehabLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0);
-                document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0);
+                if (isDscrLoan) {
+                    // For DSCR loans: Purchase Loan = purchase_price from buyer_related_charges
+                    // Total Loan = initial_loan_amount from loan_amount_section
+                    const purchasePrice = closingData.buyer_related_charges?.purchase_price || 0;
+                    const totalLoan = closingData.loan_amount_section.initial_loan_amount || 0;
+                    
+                    document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(purchasePrice);
+                    document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(totalLoan);
+                    
+                    // Hide Rehab Loan row for DSCR loans
+                    const rehabLoanRow = document.getElementById('closingRehabLoan').closest('.flex');
+                    if (rehabLoanRow) {
+                        rehabLoanRow.style.display = 'none';
+                    }
+                } else {
+                    // For Fix & Flip and New Construction loans: use existing logic
+                    document.getElementById('closingPurchaseLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.purchase_loan_amount || 0);
+                    document.getElementById('closingRehabLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.rehab_loan_amount || 0);
+                    document.getElementById('closingTotalLoan').textContent = '$' + numberWithCommas(closingData.loan_amount_section.total_loan_amount || 0);
+                    
+                    // Show Rehab Loan row for non-DSCR loans
+                    const rehabLoanRow = document.getElementById('closingRehabLoan').closest('.flex');
+                    if (rehabLoanRow) {
+                        rehabLoanRow.style.display = 'flex';
+                    }
+                }
             }
             
             // Buyer Related Charges
             if (closingData.buyer_related_charges) {
                 document.getElementById('closingPurchasePrice').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0);
-                document.getElementById('closingRehabBudget').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0);
+                
+                if (isDscrLoan) {
+                    // Hide Rehab Budget row for DSCR loans
+                    const rehabBudgetRow = document.getElementById('closingRehabBudget').closest('.flex');
+                    if (rehabBudgetRow) {
+                        rehabBudgetRow.style.display = 'none';
+                    }
+                } else {
+                    // Show and populate Rehab Budget for non-DSCR loans
+                    document.getElementById('closingRehabBudget').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0);
+                    const rehabBudgetRow = document.getElementById('closingRehabBudget').closest('.flex');
+                    if (rehabBudgetRow) {
+                        rehabBudgetRow.style.display = 'flex';
+                    }
+                }
+                
                 document.getElementById('closingSubtotalBuyer').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0);
             }
             
@@ -2649,6 +2718,8 @@
             
             // Cash Due to Buyer
             document.getElementById('closingCashDue').textContent = '$' + numberWithCommas(closingData.cash_due_to_buyer || 0);
+            
+            console.log('Closing statement populated successfully');
         }
                         </script>
 
@@ -3100,12 +3171,147 @@
                     return;
                 }
                 
-                // For DSCR loans, we can potentially recalculate the monthly payment and other values
-                // based on the new loan amount, but for now we'll just update the display
-                console.log(`DSCR loan amount updated for ${programName}: $${numberWithCommas(newAmount)}`);
+                // Update DSCR loan calculations with new loan amount
+                updateDscrLoanCalculations(programName, newAmount);
+            };
+
+            // Function to update DSCR loan calculations with new loan amount
+            window.updateDscrLoanCalculations = async function(programName, newLoanAmount) {
+                try {
+                    console.log(`Updating DSCR loan calculations for ${programName} with amount: $${numberWithCommas(newLoanAmount)}`);
+                    
+                    // Get the original loan data for this program to extract the current parameters
+                    const originalLoanData = window.allLoansData[programName][0];
+                    if (!originalLoanData) {
+                        console.error('Original DSCR loan data not found for program:', programName);
+                        return;
+                    }
+
+                    // Get current form data to build API request
+                    const formData = new FormData(document.getElementById('loanCalculatorForm'));
+                    
+                    // Build API parameters for DSCR loan with the new loan amount
+                    const apiParams = new URLSearchParams();
+                    
+                    // Add required parameters with fallbacks
+                    apiParams.append('credit_score', formData.get('credit_score') || '700');
+                    apiParams.append('experience', formData.get('experience') || '4');
+                    apiParams.append('loan_type', 'DSCR Rental Loans');
+                    apiParams.append('transaction_type', formData.get('transaction_type') || 'Purchase');
+                    apiParams.append('purchase_price', formData.get('purchase_price') || '475000');
+                    apiParams.append('broker_points', formData.get('broker_points') || '1');
+                    apiParams.append('state', formData.get('state') || 'AL');
+                    apiParams.append('property_type', formData.get('property_type') || 'Single Family');
+                    apiParams.append('occupancy_type', formData.get('occupancy_type') || 'Occupied');
+                    apiParams.append('monthly_market_rent', formData.get('monthly_market_rent') || '5200');
+                    apiParams.append('annual_tax', formData.get('annual_tax') || '4400');
+                    apiParams.append('annual_insurance', formData.get('annual_insurance') || '2400');
+                    apiParams.append('annual_hoa', formData.get('annual_hoa') || '0');
+                    
+                    // Add current dropdown values with fallbacks
+                    apiParams.append('loan_term', window.currentDscrValues?.loanTerm || '30 Year Fixed');
+                    apiParams.append('lender_points', window.currentDscrValues?.lenderPoints || '2.000');
+                    apiParams.append('pre_pay_penalty', window.currentDscrValues?.prepayPenalty || '5 Year Prepay');
+                    
+                    // Add the new user input loan amount
+                    apiParams.append('user_input_loan_amount', newLoanAmount);
+                    
+                    // Filter to only get this specific loan program
+                    apiParams.append('loan_program', programName);
+
+                    console.log('API Parameters:', apiParams.toString());
+
+                    // Make API call to recalculate DSCR loan with new amount (using GET method)
+                    const apiUrl = `/api/loan-matrix-dscr?${apiParams.toString()}`;
+                    console.log('Making API call to:', apiUrl);
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    console.log('API Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('API Response data:', data);
+                    
+                    if (data.success && data.data && data.data.length > 0) {
+                        const updatedLoanData = data.data[0];
+                        console.log('Updated DSCR loan data:', updatedLoanData);
+                        
+                        // Update the global loan data
+                        window.allLoansData[programName][0] = updatedLoanData;
+                        
+                        // Update the card display with new values
+                        updateDscrCardDisplay(programName, updatedLoanData);
+                        
+                        // If this program is currently selected, update the closing statement
+                        const closingSection = document.getElementById('closingStatementSection');
+                        if (!closingSection.classList.contains('hidden') && window.selectedLoanProgram === programName) {
+                            populateClosingStatement(updatedLoanData.estimated_closing_statement);
+                        }
+                        
+                        console.log('DSCR loan calculations updated successfully');
+                        
+                    } else {
+                        console.error('Failed to update DSCR loan calculations:', data);
+                        const errorMsg = data.message || 'Failed to update loan calculations. Please try again.';
+                        alert(errorMsg);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error updating DSCR loan calculations:', error);
+                    console.error('Error details:', error.message);
+                    alert('An error occurred while updating loan calculations. Please check the console for details.');
+                }
+            };
+
+            // Function to update DSCR card display with new calculated values
+            window.updateDscrCardDisplay = function(programName, updatedLoanData) {
+                const loanData = updatedLoanData.loan_program_values;
                 
-                // You can add additional logic here to recalculate DSCR-specific values
-                // such as monthly payment, DSCR ratio, etc. based on the new loan amount
+                // Find the card for this program
+                const cards = document.querySelectorAll('#loanProgramCardsContainer > div');
+                let targetCard = null;
+                
+                cards.forEach(card => {
+                    const headerText = card.querySelector('h3');
+                    if (headerText && headerText.textContent === programName) {
+                        targetCard = card;
+                    }
+                });
+                
+                if (!targetCard) {
+                    console.error('Could not find card for program:', programName);
+                    return;
+                }
+                
+                // Update monthly payment
+                const monthlyPaymentSpan = targetCard.querySelector('.text-green-600');
+                if (monthlyPaymentSpan && loanData.monthly_payment) {
+                    monthlyPaymentSpan.textContent = `$${numberWithCommas(loanData.monthly_payment)}`;
+                }
+                
+                // Update interest rate
+                const interestRateSpan = targetCard.querySelector('.text-orange-600');
+                if (interestRateSpan && loanData.interest_rate) {
+                    interestRateSpan.textContent = `${loanData.interest_rate}%`;
+                }
+                
+                // Update max LTV
+                const maxLtvSpan = targetCard.querySelector('.text-purple-600');
+                if (maxLtvSpan && loanData.max_ltv) {
+                    maxLtvSpan.textContent = `${loanData.max_ltv}%`;
+                }
+                
+                console.log(`Updated card display for ${programName}`);
             };
             
             // Function to calculate lender fees based on loan amount
