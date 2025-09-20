@@ -24,36 +24,27 @@ class LoanApplicationController extends Controller
      */
     public function submitApplication(Request $request)
     {
-        // Validate the incoming request
-        $validator = Validator::make($request->all(), [
+        // Determine if this is a DSCR loan to apply conditional validation
+        $isDscrLoan = $request->input('loan_type') === 'DSCR Rental Loans';
+
+        // Base validation rules
+        $validationRules = [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
 
-            // Calculator inputs
+            // Calculator inputs - common fields
             'credit_score' => 'required|integer|min:300|max:850',
             'experience' => 'required|integer|min:0',
             'loan_type' => 'required|string',
             'transaction_type' => 'required|string',
-            'loan_term' => 'required|integer',
             'purchase_price' => 'required|numeric|min:0',
-            'arv' => 'required|numeric|min:0',
-            'rehab_budget' => 'required|numeric|min:0',
             'broker_points' => 'required|numeric|min:0',
             'state' => 'required|string|max:2',
 
-            // Optional DSCR fields
+            // Always optional fields
             'payoff_amount' => 'nullable|numeric|min:0',
-            'lender_points' => 'nullable|numeric|min:0',
-            'pre_pay_penalty' => 'nullable|string',
-            'occupancy_type' => 'nullable|string',
-            'monthly_market_rent' => 'nullable|numeric|min:0',
-            'annual_tax' => 'nullable|numeric|min:0',
-            'annual_insurance' => 'nullable|numeric|min:0',
-            'annual_hoa' => 'nullable|numeric|min:0',
-            'dscr' => 'nullable|numeric|min:0',
-            'purchase_date' => 'nullable|date',
             'title_charges' => 'nullable|numeric|min:0',
             'property_insurance' => 'nullable|numeric|min:0',
 
@@ -68,14 +59,67 @@ class LoanApplicationController extends Controller
 
             // Calculated values
             'calculated_values' => 'required|array',
-            'calculated_values.purchase_loan_amount' => 'required|numeric|min:0',
-            'calculated_values.rehab_loan_amount' => 'required|numeric|min:0',
-            'calculated_values.total_loan_amount' => 'required|numeric|min:0',
 
             // API data
             'api_url' => 'required|string',
             'api_response' => 'required|array',
-        ]);
+        ];
+
+        if ($isDscrLoan) {
+            // DSCR loan specific validation rules
+            $validationRules = array_merge($validationRules, [
+                // DSCR required fields
+                'occupancy_type' => 'required|string',
+                'monthly_market_rent' => 'required|numeric|min:0',
+                'annual_tax' => 'required|numeric|min:0',
+                'annual_insurance' => 'required|numeric|min:0',
+                'annual_hoa' => 'required|numeric|min:0',
+
+                // DSCR optional fields
+                'dscr' => 'nullable|numeric|min:0',
+                'purchase_date' => 'nullable|date',
+                'lender_points' => 'nullable|numeric|min:0',
+                'pre_pay_penalty' => 'nullable|string',
+
+                // DSCR doesn't require these fields
+                'loan_term' => 'nullable|integer',
+                'arv' => 'nullable|numeric',
+                'rehab_budget' => 'nullable|numeric',
+
+                // DSCR calculated values structure
+                'calculated_values.total_loan_amount' => 'required|numeric|min:0',
+                'calculated_values.lender_origination_fee' => 'nullable|numeric|min:0',
+                'calculated_values.broker_fee' => 'nullable|numeric|min:0',
+                'calculated_values.cash_due_to_buyer' => 'nullable|numeric',
+            ]);
+        } else {
+            // Fix & Flip / New Construction validation rules
+            $validationRules = array_merge($validationRules, [
+                // Required for non-DSCR loans
+                'loan_term' => 'required|integer',
+                'arv' => 'required|numeric|min:0',
+                'rehab_budget' => 'required|numeric|min:0',
+                'lender_points' => 'nullable|numeric|min:0',
+                'pre_pay_penalty' => 'nullable|string',
+
+                // Optional DSCR fields (not used for non-DSCR)
+                'occupancy_type' => 'nullable|string',
+                'monthly_market_rent' => 'nullable|numeric|min:0',
+                'annual_tax' => 'nullable|numeric|min:0',
+                'annual_insurance' => 'nullable|numeric|min:0',
+                'annual_hoa' => 'nullable|numeric|min:0',
+                'dscr' => 'nullable|numeric|min:0',
+                'purchase_date' => 'nullable|date',
+
+                // Standard calculated values structure
+                'calculated_values.purchase_loan_amount' => 'required|numeric|min:0',
+                'calculated_values.rehab_loan_amount' => 'required|numeric|min:0',
+                'calculated_values.total_loan_amount' => 'required|numeric|min:0',
+            ]);
+        }
+
+        // Validate the incoming request
+        $validator = Validator::make($request->all(), $validationRules);
 
         if ($validator->fails()) {
             return response()->json([
@@ -118,7 +162,7 @@ class LoanApplicationController extends Controller
             // The same email can have multiple borrower applications
 
             // Create new borrower record for this application
-            $borrower = Borrower::create([
+            $borrowerData = [
                 'user_id' => $user->id,
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -129,44 +173,17 @@ class LoanApplicationController extends Controller
                 'property_state' => $request->state,
                 'property_type' => $request->property_type ?? null,
 
-                // Calculator inputs
+                // Calculator inputs - common fields
                 'transaction_type' => $request->transaction_type,
-                'loan_term' => $request->loan_term,
                 'purchase_price' => $request->purchase_price,
-                'arv' => $request->arv,
-                'rehab_budget' => $request->rehab_budget,
                 'broker_points' => $request->broker_points,
                 'payoff_amount' => $request->payoff_amount,
-                'lender_points' => $request->lender_points,
-                'pre_pay_penalty' => $request->pre_pay_penalty,
-                'occupancy_type' => $request->occupancy_type,
-                'monthly_market_rent' => $request->monthly_market_rent,
-                'annual_tax' => $request->annual_tax,
-                'annual_insurance' => $request->annual_insurance,
-                'annual_hoa' => $request->annual_hoa,
-                'dscr' => $request->dscr,
-                'purchase_date' => $request->purchase_date,
                 'title_charges' => $request->title_charges,
                 'property_insurance' => $request->property_insurance,
 
                 // Selected program
                 'selected_loan_type' => $request->loan_type,
                 'selected_loan_program' => $request->selected_loan_program,
-
-                // Calculated amounts
-                'purchase_loan_amount' => $request->calculated_values['purchase_loan_amount'],
-                'rehab_loan_amount' => $request->calculated_values['rehab_loan_amount'],
-                'total_loan_amount' => $request->calculated_values['total_loan_amount'],
-
-                // Costs from API response
-                'lender_origination_fee' => $request->calculated_values['lender_origination_fee'] ?? 0,
-                'broker_fee' => $request->calculated_values['broker_fee'] ?? 0,
-                'underwriting_processing_fee' => $request->calculated_values['underwriting_processing_fee'] ?? 0,
-                'interest_reserves' => $request->calculated_values['interest_reserves'] ?? 0,
-                'title_costs' => $request->calculated_values['title_charges'] ?? 0,
-                'legal_doc_prep_fee' => $request->calculated_values['legal_doc_prep_fee'] ?? 0,
-                'subtotal_closing_costs' => $request->calculated_values['subtotal_closing_costs'] ?? 0,
-                'cash_due_to_buyer' => $request->calculated_values['cash_due_to_buyer'] ?? 0,
 
                 // Application data
                 'application_status' => 'IN_PROCESS',
@@ -175,31 +192,129 @@ class LoanApplicationController extends Controller
                 'application_submitted_at' => now(),
                 'application_source' => 'loan_calculator',
                 'status' => 'active',
-            ]);
+            ];
+
+            // Add loan type specific fields
+            if ($isDscrLoan) {
+                // DSCR loan specific fields
+                $borrowerData = array_merge($borrowerData, [
+                    'loan_term' => null, // DSCR doesn't use loan_term
+                    'arv' => null,
+                    'rehab_budget' => null,
+
+                    // DSCR specific fields
+                    'lender_points' => $request->lender_points,
+                    'pre_pay_penalty' => $request->pre_pay_penalty,
+                    'occupancy_type' => $request->occupancy_type,
+                    'monthly_market_rent' => $request->monthly_market_rent,
+                    'annual_tax' => $request->annual_tax,
+                    'annual_insurance' => $request->annual_insurance,
+                    'annual_hoa' => $request->annual_hoa,
+                    'dscr' => $request->dscr,
+                    'purchase_date' => $request->purchase_date,
+
+                    // Extract DSCR loan amounts from API response or calculated values
+                    'loan_amount_requested' => $request->loan_amount_requested ?? null,
+                    'purchase_loan_amount' => $request->calculated_values['purchase_loan_amount'] ?? 0,
+                    'rehab_loan_amount' => 0, // DSCR loans don't have rehab
+                    'total_loan_amount' => $request->calculated_values['total_loan_amount'] ?? 0,
+
+                    // DSCR closing costs
+                    'lender_origination_fee' => $request->calculated_values['lender_origination_fee'] ?? 0,
+                    'broker_fee' => $request->calculated_values['broker_fee'] ?? 0,
+                    'underwriting_processing_fee' => $request->calculated_values['underwriting_processing_fee'] ?? 0,
+                    'interest_reserves' => $request->calculated_values['interest_reserves'] ?? 0,
+                    'title_costs' => $request->calculated_values['title_charges'] ?? 0,
+                    'legal_doc_prep_fee' => $request->calculated_values['legal_doc_prep_fee'] ?? 0,
+                    'subtotal_closing_costs' => $request->calculated_values['subtotal_closing_costs'] ?? 0,
+                    'cash_due_to_buyer' => $request->calculated_values['cash_due_to_buyer'] ?? 0,
+                ]);
+            } else {
+                // Fix & Flip / New Construction loan specific fields
+                $borrowerData = array_merge($borrowerData, [
+                    'loan_term' => $request->loan_term,
+                    'arv' => $request->arv,
+                    'rehab_budget' => $request->rehab_budget,
+                    'lender_points' => $request->lender_points,
+                    'pre_pay_penalty' => $request->pre_pay_penalty,
+
+                    // DSCR fields set to null for non-DSCR loans
+                    'occupancy_type' => null,
+                    'monthly_market_rent' => null,
+                    'annual_tax' => null,
+                    'annual_insurance' => null,
+                    'annual_hoa' => null,
+                    'dscr' => null,
+                    'purchase_date' => null,
+
+                    // Standard loan amounts
+                    'purchase_loan_amount' => $request->calculated_values['purchase_loan_amount'],
+                    'rehab_loan_amount' => $request->calculated_values['rehab_loan_amount'],
+                    'total_loan_amount' => $request->calculated_values['total_loan_amount'],
+
+                    // Standard closing costs
+                    'lender_origination_fee' => $request->calculated_values['lender_origination_fee'] ?? 0,
+                    'broker_fee' => $request->calculated_values['broker_fee'] ?? 0,
+                    'underwriting_processing_fee' => $request->calculated_values['underwriting_processing_fee'] ?? 0,
+                    'interest_reserves' => $request->calculated_values['interest_reserves'] ?? 0,
+                    'title_costs' => $request->calculated_values['title_charges'] ?? 0,
+                    'legal_doc_prep_fee' => $request->calculated_values['legal_doc_prep_fee'] ?? 0,
+                    'subtotal_closing_costs' => $request->calculated_values['subtotal_closing_costs'] ?? 0,
+                    'cash_due_to_buyer' => $request->calculated_values['cash_due_to_buyer'] ?? 0,
+                ]);
+            }
+
+            $borrower = Borrower::create($borrowerData);
 
             // Save all loan program results
             foreach ($request->loan_programs as $index => $programData) {
-                LoanProgramResult::create([
+                $loanProgramData = [
                     'borrower_id' => $borrower->id,
-                    'loan_type' => $programData['loan_type'],
+                    'loan_type' => $programData['loan_type'] ?? $request->loan_type,
                     'loan_program' => $programData['loan_program'],
-                    'loan_term' => $programData['loan_term'] ?? $request->loan_term . ' Months',
-                    'interest_rate' => $programData['interest_rate'] ?? null,
-                    'lender_points' => $programData['lender_points'] ?? null,
-                    'max_ltv' => $programData['max_ltv'] ?? null,
-                    'max_ltc' => $programData['max_ltc'] ?? null,
-                    'max_ltfc' => $programData['max_ltfc'] ?? null,
-                    'purchase_loan_up_to' => $programData['purchase_loan_up_to'] ?? 0,
-                    'rehab_loan_up_to' => $programData['rehab_loan_up_to'] ?? 0,
-                    'total_loan_up_to' => $programData['total_loan_up_to'] ?? 0,
-                    'rehab_category' => $programData['rehab_category'] ?? null,
-                    'rehab_percentage' => $programData['rehab_percentage'] ?? null,
-                    'pricing_tier' => $programData['pricing_tier'] ?? null,
                     'is_selected' => $programData['is_selected'],
                     'raw_loan_data' => $programData,
                     'display_order' => $index + 1,
                     'program_status' => $programData['is_selected'] ? 'selected' : 'available',
-                ]);
+                ];
+
+                if ($isDscrLoan) {
+                    // For DSCR loans, extract data from the API response structure
+                    $loanValues = $programData['loan_program_values'] ?? [];
+
+                    $loanProgramData = array_merge($loanProgramData, [
+                        'loan_term' => $loanValues['loan_term'] ?? null,
+                        'interest_rate' => $loanValues['interest_rate'] ?? null,
+                        'lender_points' => $loanValues['lender_points'] ?? null,
+                        'max_ltv' => $loanValues['max_ltv'] ?? null,
+                        'max_ltc' => null, // DSCR loans don't typically use LTC
+                        'max_ltfc' => null, // DSCR loans don't typically use LTFC
+                        'purchase_loan_up_to' => $loanValues['loan_amount'] ?? 0,
+                        'rehab_loan_up_to' => 0, // DSCR loans don't have rehab
+                        'total_loan_up_to' => $loanValues['loan_amount'] ?? 0,
+                        'rehab_category' => null,
+                        'rehab_percentage' => null,
+                        'pricing_tier' => $loanValues['pricing_tier'] ?? null,
+                    ]);
+                } else {
+                    // For Fix & Flip / New Construction loans, use existing logic
+                    $loanProgramData = array_merge($loanProgramData, [
+                        'loan_term' => $programData['loan_term'] ?? $request->loan_term . ' Months',
+                        'interest_rate' => $programData['interest_rate'] ?? null,
+                        'lender_points' => $programData['lender_points'] ?? null,
+                        'max_ltv' => $programData['max_ltv'] ?? null,
+                        'max_ltc' => $programData['max_ltc'] ?? null,
+                        'max_ltfc' => $programData['max_ltfc'] ?? null,
+                        'purchase_loan_up_to' => $programData['purchase_loan_up_to'] ?? 0,
+                        'rehab_loan_up_to' => $programData['rehab_loan_up_to'] ?? 0,
+                        'total_loan_up_to' => $programData['total_loan_up_to'] ?? 0,
+                        'rehab_category' => $programData['rehab_category'] ?? null,
+                        'rehab_percentage' => $programData['rehab_percentage'] ?? null,
+                        'pricing_tier' => $programData['pricing_tier'] ?? null,
+                    ]);
+                }
+
+                LoanProgramResult::create($loanProgramData);
             }
 
             // Send email notification

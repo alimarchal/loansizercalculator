@@ -3771,44 +3771,87 @@
                     
                     // Prepare loan programs array with selection status
                     const loanPrograms = [];
+                    const isDscrLoan = formData.loan_type === 'DSCR Rental Loans';
+                    
                     Object.keys(window.allLoansData).forEach(programName => {
                         const loanData = window.allLoansData[programName][0];
-                        const loanTypeData = loanData.loan_type_and_loan_program_table || loanData.loan_program_values;
                         
-                        loanPrograms.push({
-                            loan_type: loanData.loan_type,
-                            loan_program: programName,
-                            loan_term: loanTypeData?.loan_term || formData.loan_term,
-                            interest_rate: loanTypeData?.interest_rate || loanTypeData?.rate,
-                            lender_points: loanTypeData?.lender_points || loanTypeData?.points,
-                            max_ltv: loanTypeData?.max_ltv,
-                            max_ltc: loanTypeData?.max_ltc,
-                            max_ltfc: loanTypeData?.max_ltfc,
-                            purchase_loan_up_to: loanTypeData?.purchase_loan_up_to || 0,
-                            rehab_loan_up_to: loanTypeData?.rehab_loan_up_to || 0,
-                            total_loan_up_to: loanTypeData?.total_loan_up_to || 0,
-                            rehab_category: loanTypeData?.rehab_category,
-                            rehab_percentage: loanTypeData?.percentage_max_ltv_max_ltc,
-                            pricing_tier: loanTypeData?.pricing_tier,
-                            is_selected: programName === window.selectedLoanProgram
-                        });
+                        if (isDscrLoan) {
+                            // For DSCR loans, use loan_program_values structure
+                            const loanTypeData = loanData.loan_program_values;
+                            
+                            loanPrograms.push({
+                                loan_type: loanData.loan_type || 'DSCR Rental Loans',
+                                loan_program: programName,
+                                loan_program_values: loanTypeData, // Include the full structure for DSCR
+                                loan_term: loanTypeData?.loan_term,
+                                interest_rate: loanTypeData?.interest_rate,
+                                lender_points: loanTypeData?.lender_points,
+                                max_ltv: loanTypeData?.max_ltv,
+                                loan_amount: loanTypeData?.loan_amount || loanData?.ltv_formula?.loan_amount?.input,
+                                monthly_payment: loanTypeData?.monthly_payment,
+                                pricing_tier: loanTypeData?.pricing_tier,
+                                is_selected: programName === window.selectedLoanProgram
+                            });
+                        } else {
+                            // For Fix & Flip / New Construction loans, use existing logic
+                            const loanTypeData = loanData.loan_type_and_loan_program_table || loanData.loan_program_values;
+                            
+                            loanPrograms.push({
+                                loan_type: loanData.loan_type,
+                                loan_program: programName,
+                                loan_term: loanTypeData?.loan_term || formData.loan_term,
+                                interest_rate: loanTypeData?.interest_rate || loanTypeData?.rate,
+                                lender_points: loanTypeData?.lender_points || loanTypeData?.points,
+                                max_ltv: loanTypeData?.max_ltv,
+                                max_ltc: loanTypeData?.max_ltc,
+                                max_ltfc: loanTypeData?.max_ltfc,
+                                purchase_loan_up_to: loanTypeData?.purchase_loan_up_to || 0,
+                                rehab_loan_up_to: loanTypeData?.rehab_loan_up_to || 0,
+                                total_loan_up_to: loanTypeData?.total_loan_up_to || 0,
+                                rehab_category: loanTypeData?.rehab_category,
+                                rehab_percentage: loanTypeData?.percentage_max_ltv_max_ltc,
+                                pricing_tier: loanTypeData?.pricing_tier,
+                                is_selected: programName === window.selectedLoanProgram
+                            });
+                        }
                     });
 
                     // Get calculated values from the selected program
                     const closingStatement = selectedLoanData.estimated_closing_statement;
-                    const calculatedValues = {
-                        purchase_loan_amount: closingStatement?.loan_amount_section?.purchase_loan_amount || 0,
-                        rehab_loan_amount: closingStatement?.loan_amount_section?.rehab_loan_amount || 0,
-                        total_loan_amount: closingStatement?.loan_amount_section?.total_loan_amount || 0,
-                        lender_origination_fee: closingStatement?.lender_related_charges?.lender_origination_fee || 0,
-                        broker_fee: closingStatement?.lender_related_charges?.broker_fee || 0,
-                        underwriting_processing_fee: closingStatement?.lender_related_charges?.underwriting_processing_fee || 0,
-                        interest_reserves: closingStatement?.lender_related_charges?.interest_reserves || 0,
-                        title_charges: closingStatement?.title_other_charges?.title_charges || 0,
-                        legal_doc_prep_fee: closingStatement?.title_other_charges?.legal_doc_prep_fee || 0,
-                        subtotal_closing_costs: closingStatement?.title_other_charges?.subtotal_closing_costs || 0,
-                        cash_due_to_buyer: closingStatement?.cash_due_to_buyer || 0
-                    };
+                    let calculatedValues = {};
+                    
+                    if (isDscrLoan) {
+                        // For DSCR loans, extract values from DSCR structure
+                        calculatedValues = {
+                            purchase_loan_amount: closingStatement?.buyer_related_charges?.purchase_price || 0,
+                            rehab_loan_amount: 0, // DSCR loans don't have rehab
+                            total_loan_amount: closingStatement?.loan_amount_section?.initial_loan_amount || 0,
+                            lender_origination_fee: closingStatement?.lender_related_charges?.lender_origination_fee || 0,
+                            broker_fee: closingStatement?.lender_related_charges?.broker_fee || 0,
+                            underwriting_processing_fee: closingStatement?.lender_related_charges?.underwriting_processing_fee || 0,
+                            interest_reserves: closingStatement?.lender_related_charges?.interest_reserves || 0,
+                            title_charges: closingStatement?.title_other_charges?.title_charges || 0,
+                            legal_doc_prep_fee: closingStatement?.title_other_charges?.legal_doc_prep_fee || 0,
+                            subtotal_closing_costs: closingStatement?.title_other_charges?.subtotal_closing_costs || 0,
+                            cash_due_to_buyer: closingStatement?.cash_due_to_buyer || 0
+                        };
+                    } else {
+                        // For Fix & Flip / New Construction loans, use existing logic
+                        calculatedValues = {
+                            purchase_loan_amount: closingStatement?.loan_amount_section?.purchase_loan_amount || 0,
+                            rehab_loan_amount: closingStatement?.loan_amount_section?.rehab_loan_amount || 0,
+                            total_loan_amount: closingStatement?.loan_amount_section?.total_loan_amount || 0,
+                            lender_origination_fee: closingStatement?.lender_related_charges?.lender_origination_fee || 0,
+                            broker_fee: closingStatement?.lender_related_charges?.broker_fee || 0,
+                            underwriting_processing_fee: closingStatement?.lender_related_charges?.underwriting_processing_fee || 0,
+                            interest_reserves: closingStatement?.lender_related_charges?.interest_reserves || 0,
+                            title_charges: closingStatement?.title_other_charges?.title_charges || 0,
+                            legal_doc_prep_fee: closingStatement?.title_other_charges?.legal_doc_prep_fee || 0,
+                            subtotal_closing_costs: closingStatement?.title_other_charges?.subtotal_closing_costs || 0,
+                            cash_due_to_buyer: closingStatement?.cash_due_to_buyer || 0
+                        };
+                    }
 
                     // Show user input modal
                     showUserInputModal(formData, loanPrograms, calculatedValues, selectedLoanData);
@@ -3906,6 +3949,11 @@
                 submitButton.disabled = true;
 
                 try {
+                    // Determine if this is a DSCR loan
+                    const isDscrLoan = formData.loan_type === 'DSCR Rental Loans';
+                    
+                    console.log('Submitting application for loan type:', formData.loan_type, 'isDscrLoan:', isDscrLoan);
+                    
                     // Prepare the payload
                     const payload = {
                         // Borrower information
@@ -3914,29 +3962,17 @@
                         email: borrowerData.get('email'),
                         phone: borrowerData.get('phone'),
                         
-                        // Calculator inputs
+                        // Calculator inputs - common fields
                         credit_score: parseInt(formData.credit_score),
                         experience: parseInt(formData.experience),
                         loan_type: formData.loan_type,
                         transaction_type: formData.transaction_type,
-                        loan_term: parseInt(formData.loan_term),
                         purchase_price: parseFloat(formData.purchase_price),
-                        arv: parseFloat(formData.arv),
-                        rehab_budget: parseFloat(formData.rehab_budget),
                         broker_points: parseFloat(formData.broker_points),
                         state: formData.state,
                         
-                        // Optional fields
+                        // Optional fields - populate based on loan type
                         payoff_amount: formData.payoff_amount ? parseFloat(formData.payoff_amount) : null,
-                        lender_points: formData.lender_points ? parseFloat(formData.lender_points) : null,
-                        pre_pay_penalty: formData.pre_pay_penalty || null,
-                        occupancy_type: formData.occupancy_type || null,
-                        monthly_market_rent: formData.monthly_market_rent ? parseFloat(formData.monthly_market_rent) : null,
-                        annual_tax: formData.annual_tax ? parseFloat(formData.annual_tax) : null,
-                        annual_insurance: formData.annual_insurance ? parseFloat(formData.annual_insurance) : null,
-                        annual_hoa: formData.annual_hoa ? parseFloat(formData.annual_hoa) : null,
-                        dscr: formData.dscr ? parseFloat(formData.dscr) : null,
-                        purchase_date: formData.purchase_date || null,
                         title_charges: formData.title_charges ? parseFloat(formData.title_charges) : null,
                         property_insurance: formData.property_insurance ? parseFloat(formData.property_insurance) : null,
                         
@@ -3953,6 +3989,51 @@
                         api_url: window.lastApiUrl || 'Unknown',
                         api_response: selectedLoanData
                     };
+                    
+                    // Add loan type specific fields
+                    if (isDscrLoan) {
+                        // DSCR loan specific fields
+                        payload.loan_term = null; // DSCR doesn't use loan_term dropdown
+                        payload.arv = null; // DSCR doesn't use ARV
+                        payload.rehab_budget = null; // DSCR doesn't use rehab_budget
+                        
+                        // DSCR specific required fields
+                        payload.occupancy_type = formData.occupancy_type || null;
+                        payload.monthly_market_rent = formData.monthly_market_rent ? parseFloat(formData.monthly_market_rent) : null;
+                        payload.annual_tax = formData.annual_tax ? parseFloat(formData.annual_tax) : null;
+                        payload.annual_insurance = formData.annual_insurance ? parseFloat(formData.annual_insurance) : null;
+                        payload.annual_hoa = formData.annual_hoa ? parseFloat(formData.annual_hoa) : null;
+                        payload.dscr = formData.dscr ? parseFloat(formData.dscr) : null;
+                        payload.purchase_date = formData.purchase_date || null;
+                        
+                        // DSCR uses dropdown values from loan cards
+                        payload.lender_points = window.currentDscrValues?.lenderPoints ? parseFloat(window.currentDscrValues.lenderPoints) : null;
+                        payload.pre_pay_penalty = window.currentDscrValues?.prepayPenalty || null;
+                        
+                        // Extract DSCR-specific loan amount from selected loan data
+                        if (selectedLoanData && selectedLoanData.ltv_formula && selectedLoanData.ltv_formula.loan_amount) {
+                            payload.loan_amount_requested = parseFloat(selectedLoanData.ltv_formula.loan_amount.input || 0);
+                        }
+                        
+                    } else {
+                        // Fix & Flip / New Construction loan specific fields
+                        payload.loan_term = parseInt(formData.loan_term);
+                        payload.arv = parseFloat(formData.arv);
+                        payload.rehab_budget = parseFloat(formData.rehab_budget);
+                        payload.lender_points = formData.lender_points ? parseFloat(formData.lender_points) : null;
+                        payload.pre_pay_penalty = formData.pre_pay_penalty || null;
+                        
+                        // These fields are not used for Fix & Flip / New Construction
+                        payload.occupancy_type = null;
+                        payload.monthly_market_rent = null;
+                        payload.annual_tax = null;
+                        payload.annual_insurance = null;
+                        payload.annual_hoa = null;
+                        payload.dscr = null;
+                        payload.purchase_date = null;
+                    }
+                    
+                    console.log('Submission payload:', payload);
 
                     // Submit to backend
                     const response = await fetch('/api/loan-application/submit', {
