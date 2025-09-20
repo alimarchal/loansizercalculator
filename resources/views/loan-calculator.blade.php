@@ -1252,7 +1252,8 @@
                                             <div class="bg-green-500 p-3 rounded-full mr-3">
                                                 <i class="fas fa-home text-white text-lg"></i>
                                             </div>
-                                            <h3 class="text-lg font-bold text-green-800">Property Costs</h3>
+                                            <h3 id="closingPropertyCostsTitle" class="text-lg font-bold text-green-800">
+                                                Property Costs</h3>
                                         </div>
                                         <div class="space-y-3">
                                             <div class="flex justify-between items-center">
@@ -1264,7 +1265,7 @@
                                                 <span class="text-sm text-gray-600">Rehab Budget:</span>
                                                 <span id="closingRehabBudget" class="font-bold text-green-700">$0</span>
                                             </div>
-                                            <div class="border-t pt-3">
+                                            <div id="closingSubtotalRow" class="border-t pt-3">
                                                 <div class="flex justify-between items-center">
                                                     <span class="font-semibold text-gray-700">Subtotal:</span>
                                                     <span id="closingSubtotalBuyer"
@@ -2683,24 +2684,45 @@
             
             // Buyer Related Charges
             if (closingData.buyer_related_charges) {
-                document.getElementById('closingPurchasePrice').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0);
-                
+                // Update title and subtotal visibility based on loan type
                 if (isDscrLoan) {
+                    // For DSCR loans: Change title and hide subtotal
+                    document.getElementById('closingPropertyCostsTitle').textContent = 'Buyer Related Charges';
+                    
+                    // Hide subtotal row for DSCR loans
+                    const subtotalRow = document.getElementById('closingSubtotalRow');
+                    if (subtotalRow) {
+                        subtotalRow.style.display = 'none';
+                    }
+                    
                     // Hide Rehab Budget row for DSCR loans
                     const rehabBudgetRow = document.getElementById('closingRehabBudget').closest('.flex');
                     if (rehabBudgetRow) {
                         rehabBudgetRow.style.display = 'none';
                     }
                 } else {
+                    // For Fix & Flip / New Construction loans: Keep original title and show subtotal
+                    document.getElementById('closingPropertyCostsTitle').textContent = 'Property Costs';
+                    
+                    // Show subtotal row for non-DSCR loans
+                    const subtotalRow = document.getElementById('closingSubtotalRow');
+                    if (subtotalRow) {
+                        subtotalRow.style.display = 'block';
+                    }
+                    
                     // Show and populate Rehab Budget for non-DSCR loans
                     document.getElementById('closingRehabBudget').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0);
                     const rehabBudgetRow = document.getElementById('closingRehabBudget').closest('.flex');
                     if (rehabBudgetRow) {
                         rehabBudgetRow.style.display = 'flex';
                     }
+                    
+                    // Update subtotal for non-DSCR loans
+                    document.getElementById('closingSubtotalBuyer').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0);
                 }
                 
-                document.getElementById('closingSubtotalBuyer').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0);
+                // Common field for all loan types
+                document.getElementById('closingPurchasePrice').textContent = '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0);
             }
             
             // Lender Related Charges
@@ -3668,8 +3690,12 @@
                         data.push(['BUYER RELATED CHARGES', '']);
                         if (closingData.buyer_related_charges) {
                             data.push(['Purchase Price', '$' + numberWithCommas(closingData.buyer_related_charges.purchase_price || 0)]);
-                            data.push(['Rehab Budget', '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0)]);
-                            data.push(['Sub Total Buyer Charges', '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0)]);
+                            
+                            if (!isDscrLoan) {
+                                // Only show rehab budget and subtotal for non-DSCR loans
+                                data.push(['Rehab Budget', '$' + numberWithCommas(closingData.buyer_related_charges.rehab_budget || 0)]);
+                                data.push(['Sub Total Buyer Charges', '$' + numberWithCommas(closingData.buyer_related_charges.sub_total_buyer_charges || 0)]);
+                            }
                         }
                         
                         data.push(['', '']); // Empty row
