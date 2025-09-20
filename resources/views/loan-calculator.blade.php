@@ -3909,9 +3909,16 @@
                                             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
                                             Cancel
                                         </button>
-                                        <button type="submit" 
-                                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                            Submit Application
+                                        <button type="submit" id="submitApplicationBtn"
+                                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <span id="submitButtonText">Submit Application</span>
+                                            <span id="submitButtonLoader" class="hidden">
+                                                <svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Submitting...
+                                            </span>
                                         </button>
                                     </div>
                                 </form>
@@ -3922,6 +3929,56 @@
 
                 // Add modal to DOM
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                // Add success modal HTML
+                const successModalHTML = `
+                    <div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+                        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+                            <div class="mt-3">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                        <svg class="w-6 h-6 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Application Submitted Successfully!
+                                    </h3>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
+                                        <p class="text-green-800 mb-2">
+                                            <strong>Email Confirmation:</strong> We've sent a confirmation email with your application details.
+                                        </p>
+                                        <p id="successModalContent" class="text-gray-700">
+                                            <!-- Dynamic content will be inserted here -->
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                        <h4 class="font-semibold text-blue-800 mb-2">Next Steps:</h4>
+                                        <ul class="text-blue-700 text-sm space-y-1">
+                                            <li>• Check your email for application confirmation</li>
+                                            <li>• Our team will review your application within 24-48 hours</li>
+                                            <li>• We'll contact you with any additional requirements</li>
+                                            <li id="loginInstruction">• Log in to track your application status</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <button id="loginButton" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                        Login to Account
+                                    </button>
+                                    <button id="closeSuccessModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.insertAdjacentHTML('beforeend', successModalHTML);
 
                 // Handle form submission
                 document.getElementById('borrowerInfoForm').addEventListener('submit', async function(e) {
@@ -3943,10 +4000,14 @@
                 const borrowerForm = document.getElementById('borrowerInfoForm');
                 const borrowerData = new FormData(borrowerForm);
                 
-                const submitButton = borrowerForm.querySelector('button[type="submit"]');
-                const originalText = submitButton.innerHTML;
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+                const submitButton = document.getElementById('submitApplicationBtn');
+                const submitButtonText = document.getElementById('submitButtonText');
+                const submitButtonLoader = document.getElementById('submitButtonLoader');
+                
+                // Disable button and show loading state
                 submitButton.disabled = true;
+                submitButtonText.classList.add('hidden');
+                submitButtonLoader.classList.remove('hidden');
 
                 try {
                     // Determine if this is a DSCR loan
@@ -4065,7 +4126,7 @@
 
                     if (result.success) {
                         closeUserInputModal();
-                        alert(result.message || 'Application submitted successfully!');
+                        showSuccessModal(result);
                     } else {
                         alert('Error submitting application: ' + (result.message || 'Unknown error'));
                     }
@@ -4074,9 +4135,68 @@
                     console.error('Error submitting application:', error);
                     alert('An error occurred while submitting your application. Please try again.');
                 } finally {
-                    submitButton.innerHTML = originalText;
+                    // Reset button state
                     submitButton.disabled = false;
+                    submitButtonText.classList.remove('hidden');
+                    submitButtonLoader.classList.add('hidden');
                 }
+            }
+
+            // Show success modal with account-specific content
+            function showSuccessModal(result) {
+                const modal = document.getElementById('successModal');
+                const modalContent = document.getElementById('successModalContent');
+                const loginButton = document.getElementById('loginButton');
+                const loginInstruction = document.getElementById('loginInstruction');
+                
+                // Set content based on account type
+                if (result.data && result.data.is_new_user) {
+                    modalContent.innerHTML = `
+                        <p class="mb-2">
+                            <strong>New Account Created:</strong> We've created an account for you using your email address.
+                        </p>
+                        <p class="mb-2">
+                            <strong>Email:</strong> <span class="font-mono bg-gray-100 px-2 py-1 rounded">${result.data.email || 'Your email address'}</span>
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            Your login credentials have been sent to your email. Please check your inbox for login instructions.
+                        </p>
+                    `;
+                    loginInstruction.textContent = '• Use the credentials sent to your email to log in';
+                } else {
+                    modalContent.innerHTML = `
+                        <p class="mb-2">
+                            <strong>Existing Account:</strong> This application has been added to your existing account.
+                        </p>
+                        <p class="mb-2">
+                            <strong>Email:</strong> <span class="font-mono bg-gray-100 px-2 py-1 rounded">${result.data.email || 'Your email address'}</span>
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            Please log in using your existing password. If you've forgotten your password, you can reset it using the link below.
+                        </p>
+                    `;
+                    loginInstruction.innerHTML = '• Log in with your existing password or <a href="{{ route("password.request") }}" class="text-blue-600 hover:underline">reset password</a>';
+                }
+                
+                // Show modal
+                modal.classList.remove('hidden');
+                
+                // Handle login button click
+                loginButton.onclick = function() {
+                    window.location.href = '{{ route("login") }}';
+                };
+                
+                // Handle close button
+                document.getElementById('closeSuccessModal').onclick = function() {
+                    modal.classList.add('hidden');
+                };
+                
+                // Close modal when clicking outside
+                modal.onclick = function(e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                };
             }
 
             $('form').submit(function(){

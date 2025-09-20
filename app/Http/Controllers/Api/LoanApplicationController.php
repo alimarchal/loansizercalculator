@@ -357,8 +357,10 @@ class LoanApplicationController extends Controller
                     'borrower_id' => $borrower->id,
                     'application_status' => $borrower->application_status,
                     'is_new_user' => $isNewUser,
+                    'email' => $user->email,
                     'email_sent' => true,
                     'is_new_application' => true, // Always true since we always create new borrower records
+                    'temporary_password' => $isNewUser ? $temporaryPassword : null, // Only for debugging, don't use in production
                 ]
             ], 201);
 
