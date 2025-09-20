@@ -47,6 +47,9 @@ class LoanApplicationController extends Controller
             'payoff_amount' => 'nullable|numeric|min:0',
             'title_charges' => 'nullable|numeric|min:0',
             'property_insurance' => 'nullable|numeric|min:0',
+            'property_type' => 'nullable|string',
+            'property_address' => 'nullable|string|max:500',
+            'property_zip_code' => 'nullable|string|max:10',
 
             // Selected loan program
             'selected_loan_program' => 'required|string',
@@ -80,9 +83,7 @@ class LoanApplicationController extends Controller
                 'purchase_date' => 'nullable|date',
                 'lender_points' => 'nullable|numeric|min:0',
                 'pre_pay_penalty' => 'nullable|string',
-
-                // DSCR doesn't require these fields
-                'loan_term' => 'nullable|integer',
+                'loan_term' => 'nullable|string', // DSCR can have loan term as string (e.g., "30 Year Fixed")
                 'arv' => 'nullable|numeric',
                 'rehab_budget' => 'nullable|numeric',
 
@@ -130,6 +131,15 @@ class LoanApplicationController extends Controller
         }
 
         try {
+            // Debug: Log the received data
+            \Log::info('Loan application submission data:', [
+                'loan_type' => $request->loan_type,
+                'property_address' => $request->property_address,
+                'property_zip_code' => $request->property_zip_code,
+                'property_type' => $request->property_type,
+                'isDscrLoan' => $isDscrLoan
+            ]);
+
             // Check if user exists with this email
             $user = User::where('email', $request->email)->first();
             $isNewUser = false;
@@ -172,6 +182,8 @@ class LoanApplicationController extends Controller
                 'years_of_experience' => $request->experience,
                 'property_state' => $request->state,
                 'property_type' => $request->property_type ?? null,
+                'property_address' => $request->property_address ?? null,
+                'property_zip_code' => $request->property_zip_code ?? null,
 
                 // Calculator inputs - common fields
                 'transaction_type' => $request->transaction_type,
@@ -196,21 +208,32 @@ class LoanApplicationController extends Controller
 
             // Add loan type specific fields
             if ($isDscrLoan) {
-                // DSCR loan specific fields
+                // For DSCR loans, extract values from API response when available
+                $apiResponse = $request->api_response;
+                $loanProgramValues = null;
+
+                // Extract loan program values from API response
+                if (isset($apiResponse['loan_program_values'])) {
+                    $loanProgramValues = $apiResponse['loan_program_values'];
+                }
+
+                // DSCR loan specific fields - prioritize API response over request data
                 $borrowerData = array_merge($borrowerData, [
-                    'loan_term' => null, // DSCR doesn't use loan_term
+                    'loan_term' => $loanProgramValues['loan_term'] ?? $request->loan_term,
                     'arv' => null,
                     'rehab_budget' => null,
 
-                    // DSCR specific fields
-                    'lender_points' => $request->lender_points,
-                    'pre_pay_penalty' => $request->pre_pay_penalty,
+                    // DSCR specific fields - use API values when available
+                    'lender_points' => $loanProgramValues['lender_points'] ?? $request->lender_points,
+                    'pre_pay_penalty' => $loanProgramValues['pre_pay_penalty'] ?? $request->pre_pay_penalty,
+                    'dscr' => $loanProgramValues['calculated_dscr'] ?? $request->dscr,
+
+                    // User input fields (not from API)
                     'occupancy_type' => $request->occupancy_type,
                     'monthly_market_rent' => $request->monthly_market_rent,
                     'annual_tax' => $request->annual_tax,
                     'annual_insurance' => $request->annual_insurance,
                     'annual_hoa' => $request->annual_hoa,
-                    'dscr' => $request->dscr,
                     'purchase_date' => $request->purchase_date,
 
                     // Extract DSCR loan amounts from API response or calculated values

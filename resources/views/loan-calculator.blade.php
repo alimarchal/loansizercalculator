@@ -3953,6 +3953,9 @@
                     const isDscrLoan = formData.loan_type === 'DSCR Rental Loans';
                     
                     console.log('Submitting application for loan type:', formData.loan_type, 'isDscrLoan:', isDscrLoan);
+                    console.log('Form data:', formData);
+                    console.log('Property address:', formData.property_address);
+                    console.log('Zip code:', formData.zip_code);
                     
                     // Prepare the payload
                     const payload = {
@@ -3970,6 +3973,9 @@
                         purchase_price: parseFloat(formData.purchase_price),
                         broker_points: parseFloat(formData.broker_points),
                         state: formData.state,
+                        property_type: formData.property_type || null,
+                        property_address: formData.property_address || null,
+                        property_zip_code: formData.zip_code || null,
                         
                         // Optional fields - populate based on loan type
                         payoff_amount: formData.payoff_amount ? parseFloat(formData.payoff_amount) : null,
@@ -3993,7 +3999,6 @@
                     // Add loan type specific fields
                     if (isDscrLoan) {
                         // DSCR loan specific fields
-                        payload.loan_term = null; // DSCR doesn't use loan_term dropdown
                         payload.arv = null; // DSCR doesn't use ARV
                         payload.rehab_budget = null; // DSCR doesn't use rehab_budget
                         
@@ -4003,12 +4008,23 @@
                         payload.annual_tax = formData.annual_tax ? parseFloat(formData.annual_tax) : null;
                         payload.annual_insurance = formData.annual_insurance ? parseFloat(formData.annual_insurance) : null;
                         payload.annual_hoa = formData.annual_hoa ? parseFloat(formData.annual_hoa) : null;
-                        payload.dscr = formData.dscr ? parseFloat(formData.dscr) : null;
                         payload.purchase_date = formData.purchase_date || null;
                         
-                        // DSCR uses dropdown values from loan cards
-                        payload.lender_points = window.currentDscrValues?.lenderPoints ? parseFloat(window.currentDscrValues.lenderPoints) : null;
-                        payload.pre_pay_penalty = window.currentDscrValues?.prepayPenalty || null;
+                        // Extract DSCR value from API response (calculated_dscr in loan_program_values)
+                        let dscrValue = null;
+                        if (selectedLoanData && selectedLoanData.loan_program_values && selectedLoanData.loan_program_values.calculated_dscr) {
+                            dscrValue = parseFloat(selectedLoanData.loan_program_values.calculated_dscr);
+                        } else if (formData.dscr) {
+                            dscrValue = parseFloat(formData.dscr);
+                        }
+                        payload.dscr = dscrValue;
+                        
+                        // DSCR dropdown values - prioritize API response over current values
+                        payload.loan_term = selectedLoanData?.loan_program_values?.loan_term || window.currentDscrValues?.loanTerm || null;
+                        payload.lender_points = selectedLoanData?.loan_program_values?.lender_points ? 
+                            parseFloat(selectedLoanData.loan_program_values.lender_points) : 
+                            (window.currentDscrValues?.lenderPoints ? parseFloat(window.currentDscrValues.lenderPoints) : null);
+                        payload.pre_pay_penalty = selectedLoanData?.loan_program_values?.pre_pay_penalty || window.currentDscrValues?.prepayPenalty || null;
                         
                         // Extract DSCR-specific loan amount from selected loan data
                         if (selectedLoanData && selectedLoanData.ltv_formula && selectedLoanData.ltv_formula.loan_amount) {
@@ -4033,7 +4049,7 @@
                         payload.purchase_date = null;
                     }
                     
-                    console.log('Submission payload:', payload);
+                    console.log('Final submission payload:', payload);
 
                     // Submit to backend
                     const response = await fetch('/api/loan-application/submit', {

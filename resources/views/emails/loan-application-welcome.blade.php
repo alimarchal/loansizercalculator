@@ -75,9 +75,21 @@
             @if($borrower->phone)
             <li><strong>Phone:</strong> {{ $borrower->phone }}</li>
             @endif
-            <li><strong>Loan Type:</strong> {{ $borrower->loan_type }}</li>
+            <li><strong>Loan Type:</strong> {{ $borrower->selected_loan_type }}</li>
             <li><strong>Transaction Type:</strong> {{ $borrower->transaction_type }}</li>
             <li><strong>Purchase Price:</strong> ${{ number_format($borrower->purchase_price, 2) }}</li>
+            @if($borrower->property_type)
+            <li><strong>Property Type:</strong> {{ $borrower->property_type }}</li>
+            @endif
+            @if($borrower->property_address)
+            <li><strong>Property Address:</strong> {{ $borrower->property_address }}</li>
+            @endif
+            @if($borrower->property_zip_code)
+            <li><strong>Property Zip:</strong> {{ $borrower->property_zip_code }}</li>
+            @endif
+            @if($borrower->property_state)
+            <li><strong>Property State:</strong> {{ $borrower->property_state }}</li>
+            @endif
             @if($borrower->selected_loan_program)
             <li><strong>Selected Program:</strong> {{ $borrower->selected_loan_program }}</li>
             @endif
