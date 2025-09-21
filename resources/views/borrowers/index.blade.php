@@ -276,7 +276,7 @@
                                     {{ $borrower->id }}
                                 </a>
                             </td>
-                            <td class="py-2 px-2 text-left border border-gray-300">
+                            <td class="py-2 px-2 text-left border border-gray-300 align-top">
                                 <div class="space-y-1">
                                     <div class="font-semibold text-gray-900">
                                         <span class="text-xs text-gray-500">Name:</span> {{ $borrower->full_name ??
@@ -317,7 +317,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="py-2 px-2 text-left border border-gray-300">
+                            <td class="py-2 px-2 text-left border border-gray-300 align-top">
                                 <div class="space-y-1">
                                     <div class="font-semibold text-gray-900">
                                         <span class="text-xs text-gray-500">Name:</span> {{ $borrower->broker_name ??
@@ -343,10 +343,11 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="py-2 px-2 text-left border border-gray-300">
+                            <td class="py-2 px-2 text-left border border-gray-300 align-top">
                                 <div class="space-y-1">
                                     <div class="text-sm text-gray-600">
-                                        <span class="text-xs text-gray-500">Loan Type:</span> {{ $borrower->selected_loan_type ??
+                                        <span class="text-xs text-gray-500">Loan Type:</span> {{
+                                        $borrower->selected_loan_type ??
                                         'N/A' }}
                                     </div>
                                     <div class="text-sm text-gray-600">
@@ -354,26 +355,29 @@
                                         $borrower->transaction_type ?? 'N/A' }}
                                     </div>
                                     <div class="text-sm text-gray-600">
-                                        <span class="text-xs text-gray-500">Address:</span> {{
-                                        $borrower->property_address ?? 'N/A' }}
+                                        <span class="text-xs text-gray-500">Selected Loan Program:</span> {{
+                                        $borrower->selected_loan_program ?? 'N/A' }}
                                     </div>
-                                    <div class="text-sm text-gray-600">
-                                        <span class="text-xs text-gray-500">State:</span> {{ $borrower->property_state
-                                        ?? 'N/A' }}
-                                    </div>
-                                    <div class="text-sm text-gray-600">
-                                        <span class="text-xs text-gray-500">Zip:</span> {{ $borrower->property_zip_code
-                                        ?? 'N/A' }}
-                                    </div>
-                                    <div class="text-sm text-gray-600">
-                                        <span class="text-xs text-gray-500">Property Type:</span> {{
-                                        $borrower->property_type ?? 'N/A' }}
-                                    </div>
+
                                 </div>
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
-                                {{ $borrower->property_type ?? 'N/A' }}<br>
-                                <small class="text-gray-500">{{ $borrower->property_state ?? 'N/A' }}</small>
+                                <div class="text-sm text-gray-600">
+                                    <span class="text-xs text-gray-500">Property Type:</span> {{
+                                    $borrower->property_type ?? 'N/A' }}
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <span class="text-xs text-gray-500">Address:</span> {{
+                                    $borrower->property_address ?? 'N/A' }}
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <span class="text-xs text-gray-500">State:</span> {{ $borrower->property_state
+                                    ?? 'N/A' }}
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <span class="text-xs text-gray-500">Zip:</span> {{ $borrower->property_zip_code
+                                    ?? 'N/A' }}
+                                </div>
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 {{ $borrower->loan_amount_requested ? '$' .
