@@ -246,7 +246,7 @@
                     <thead>
                         <!-- Dynamic Header for Borrowers -->
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="10" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="8" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 @if(auth()->user()->hasRole('borrower'))
                                 My Loan Applications - {{ $borrowers->total() }} Records Found
                                 @else
@@ -257,11 +257,9 @@
 
                         <tr class="bg-green-800 text-white uppercase text-xs">
                             <th class="py-2 px-1 text-center border border-white text-xs">ID</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Name</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Email</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Phone</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Credit Score</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Experience</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs">Borrower Info</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs">Broker Info</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs">Loan Summary</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Property</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Loan Amount</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Status</th>
@@ -278,32 +276,100 @@
                                     {{ $borrower->id }}
                                 </a>
                             </td>
-                            <td class="py-1 px-1 text-center border border-gray-300 font-semibold">
-                                {{ $borrower->full_name }}
+                            <td class="py-2 px-2 text-left border border-gray-300">
+                                <div class="space-y-1">
+                                    <div class="font-semibold text-gray-900">
+                                        <span class="text-xs text-gray-500">Name:</span> {{ $borrower->full_name ??
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-blue-600">
+                                        <span class="text-xs text-gray-500">Email:</span>
+                                        @if($borrower->email)
+                                        <a href="mailto:{{ $borrower->email }}" class="hover:underline">
+                                            {{ $borrower->email }}
+                                        </a>
+                                        @else
+                                        N/A
+                                        @endif
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Phone:</span> {{ $borrower->phone ?? 'N/A'
+                                        }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Credit Score:</span>
+                                        @if($borrower->credit_score)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                            @if($borrower->credit_score >= 740) bg-green-100 text-green-800
+                                            @elseif($borrower->credit_score >= 680) bg-yellow-100 text-yellow-800
+                                            @else bg-red-100 text-red-800
+                                            @endif">
+                                            {{ $borrower->credit_score }}
+                                        </span>
+                                        @else
+                                        N/A
+                                        @endif
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Experience:</span> {{
+                                        $borrower->years_of_experience ?? 'N/A' }} {{ $borrower->years_of_experience ?
+                                        'years' : '' }}
+                                    </div>
+                                </div>
                             </td>
-                            <td class="py-1 px-1 text-center border border-gray-300">
-                                <a href="mailto:{{ $borrower->email }}" class="text-blue-600 hover:underline">
-                                    {{ $borrower->email }}
-                                </a>
+                            <td class="py-2 px-2 text-left border border-gray-300">
+                                <div class="space-y-1">
+                                    <div class="font-semibold text-gray-900">
+                                        <span class="text-xs text-gray-500">Name:</span> {{ $borrower->broker_name ??
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-blue-600">
+                                        <span class="text-xs text-gray-500">Email:</span>
+                                        @if($borrower->broker_email)
+                                        <a href="mailto:{{ $borrower->broker_email }}" class="hover:underline">
+                                            {{ $borrower->broker_email }}
+                                        </a>
+                                        @else
+                                        N/A
+                                        @endif
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Phone:</span> {{ $borrower->broker_phone ??
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm font-medium text-green-600">
+                                        <span class="text-xs text-gray-500">Points:</span> {{ $borrower->broker_points
+                                        ?? 'N/A' }}
+                                    </div>
+                                </div>
                             </td>
-                            <td class="py-1 px-1 text-center border border-gray-300">
-                                {{ $borrower->phone ?? 'N/A' }}
-                            </td>
-                            <td class="py-1 px-1 text-center border border-gray-300">
-                                @if($borrower->credit_score)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                    @if($borrower->credit_score >= 740) bg-green-100 text-green-800
-                                    @elseif($borrower->credit_score >= 680) bg-yellow-100 text-yellow-800
-                                    @else bg-red-100 text-red-800
-                                    @endif">
-                                    {{ $borrower->credit_score }}
-                                </span>
-                                @else
-                                N/A
-                                @endif
-                            </td>
-                            <td class="py-1 px-1 text-center border border-gray-300">
-                                {{ $borrower->years_of_experience }} years
+                            <td class="py-2 px-2 text-left border border-gray-300">
+                                <div class="space-y-1">
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Loan Type:</span> {{ $borrower->selected_loan_type ??
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Transaction:</span> {{
+                                        $borrower->transaction_type ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Address:</span> {{
+                                        $borrower->property_address ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">State:</span> {{ $borrower->property_state
+                                        ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Zip:</span> {{ $borrower->property_zip_code
+                                        ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Property Type:</span> {{
+                                        $borrower->property_type ?? 'N/A' }}
+                                    </div>
+                                </div>
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 {{ $borrower->property_type ?? 'N/A' }}<br>
