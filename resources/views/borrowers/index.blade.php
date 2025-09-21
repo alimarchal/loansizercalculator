@@ -271,10 +271,7 @@
                         <tr
                             class="border-b border-gray-200 hover:bg-gray-100 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
                             <td class="py-1 px-1 text-center border border-gray-300 font-semibold">
-                                <a class="hover:underline text-blue-600"
-                                    href="{{ route('borrowers.show', $borrower) }}">
-                                    {{ $borrower->id }}
-                                </a>
+                                {{ $borrower->id }}
                             </td>
                             <td class="py-2 px-2 text-left border border-gray-300 align-top">
                                 <div class="space-y-1">
@@ -414,6 +411,16 @@
                                     <div class="text-sm text-gray-600">
                                         <span class="text-xs text-gray-500">DSCR:</span> {{ $borrower->dscr ?? 'N/A' }}
                                     </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Purchase Date:</span> {{
+                                        $borrower->purchase_date ? date('m/d/Y', strtotime($borrower->purchase_date)) :
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Payoff Amount (if applicable):</span> {{
+                                        $borrower->payoff_amount ? '$' . number_format($borrower->payoff_amount) : 'N/A'
+                                        }}
+                                    </div>
                                     @else
                                     <!-- Non-DSCR Loan Fields -->
                                     <div class="text-sm text-gray-600">
@@ -430,12 +437,33 @@
                                         <span class="text-xs text-gray-500">ARV:</span> {{ $borrower->arv ? '$' .
                                         number_format($borrower->arv) : 'N/A' }}
                                     </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Purchase Date:</span> {{
+                                        $borrower->purchase_date ? date('m/d/Y', strtotime($borrower->purchase_date)) :
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Rehab Completed (if applicable):</span> {{
+                                        $borrower->rehab_completed ? date('m/d/Y',
+                                        strtotime($borrower->rehab_completed)) : 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Payoff (if applicable):</span> {{
+                                        $borrower->payoff_amount ? '$' . number_format($borrower->payoff_amount) : 'N/A'
+                                        }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Permit Status:</span> {{
+                                        $borrower->permit_status ?? 'N/A' }}
+                                    </div>
                                     @endif
                                 </div>
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
+
                                 {{ $borrower->loan_amount_requested ? '$' .
-                                number_format($borrower->loan_amount_requested) : 'N/A' }}
+                                number_format($borrower->loan_amount_requested) : ($borrower->total_loan_amount ? '$' .
+                                number_format($borrower->total_loan_amount) : 'N/A') }}
                                 @if($borrower->loan_purpose)
                                 <br><small class="text-gray-500">{{ $borrower->loan_purpose }}</small>
                                 @endif
