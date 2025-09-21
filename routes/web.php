@@ -19,40 +19,38 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         return view('dashboard');
     })->name('dashboard');
 
-    // Loan program restrictions API - must be before resource route
-    Route::get('loan-programs/api/restrictions', [LoanProgramController::class, 'getLoanTypeRestrictions'])
-        ->name('loan-programs.restrictions');
-
-    // DSCR Matrix update API
-    Route::post('loan-programs/api/dscr-matrix/update', [LoanProgramController::class, 'updateDscrMatrixCell'])
-        ->name('loan-programs.dscr-matrix.update');
-
-    // Settings Routes
-    Route::get('settings', [SettingsController::class, 'index'])
-        ->name('settings.index');
-
-    // Borrowers Routes
+    // Routes accessible to both borrowers and superadmins
     Route::resource('borrowers', BorrowersController::class);
 
-    // Loan Applications Routes
-    Route::get('loan-applications', [BorrowersController::class, 'loanApplications'])
-        ->name('loan-applications.index');
+    // Routes accessible only to superadmins
+    Route::middleware(['role:superadmin'])->group(function () {
+        // Loan program restrictions API - must be before resource route
+        Route::get('loan-programs/api/restrictions', [LoanProgramController::class, 'getLoanTypeRestrictions'])
+            ->name('loan-programs.restrictions');
 
-    // Loan Types Settings Routes
-    Route::get('settings/loan-types', [LoanTypeController::class, 'index'])
-        ->name('settings.loan-types.index');
-    Route::post('settings/loan-types/api/update', [LoanTypeController::class, 'updateField'])
-        ->name('settings.loan-types.api.update');
+        // DSCR Matrix update API
+        Route::post('loan-programs/api/dscr-matrix/update', [LoanProgramController::class, 'updateDscrMatrixCell'])
+            ->name('loan-programs.dscr-matrix.update');
 
-    // Loan Program Matrix Routes
-    Route::resource('loan-programs', LoanProgramController::class)->names([
-        'index' => 'loan-programs.index',
-        'create' => 'loan-programs.create',
-        'store' => 'loan-programs.store',
-        'show' => 'loan-programs.show',
-        'edit' => 'loan-programs.edit',
-        'update' => 'loan-programs.update',
-        'destroy' => 'loan-programs.destroy',
-    ]);
-    ;
+        // Settings Routes
+        Route::get('settings', [SettingsController::class, 'index'])
+            ->name('settings.index');
+
+        // Loan Types Settings Routes
+        Route::get('settings/loan-types', [LoanTypeController::class, 'index'])
+            ->name('settings.loan-types.index');
+        Route::post('settings/loan-types/api/update', [LoanTypeController::class, 'updateField'])
+            ->name('settings.loan-types.api.update');
+
+        // Loan Program Matrix Routes
+        Route::resource('loan-programs', LoanProgramController::class)->names([
+            'index' => 'loan-programs.index',
+            'create' => 'loan-programs.create',
+            'store' => 'loan-programs.store',
+            'show' => 'loan-programs.show',
+            'edit' => 'loan-programs.edit',
+            'update' => 'loan-programs.update',
+            'destroy' => 'loan-programs.destroy',
+        ]);
+    });
 });

@@ -12,29 +12,30 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-
-
-
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    {{-- Borrowers can see Borrowers menu --}}
+                    @if(auth()->user()->hasRole('borrower'))
                     <x-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
                         {{ __('Borrowers') }}
                     </x-nav-link>
-
-                    <x-nav-link href="{{ route('loan-applications.index') }}"
-                        :active="request()->routeIs('loan-applications.*')">
-                        {{ __('Loan Applications') }}
+                    @endif {{-- Superadmin can see all menu items --}}
+                    @if(auth()->user()->hasRole('superadmin'))
+                    <x-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
+                        {{ __('Borrowers') }}
                     </x-nav-link>
 
                     <x-nav-link href="{{ route('loan-programs.index') }}"
                         :active="request()->routeIs('loan-programs.*')">
                         {{ __('Loan Programs Matrix') }}
                     </x-nav-link>
+
                     <x-nav-link href="{{ route('settings.index') }}" :active="request()->routeIs('settings.*')">
                         {{ __('Settings') }}
                     </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -173,20 +174,29 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            {{-- Borrowers can see Borrowers menu --}}
+            @if(auth()->user()->hasRole('borrower'))
+            <x-responsive-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
+                {{ __('Borrowers') }}
+            </x-responsive-nav-link>
+            @endif
+
+            {{-- Superadmin can see all menu items --}}
+            @if(auth()->user()->hasRole('superadmin'))
+            <x-responsive-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
+                {{ __('Borrowers') }}
+            </x-responsive-nav-link>
+
             <x-responsive-nav-link href="{{ route('loan-programs.index') }}"
                 :active="request()->routeIs('loan-programs.*')">
                 {{ __('Loan Programs Matrix') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
-                {{ __('Borrowers') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ route('loan-applications.index') }}"
-                :active="request()->routeIs('loan-applications.*')">
-                {{ __('Loan Applications') }}
-            </x-responsive-nav-link>
+
             <x-responsive-nav-link href="{{ route('settings.index') }}" :active="request()->routeIs('settings.*')">
                 {{ __('Settings') }}
             </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

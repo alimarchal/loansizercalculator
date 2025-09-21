@@ -20,36 +20,50 @@ class BorrowersController extends Controller
                 'request_data' => $request->all()
             ]);
 
+            $user = auth()->user();
+
             // Build query using Spatie QueryBuilder for filtering
-            $borrowers = QueryBuilder::for(Borrower::class)
-                ->allowedFilters([
-                    AllowedFilter::partial('name', 'first_name'),
-                    AllowedFilter::partial('last_name'),
-                    AllowedFilter::partial('email'),
-                    AllowedFilter::exact('status'),
-                    AllowedFilter::exact('property_state'),
-                    AllowedFilter::exact('property_type'),
-                    AllowedFilter::exact('employment_status'),
-                    AllowedFilter::exact('loan_purpose'),
-                    AllowedFilter::callback('credit_score_min', function ($query, $value) {
-                        $query->where('credit_score', '>=', $value);
-                    }),
-                    AllowedFilter::callback('credit_score_max', function ($query, $value) {
-                        $query->where('credit_score', '<=', $value);
-                    }),
-                    AllowedFilter::callback('loan_amount_min', function ($query, $value) {
-                        $query->where('loan_amount_requested', '>=', $value);
-                    }),
-                    AllowedFilter::callback('loan_amount_max', function ($query, $value) {
-                        $query->where('loan_amount_requested', '<=', $value);
-                    }),
-                    AllowedFilter::callback('experience_min', function ($query, $value) {
-                        $query->where('years_of_experience', '>=', $value);
-                    }),
-                    AllowedFilter::callback('experience_max', function ($query, $value) {
-                        $query->where('years_of_experience', '<=', $value);
-                    }),
-                ])
+            $borrowersQuery = QueryBuilder::for(Borrower::class);
+
+            // Apply role-based filtering
+            if ($user->hasRole('borrower')) {
+                // Borrowers can only see their own records
+                $borrowersQuery->where('user_id', $user->id);
+            } elseif ($user->hasRole('superadmin')) {
+                // Superadmins can see all borrowers (no additional filtering)
+            } else {
+                // Default: users without specific roles can only see their own records
+                $borrowersQuery->where('user_id', $user->id);
+            }
+
+            $borrowers = $borrowersQuery->allowedFilters([
+                AllowedFilter::partial('name', 'first_name'),
+                AllowedFilter::partial('last_name'),
+                AllowedFilter::partial('email'),
+                AllowedFilter::exact('status'),
+                AllowedFilter::exact('property_state'),
+                AllowedFilter::exact('property_type'),
+                AllowedFilter::exact('employment_status'),
+                AllowedFilter::exact('loan_purpose'),
+                AllowedFilter::callback('credit_score_min', function ($query, $value) {
+                    $query->where('credit_score', '>=', $value);
+                }),
+                AllowedFilter::callback('credit_score_max', function ($query, $value) {
+                    $query->where('credit_score', '<=', $value);
+                }),
+                AllowedFilter::callback('loan_amount_min', function ($query, $value) {
+                    $query->where('loan_amount_requested', '>=', $value);
+                }),
+                AllowedFilter::callback('loan_amount_max', function ($query, $value) {
+                    $query->where('loan_amount_requested', '<=', $value);
+                }),
+                AllowedFilter::callback('experience_min', function ($query, $value) {
+                    $query->where('years_of_experience', '>=', $value);
+                }),
+                AllowedFilter::callback('experience_max', function ($query, $value) {
+                    $query->where('years_of_experience', '<=', $value);
+                }),
+            ])
                 ->allowedSorts(['first_name', 'last_name', 'email', 'credit_score', 'loan_amount_requested', 'created_at'])
                 ->defaultSort('-created_at')
                 ->paginate(50);
@@ -57,12 +71,19 @@ class BorrowersController extends Controller
             // Get filter options for dropdowns
             $filterOptions = $this->getFilterOptions();
 
-            // Statistics for display
+            // Statistics for display (also filtered by role)
+            $statsQuery = Borrower::query();
+            if ($user->hasRole('borrower')) {
+                $statsQuery->where('user_id', $user->id);
+            } elseif (!$user->hasRole('superadmin')) {
+                $statsQuery->where('user_id', $user->id);
+            }
+
             $stats = [
-                'total_borrowers' => Borrower::count(),
-                'active_borrowers' => Borrower::where('status', 'active')->count(),
-                'average_credit_score' => Borrower::whereNotNull('credit_score')->avg('credit_score'),
-                'total_loan_requests' => Borrower::whereNotNull('loan_amount_requested')->sum('loan_amount_requested'),
+                'total_borrowers' => $statsQuery->count(),
+                'active_borrowers' => (clone $statsQuery)->where('status', 'active')->count(),
+                'average_credit_score' => (clone $statsQuery)->whereNotNull('credit_score')->avg('credit_score'),
+                'total_loan_requests' => (clone $statsQuery)->whereNotNull('loan_amount_requested')->sum('loan_amount_requested'),
             ];
 
             Log::info('Borrowers retrieved successfully', [
@@ -162,24 +183,6 @@ class BorrowersController extends Controller
     {
         // Implementation for updating borrower
         // This will be implemented later when we add edit functionality
-    }
-
-    /**
-     * Display loan applications from the calculator
-     */
-    public function loanApplications(Request $request)
-    {
-        try {
-            $applications = Borrower::with(['user', 'loanProgramResults'])
-                ->where('application_source', 'loan_calculator')
-                ->orderBy('created_at', 'desc')
-                ->paginate(20);
-
-            return view('loan-applications.index', compact('applications'));
-        } catch (\Exception $e) {
-            Log::error('Error loading loan applications: ' . $e->getMessage());
-            return back()->with('error', 'Error loading loan applications');
-        }
     }
 
     /**
