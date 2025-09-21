@@ -361,7 +361,7 @@
 
                                 </div>
                             </td>
-                            <td class="py-1 px-1 text-center border border-gray-300">
+                            <td class="py-2 px-2 text-left border border-gray-300 align-top">
                                 <div class="text-sm text-gray-600">
                                     <span class="text-xs text-gray-500">Property Type:</span> {{
                                     $borrower->property_type ?? 'N/A' }}
