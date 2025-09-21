@@ -246,7 +246,7 @@
                     <thead>
                         <!-- Dynamic Header for Borrowers -->
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="8" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="9" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 @if(auth()->user()->hasRole('borrower'))
                                 My Loan Applications - {{ $borrowers->total() }} Records Found
                                 @else
@@ -260,7 +260,7 @@
                             <th class="py-2 px-1 text-center border border-white text-xs">Borrower Info</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Broker Info</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Loan Summary</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Property</th>
+                            <th class="py-2 px-1 text-center border border-white text-xs">Loan Details</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Loan Amount</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Status</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Actions</th>
@@ -359,24 +359,78 @@
                                         $borrower->selected_loan_program ?? 'N/A' }}
                                     </div>
 
+
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Property Type:</span> {{
+                                        $borrower->property_type ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Address:</span> {{
+                                        $borrower->property_address ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">State:</span> {{ $borrower->property_state
+                                        ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Zip:</span> {{ $borrower->property_zip_code
+                                        ?? 'N/A' }}
+                                    </div>
+
                                 </div>
                             </td>
+
                             <td class="py-2 px-2 text-left border border-gray-300 align-top">
-                                <div class="text-sm text-gray-600">
-                                    <span class="text-xs text-gray-500">Property Type:</span> {{
-                                    $borrower->property_type ?? 'N/A' }}
-                                </div>
-                                <div class="text-sm text-gray-600">
-                                    <span class="text-xs text-gray-500">Address:</span> {{
-                                    $borrower->property_address ?? 'N/A' }}
-                                </div>
-                                <div class="text-sm text-gray-600">
-                                    <span class="text-xs text-gray-500">State:</span> {{ $borrower->property_state
-                                    ?? 'N/A' }}
-                                </div>
-                                <div class="text-sm text-gray-600">
-                                    <span class="text-xs text-gray-500">Zip:</span> {{ $borrower->property_zip_code
-                                    ?? 'N/A' }}
+                                <div class="space-y-1">
+                                    @if($borrower->selected_loan_type == 'DSCR Rental Loans')
+                                    <!-- DSCR Rental Loan Fields -->
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Purchase Price/As Is Value:</span> {{
+                                        $borrower->purchase_price ? '$' . number_format($borrower->purchase_price) :
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Occupancy:</span> {{ $borrower->occupancy ??
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Monthly Rent/Market Rent:</span> {{
+                                        $borrower->monthly_rent ? '$' . number_format($borrower->monthly_rent) : 'N/A'
+                                        }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Annual Tax:</span> {{ $borrower->annual_tax
+                                        ? '$' . number_format($borrower->annual_tax) : 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Annual Insurance:</span> {{
+                                        $borrower->annual_insurance ? '$' . number_format($borrower->annual_insurance) :
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Annual HOA:</span> {{ $borrower->annual_hoa
+                                        ? '$' . number_format($borrower->annual_hoa) : 'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">DSCR:</span> {{ $borrower->dscr ?? 'N/A' }}
+                                    </div>
+                                    @else
+                                    <!-- Non-DSCR Loan Fields -->
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Purchase Price/As Is Value:</span> {{
+                                        $borrower->purchase_price ? '$' . number_format($borrower->purchase_price) :
+                                        'N/A' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">Rehab Budget:</span> {{
+                                        $borrower->rehab_budget ? '$' . number_format($borrower->rehab_budget) : 'N/A'
+                                        }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="text-xs text-gray-500">ARV:</span> {{ $borrower->arv ? '$' .
+                                        number_format($borrower->arv) : 'N/A' }}
+                                    </div>
+                                    @endif
                                 </div>
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
