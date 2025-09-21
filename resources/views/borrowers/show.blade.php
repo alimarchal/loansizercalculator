@@ -388,15 +388,30 @@
                         </h3>
                     </div>
                     <div class="p-6 space-y-4">
+                        @if($borrower->selected_loan_type == 'DSCR Rental Loans')
                         <div>
                             <label class="block text-sm font-medium text-gray-500">Requested Amount</label>
                             <p class="mt-1 text-lg font-semibold text-gray-900">{{ $borrower->loan_amount_requested ?
                                 '$' . number_format($borrower->loan_amount_requested) : 'N/A' }}</p>
                         </div>
+                        @else
+                        <!-- Fix and Flip / Other Loan Types -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Loan Purpose</label>
-                            <p class="mt-1 text-sm text-gray-600">{{ $borrower->loan_purpose ?? 'N/A' }}</p>
+                            <label class="block text-sm font-medium text-gray-500">Purchase Loan Amount</label>
+                            <p class="mt-1 text-lg font-semibold text-gray-900">{{ $borrower->purchase_loan_amount ?
+                                '$' . number_format($borrower->purchase_loan_amount) : 'N/A' }}</p>
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500">Rehab Loan Amount</label>
+                            <p class="mt-1 text-lg font-semibold text-gray-900">{{ $borrower->rehab_loan_amount ?
+                                '$' . number_format($borrower->rehab_loan_amount) : 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500">Total Loan Amount</label>
+                            <p class="mt-1 text-xl font-bold text-green-600">{{ $borrower->total_loan_amount ?
+                                '$' . number_format($borrower->total_loan_amount) : 'N/A' }}</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -446,19 +461,26 @@
                                     Loan Program</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Interest Rate</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Term</th>
+                                    Loan Term</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Max LTV</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Max LTC</th>
+                                    Monthly Payment</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Interest Rate</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Lender Points</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Pre Pay Penalty</th>
+                                @if($borrower->selected_loan_type != 'DSCR Rental Loans')
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Max LTC</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Purchase Loan</th>
@@ -468,6 +490,7 @@
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Pricing Tier</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -498,20 +521,47 @@
                                     <div class="text-sm text-gray-500">{{ $result->loan_type ?? '' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $result->interest_rate ? number_format($result->interest_rate, 3) . '%' : 'N/A'
-                                    }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $result->loan_term ? $result->loan_term . ' months' : 'N/A' }}
+                                    {{ $result->loan_term ? $result->loan_term : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $result->max_ltv ? number_format($result->max_ltv, 2) . '%' : 'N/A' }}
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
+                                    @php
+                                    $monthlyPayment = null;
+                                    if($result->raw_loan_data) {
+                                    $rawData = is_array($result->raw_loan_data)
+                                    ? $result->raw_loan_data
+                                    : json_decode($result->raw_loan_data, true);
+                                    $monthlyPayment = $rawData['monthly_payment'] ??
+                                    ($rawData['loan_program_values']['monthly_payment'] ?? null);
+                                    }
+                                    @endphp
+                                    {{ $monthlyPayment ? '$' . number_format($monthlyPayment, 2) : 'N/A' }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $result->max_ltc ? number_format($result->max_ltc, 2) . '%' : 'N/A' }}
+                                    {{ $result->interest_rate ? number_format($result->interest_rate, 3) . '%' : 'N/A'
+                                    }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $result->lender_points ? number_format($result->lender_points, 2) : 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    @php
+                                    $prepayPenalty = null;
+                                    if($result->raw_loan_data) {
+                                    $rawData = is_array($result->raw_loan_data)
+                                    ? $result->raw_loan_data
+                                    : json_decode($result->raw_loan_data, true);
+                                    $prepayPenalty = $rawData['pre_pay_penalty'] ??
+                                    ($rawData['loan_program_values']['pre_pay_penalty'] ?? null);
+                                    }
+                                    @endphp
+                                    {{ $prepayPenalty ?? 'N/A' }}
+                                </td>
+                                @if($borrower->selected_loan_type != 'DSCR Rental Loans')
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $result->max_ltc ? number_format($result->max_ltc, 2) . '%' : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $result->purchase_loan_up_to ? '$' . number_format($result->purchase_loan_up_to)
@@ -527,6 +577,7 @@
                                         {{ $result->pricing_tier ?? 'Standard' }}
                                     </span>
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
