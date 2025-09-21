@@ -136,24 +136,6 @@
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
                         </div>
 
-                        <!-- Employment Status -->
-                        <div>
-                            <label for="filter_employment_status"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Employment Status
-                            </label>
-                            <select name="filter[employment_status]" id="filter_employment_status"
-                                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
-                                <option value="">All Employment Types</option>
-                                @foreach($filterOptions['employment_statuses'] as $value => $label)
-                                <option value="{{ $value }}" {{ request('filter.employment_status')==$value ? 'selected'
-                                    : '' }}>
-                                    {{ $label }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-
                         <!-- Property State -->
                         <div>
                             <label for="filter_property_state"
@@ -264,7 +246,7 @@
                     <thead>
                         <!-- Dynamic Header for Borrowers -->
                         <tr class="bg-green-800 text-white uppercase">
-                            <th colspan="12" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                            <th colspan="10" class="py-3 px-4 text-center font-bold text-lg border border-white">
                                 @if(auth()->user()->hasRole('borrower'))
                                 My Loan Applications - {{ $borrowers->total() }} Records Found
                                 @else
@@ -279,9 +261,7 @@
                             <th class="py-2 px-1 text-center border border-white text-xs">Email</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Phone</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Credit Score</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Income</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Experience</th>
-                            <th class="py-2 px-1 text-center border border-white text-xs">Employment</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Property</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Loan Amount</th>
                             <th class="py-2 px-1 text-center border border-white text-xs">Status</th>
@@ -323,13 +303,7 @@
                                 @endif
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
-                                {{ $borrower->annual_income ? '$' . number_format($borrower->annual_income) : 'N/A' }}
-                            </td>
-                            <td class="py-1 px-1 text-center border border-gray-300">
                                 {{ $borrower->years_of_experience }} years
-                            </td>
-                            <td class="py-1 px-1 text-center border border-gray-300">
-                                {{ $borrower->employment_status ?? 'N/A' }}
                             </td>
                             <td class="py-1 px-1 text-center border border-gray-300">
                                 {{ $borrower->property_type ?? 'N/A' }}<br>
