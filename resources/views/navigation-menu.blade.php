@@ -21,10 +21,12 @@
                     <x-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
                         {{ __('My Loan Applications') }}
                     </x-nav-link>
-                    @endif {{-- Superadmin can see all menu items --}}
+                    @endif
+
+                    {{-- Superadmin can see all menu items --}}
                     @if(auth()->user()->hasRole('superadmin'))
                     <x-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
-                        {{ __('Borrowers') }}
+                        {{ __('Loan Applications') }}
                     </x-nav-link>
 
                     <x-nav-link href="{{ route('loan-programs.index') }}"
@@ -185,7 +187,7 @@
             {{-- Superadmin can see all menu items --}}
             @if(auth()->user()->hasRole('superadmin'))
             <x-responsive-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
-                {{ __('Borrowers') }}
+                {{ __('Loan Applications') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link href="{{ route('loan-programs.index') }}"
