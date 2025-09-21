@@ -16,10 +16,10 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    {{-- Borrowers can see Borrowers menu --}}
+                    {{-- Borrowers can see My Loan Applications menu --}}
                     @if(auth()->user()->hasRole('borrower'))
                     <x-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
-                        {{ __('Borrowers') }}
+                        {{ __('My Loan Applications') }}
                     </x-nav-link>
                     @endif {{-- Superadmin can see all menu items --}}
                     @if(auth()->user()->hasRole('superadmin'))
@@ -175,10 +175,10 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            {{-- Borrowers can see Borrowers menu --}}
+            {{-- Borrowers can see My Loan Applications menu --}}
             @if(auth()->user()->hasRole('borrower'))
             <x-responsive-nav-link href="{{ route('borrowers.index') }}" :active="request()->routeIs('borrowers.*')">
-                {{ __('Borrowers') }}
+                {{ __('My Loan Applications') }}
             </x-responsive-nav-link>
             @endif
 

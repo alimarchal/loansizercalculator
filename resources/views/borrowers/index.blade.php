@@ -1,7 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight inline-block">
+            @if(auth()->user()->hasRole('borrower'))
+            My Loan Applications
+            @else
             Borrowers Management
+            @endif
         </h2>
 
         <div class="flex justify-center items-center float-right">
@@ -222,7 +226,8 @@
         </div>
     </div>
 
-    <!-- STATISTICS SECTION -->
+    <!-- STATISTICS SECTION - Only for Superadmin -->
+    @if(auth()->user()->hasRole('superadmin'))
     <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 mt-2">
         <div class="bg-gradient-to-r from-blue-500 to-purple-600 overflow-hidden shadow-xl sm:rounded-lg">
             <div class="p-4">
@@ -247,6 +252,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- TABLE SECTION -->
     <div class="max-w-full mx-auto sm:px-6 lg:px-8 mt-2 pb-16">
@@ -259,7 +265,11 @@
                         <!-- Dynamic Header for Borrowers -->
                         <tr class="bg-green-800 text-white uppercase">
                             <th colspan="12" class="py-3 px-4 text-center font-bold text-lg border border-white">
+                                @if(auth()->user()->hasRole('borrower'))
+                                My Loan Applications - {{ $borrowers->total() }} Records Found
+                                @else
                                 Borrowers Management - {{ $borrowers->total() }} Records Found
+                                @endif
                             </th>
                         </tr>
 
