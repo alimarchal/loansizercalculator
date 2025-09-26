@@ -411,13 +411,13 @@
                                                                 stroke-width="2"
                                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                         </svg>
-                                                        Experience (Years) <span class="text-red-500">*</span>
+                                                        Experience (# of Deals) <span class="text-red-500">*</span>
                                                     </span>
                                                 </label>
                                                 <input
                                                     class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
                                                     type="number" name="experience" id="experience" min="0" max="50"
-                                                    value="4" placeholder="Enter years of experience" required>
+                                                    value="4" placeholder="Enter number of deals" required>
                                             </div>
 
                                             <!-- Borrower Name -->
@@ -572,14 +572,13 @@
                                                                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
                                                             </path>
                                                         </svg>
-                                                        Broker Points (%) <span class="text-red-500">*</span>
+                                                        Broker Points (%)
                                                     </span>
                                                 </label>
                                                 <input
                                                     class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
                                                     type="number" name="broker_points" id="broker_points" min="0"
-                                                    max="10" step="0.1" value="" placeholder="Enter points percentage"
-                                                    required>
+                                                    max="10" step="0.1" value="0" placeholder="Enter points percentage">
                                             </div>
                                         </div>
                                     </div>
@@ -588,7 +587,7 @@
                                     <div class="flex justify-end mt-8 pt-6 border-t border-gray-200">
                                         <button type="button" onclick="nextSection(2)"
                                             class="inline-flex items-center px-6 py-3 bg-blue-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            Continue to Loan Details
+                                            Continue to Property Details
                                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1425,9 +1424,8 @@
                         function validateSection1() {
                             const creditScore = document.getElementById('credit_score').value;
                             const experience = document.getElementById('experience').value;
-                            const brokerPoints = document.getElementById('broker_points').value;
                             
-                            if (!creditScore || !experience || !brokerPoints) {
+                            if (!creditScore || !experience) {
                                 alert('Please fill in all required fields in the Basic Information section.');
                                 return false;
                             }
