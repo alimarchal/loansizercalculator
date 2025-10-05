@@ -922,6 +922,52 @@
                                                     value="40000" placeholder="Enter rehab budget" required>
                                             </div>
 
+                                            <!-- Seasoning Period (Fix and Flip Refinance only) -->
+                                            <div id="fix_flip_seasoning_field" class="hidden">
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="fix_flip_seasoning_period">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-purple-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                            </path>
+                                                        </svg>
+                                                        Seasoning Period <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <select name="fix_flip_seasoning_period" id="fix_flip_seasoning_period"
+                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200">
+                                                    <option value="">-- Select Seasoning Period --</option>
+                                                    <option value="Owned < 6 Months">Owned < 6 Months</option>
+                                                    <option value="Owned < 12 Months">Owned < 12 Months</option>
+                                                    <option value="Owned 12+ Months">Owned 12+ Months</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Payoff Amount (Fix and Flip Refinance only) -->
+                                            <div id="fix_flip_payoff_amount_field" class="hidden">
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="fix_flip_payoff_amount">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                            </path>
+                                                        </svg>
+                                                        Payoff Amount <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="fix_flip_payoff_amount"
+                                                    id="fix_flip_payoff_amount" min="0" step="0.01" value=""
+                                                    placeholder="Enter payoff amount">
+                                            </div>
+
                                             <!-- ARV -->
                                             <div id="arv_field">
                                                 <label class="block font-medium text-sm text-gray-700 mb-2" for="arv">
@@ -1566,6 +1612,25 @@
                                         return false;
                                     }
                                 }
+                                
+                                // Additional validation for Fix and Flip refinance transactions
+                                const isFixAndFlip = loanType === 'Fix and Flip';
+                                if (isFixAndFlip && (transactionType === 'Refinance' || transactionType === 'Refinance Cash Out')) {
+                                    const seasoningPeriod = document.getElementById('fix_flip_seasoning_period').value;
+                                    const payoffAmount = document.getElementById('fix_flip_payoff_amount').value;
+                                    
+                                    if (!seasoningPeriod) {
+                                        console.log('Fix and Flip refinance validation failed - missing seasoning period');
+                                        alert('Please select Seasoning Period for Fix and Flip refinance transactions.');
+                                        return false;
+                                    }
+                                    
+                                    if (!payoffAmount || payoffAmount === '') {
+                                        console.log('Fix and Flip refinance validation failed - missing payoff amount');
+                                        alert('Please enter Payoff Amount for Fix and Flip refinance transactions.');
+                                        return false;
+                                    }
+                                }
                             }
                             console.log('Validation passed');
                             return true;
@@ -1664,7 +1729,15 @@
                     const selectedState = formData.get('state');
                     
                     // Check for ineligible states
-                    const ineligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT'];
+                    let ineligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT']; // Default for DSCR and New Construction
+                    
+                    // For Fix and Flip loans, state eligibility depends on program type
+                    // Since we don't know the program type yet, we'll use the most restrictive list (Desktop Appraisal)
+                    // and let the backend handle program-specific validation
+                    if (loanType === 'Fix and Flip') {
+                        ineligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'NY', 'NJ', 'CA', 'UT']; // Desktop Appraisal states
+                    }
+                    
                     if (ineligibleStates.includes(selectedState)) {
                         loadingSpinner.classList.add('hidden');
                         showError(`We do not lend in the state of ${selectedState}`);
@@ -1730,6 +1803,16 @@
                         if (loanType === 'New Construction' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out') && formData.get('new_construction_payoff_amount')) {
                             apiParams.append('payoff_amount', formData.get('new_construction_payoff_amount'));
                         }
+                        
+                        // Add Fix and Flip specific parameters for refinance transactions
+                        if (loanType === 'Fix and Flip' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out')) {
+                            if (formData.get('fix_flip_seasoning_period')) {
+                                apiParams.append('seasoning_period', formData.get('fix_flip_seasoning_period'));
+                            }
+                            if (formData.get('fix_flip_payoff_amount')) {
+                                apiParams.append('payoff_amount', formData.get('fix_flip_payoff_amount'));
+                            }
+                        }
                     }
                     
                     const finalApiUrl = `${apiUrl}?${apiParams.toString()}`;
@@ -1762,6 +1845,10 @@
                     if (data.success && data.data && data.data.length > 0) {
                         if (loanType === 'DSCR Rental Loans') {
                             populateDscrResults(data.data);
+                        } else if (loanType === 'Fix and Flip') {
+                            // For Fix and Flip, show all programs but mark eligibility status
+                            const loansWithEligibility = markFixAndFlipEligibility(data.data, formData);
+                            populateResults(loansWithEligibility, formData);
                         } else {
                             populateResults(data.data);
                         }
@@ -1878,7 +1965,314 @@
                 tableHeader.innerHTML = headerHTML;
             }
             
-            function populateResults(loans) {
+            // Function to filter Fix and Flip loans with detailed error messages
+            function filterFixAndFlipLoansWithErrors(loans, formData) {
+                const transactionType = formData.get('transaction_type');
+                const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out';
+                const seasoningPeriod = formData.get('fix_flip_seasoning_period');
+                const creditScore = parseInt(formData.get('credit_score'));
+                const experience = parseInt(formData.get('experience'));
+                const state = formData.get('state');
+                const errors = [];
+                
+                const filteredLoans = loans.filter(loan => {
+                    const programName = loan.loan_program;
+                    const loanData = loan.loan_type_and_loan_program_table;
+                    const totalLoanAmount = parseFloat(loanData?.total_loan_amount || 0);
+                    
+                    // Apply loan limit validation
+                    if (programName === 'DESKTOP APPRAISAL') {
+                        // Desktop Appraisal: max $1.5M (min $100k)
+                        if (totalLoanAmount < 100000) {
+                            errors.push('Desktop Appraisal program: minimum loan is $100,000');
+                            return false;
+                        }
+                        if (totalLoanAmount > 1500000) {
+                            errors.push('Desktop Appraisal program: maximum loan is $1,500,000');
+                            return false;
+                        }
+                        
+                        // Check state eligibility for Desktop Appraisal
+                        const desktopIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'NY', 'NJ', 'CA', 'UT'];
+                        if (desktopIneligibleStates.includes(state)) {
+                            return false;
+                        }
+                        
+                        // Seasoning requirement for refinance: must be less than 6 months
+                        if (isRefinance && (seasoningPeriod === '12+ Months' || seasoningPeriod === '< 12 Months')) {
+                            errors.push('Desktop Appraisal program: loans with seasoning greater than 6 months are ineligible');
+                            return false;
+                        }
+                        
+                        return true;
+                    }
+                    
+                    if (programName === 'FULL APPRAISAL') {
+                        // Full Appraisal: max $1.5M (min $50k)
+                        if (totalLoanAmount < 50000) {
+                            errors.push('Full Appraisal program: minimum loan is $50,000');
+                            return false;
+                        }
+                        if (totalLoanAmount > 1500000) {
+                            errors.push('Full Appraisal program: maximum loan is $1,500,000');
+                            return false;
+                        }
+                        
+                        // Check state eligibility for Full Appraisal
+                        const fullAppraisalIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT'];
+                        if (fullAppraisalIneligibleStates.includes(state)) {
+                            return false;
+                        }
+                        
+                        // Seasoning requirement for refinance: must be less than 12 months
+                        if (isRefinance && seasoningPeriod === '12+ Months') {
+                            errors.push('Full Appraisal program: loans with seasoning greater than 12 months are ineligible');
+                            return false;
+                        }
+                        
+                        // Additional requirements for refinance: FICO >= 680 and Experience >= 3
+                        if (isRefinance && creditScore < 680) {
+                            errors.push('Full Appraisal program: minimum FICO score of 680 required for refinance transactions');
+                            return false;
+                        }
+                        if (isRefinance && experience < 3) {
+                            errors.push('Full Appraisal program: minimum 3 deals experience required for refinance transactions');
+                            return false;
+                        }
+                        
+                        return true;
+                    }
+                    
+                    // For unknown programs, return true (let backend handle)
+                    return true;
+                });
+                
+                return { filteredData: filteredLoans, errors: [...new Set(errors)] }; // Remove duplicates
+            }
+            
+            // Function to mark Fix and Flip loan eligibility without filtering them out
+            function markFixAndFlipEligibility(loans, formData) {
+                const transactionType = formData.get('transaction_type');
+                const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out';
+                const seasoningPeriod = formData.get('fix_flip_seasoning_period');
+                const creditScore = parseInt(formData.get('credit_score'));
+                const experience = parseInt(formData.get('experience'));
+                const state = formData.get('state');
+                
+                return loans.map(loan => {
+                    const programName = loan.loan_program;
+                    const loanData = loan.loan_type_and_loan_program_table;
+                    const totalLoanAmount = parseFloat(loanData?.total_loan_amount || 0);
+                    
+                    // Create a copy of the loan with eligibility information
+                    const loanWithEligibility = { ...loan };
+                    loanWithEligibility.isEligible = true;
+                    loanWithEligibility.ineligibilityReasons = [];
+                    
+                    // Apply loan limit validation
+                    if (programName === 'DESKTOP APPRAISAL') {
+                        // Desktop Appraisal: max $1.5M (min $100k)
+                        if (totalLoanAmount < 100000 || totalLoanAmount > 1500000) {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push(`Loan amount $${totalLoanAmount.toLocaleString()} outside limits ($100k-$1.5M)`);
+                        }
+                        
+                        // Check state eligibility for Desktop Appraisal
+                        const desktopIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'NY', 'NJ', 'CA', 'UT'];
+                        if (desktopIneligibleStates.includes(state)) {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push(`Desktop Appraisal not available in ${state}`);
+                        }
+                        
+                        // Seasoning requirements for Desktop Appraisal
+                        if (isRefinance && seasoningPeriod !== '6+ months') {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push('Desktop Appraisal refinance requires 6+ months seasoning');
+                        }
+                        
+                        // Experience requirements for Desktop Appraisal
+                        if (experience < 3) {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push('Desktop Appraisal requires 3+ years experience');
+                        }
+                    }
+                    
+                    if (programName === 'FULL APPRAISAL') {
+                        // Full Appraisal: max $3M (min $50k)
+                        if (totalLoanAmount < 50000 || totalLoanAmount > 3000000) {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push(`Loan amount $${totalLoanAmount.toLocaleString()} outside limits ($50k-$3M)`);
+                        }
+                        
+                        // Check state eligibility for Full Appraisal
+                        const fullIneligibleStates = ['AK', 'HI', 'ND', 'SD', 'VT'];
+                        if (fullIneligibleStates.includes(state)) {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push(`Full Appraisal not available in ${state}`);
+                        }
+                        
+                        // Seasoning requirements for Full Appraisal
+                        if (isRefinance && seasoningPeriod !== '6+ months') {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push('Full Appraisal refinance requires 6+ months seasoning');
+                        }
+                        
+                        // Experience requirements for Full Appraisal
+                        if (experience < 2) {
+                            loanWithEligibility.isEligible = false;
+                            loanWithEligibility.ineligibilityReasons.push('Full Appraisal requires 2+ years experience');
+                        }
+                    }
+                    
+                    // Common credit score requirements for both programs
+                    if (creditScore < 680) {
+                        loanWithEligibility.isEligible = false;
+                        loanWithEligibility.ineligibilityReasons.push(`Credit score ${creditScore} below minimum (680)`);
+                    }
+                    
+                    return loanWithEligibility;
+                });
+            }
+            
+            // Function to filter Fix and Flip loans based on eligibility criteria
+            function filterFixAndFlipLoans(loans, formData) {
+                const transactionType = formData.get('transaction_type');
+                const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out';
+                const seasoningPeriod = formData.get('fix_flip_seasoning_period');
+                const creditScore = parseInt(formData.get('credit_score'));
+                const experience = parseInt(formData.get('experience'));
+                const state = formData.get('state');
+                
+                return loans.filter(loan => {
+                    const programName = loan.loan_program;
+                    const loanData = loan.loan_type_and_loan_program_table;
+                    const totalLoanAmount = parseFloat(loanData?.total_loan_amount || 0);
+                    
+                    // Apply loan limit validation
+                    if (programName === 'DESKTOP APPRAISAL') {
+                        // Desktop Appraisal: max $1.5M (min $100k)
+                        if (totalLoanAmount < 100000 || totalLoanAmount > 1500000) {
+                            console.log(`Desktop Appraisal loan ${totalLoanAmount} outside limits (100k-1.5M)`);
+                            return false;
+                        }
+                        
+                        // Check state eligibility for Desktop Appraisal
+                        const desktopIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'NY', 'NJ', 'CA', 'UT'];
+                        if (desktopIneligibleStates.includes(state)) {
+                            return false;
+                        }
+                        
+                        // Seasoning requirement for refinance: must be less than 6 months
+                        if (isRefinance && (seasoningPeriod === 'Owned 12+ Months' || seasoningPeriod === 'Owned < 12 Months')) {
+                            return false;
+                        }
+                        
+                        return true;
+                    }
+                    
+                    if (programName === 'FULL APPRAISAL') {
+                        // Full Appraisal: max $1.5M (min $50k)
+                        if (totalLoanAmount < 50000 || totalLoanAmount > 1500000) {
+                            console.log(`Full Appraisal loan ${totalLoanAmount} outside limits (50k-1.5M)`);
+                            return false;
+                        }
+                        
+                        // Check state eligibility for Full Appraisal
+                        const fullAppraisalIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT'];
+                        if (fullAppraisalIneligibleStates.includes(state)) {
+                            return false;
+                        }
+                        
+                        // Seasoning requirement for refinance: must be less than 12 months
+                        if (isRefinance && seasoningPeriod === 'Owned 12+ Months') {
+                            return false;
+                        }
+                        
+                        // Additional requirements for refinance: FICO >= 680 and Experience >= 3
+                        if (isRefinance && (creditScore < 680 || experience < 3)) {
+                            return false;
+                        }
+                        
+                        return true;
+                    }
+                    
+                    // For unknown programs, return true (let backend handle)
+                    return true;
+                });
+            }
+            
+            // Function to check Fix and Flip loan eligibility
+            function checkFixAndFlipEligibility(loan, formData, programName) {
+                const transactionType = formData.get('transaction_type');
+                const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out';
+                const seasoningPeriod = formData.get('fix_flip_seasoning_period');
+                const creditScore = parseInt(formData.get('credit_score'));
+                const experience = parseInt(formData.get('experience'));
+                const state = formData.get('state');
+                const errors = [];
+                
+                // Get actual calculated loan amounts from the API response
+                const loanAmounts = loan.estimated_closing_statement?.loan_amount_section;
+                const totalLoanAmount = parseFloat(loanAmounts?.total_loan_amount || 0);
+                
+                if (programName === 'DESKTOP APPRAISAL') {
+                    // Desktop Appraisal: max $1.5M (min $100k)
+                    if (totalLoanAmount > 0 && totalLoanAmount < 100000) {
+                        errors.push('Desktop Appraisal program: minimum loan is $100,000');
+                    }
+                    if (totalLoanAmount > 1500000) {
+                        errors.push('Desktop Appraisal program: maximum loan is $1,500,000');
+                    }
+                    
+                    // Check state eligibility for Desktop Appraisal
+                    const desktopIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'NY', 'NJ', 'CA', 'UT'];
+                    if (desktopIneligibleStates.includes(state)) {
+                        errors.push('Desktop Appraisal program: not available in ' + state);
+                    }
+                    
+                    // Seasoning requirement for refinance: must be less than 6 months
+                    if (isRefinance && (seasoningPeriod === 'Owned 12+ Months' || seasoningPeriod === 'Owned < 12 Months')) {
+                        errors.push('Desktop Appraisal program: loans with seasoning greater than 6 months are ineligible');
+                    }
+                }
+                
+                if (programName === 'FULL APPRAISAL') {
+                    // Full Appraisal: max $1.5M (min $50k)
+                    if (totalLoanAmount > 0 && totalLoanAmount < 50000) {
+                        errors.push('Full Appraisal program: minimum loan is $50,000');
+                    }
+                    if (totalLoanAmount > 1500000) {
+                        errors.push('Full Appraisal program: maximum loan is $1,500,000');
+                    }
+                    
+                    // Check state eligibility for Full Appraisal
+                    const fullAppraisalIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT'];
+                    if (fullAppraisalIneligibleStates.includes(state)) {
+                        errors.push('Full Appraisal program: not available in ' + state);
+                    }
+                    
+                    // Seasoning requirement for refinance: must be less than 12 months
+                    if (isRefinance && seasoningPeriod === 'Owned 12+ Months') {
+                        errors.push('Full Appraisal program: loans with seasoning greater than 12 months are ineligible');
+                    }
+                    
+                    // Additional requirements for refinance: FICO >= 680 and Experience >= 3
+                    if (isRefinance && creditScore < 680) {
+                        errors.push('Full Appraisal program: minimum FICO score of 680 required for refinance transactions');
+                    }
+                    if (isRefinance && experience < 3) {
+                        errors.push('Full Appraisal program: minimum 3 deals experience required for refinance transactions');
+                    }
+                }
+                
+                return {
+                    isEligible: errors.length === 0,
+                    errors: errors,
+                    totalLoanAmount: totalLoanAmount
+                };
+            }
+            
+            function populateResults(loans, formData = null) {
                 console.log('All loans data:', loans); // Debug log
                 
                 const tableBody = document.getElementById('loanResultsTable');
@@ -1939,9 +2333,32 @@
                         }
                     }
                     
+                    // Check Fix and Flip eligibility if formData is provided
+                    let isEligible = true;
+                    let eligibilityErrors = [];
+                    
+                    if (formData && loanType === 'Fix and Flip' && (programName === 'FULL APPRAISAL' || programName === 'DESKTOP APPRAISAL')) {
+                        // Use eligibility information already attached to the loan object
+                        if (loan.hasOwnProperty('isEligible')) {
+                            isEligible = loan.isEligible;
+                            eligibilityErrors = loan.ineligibilityReasons || [];
+                        } else {
+                            // Fallback to the original check if eligibility info is not available
+                            const eligibilityCheck = checkFixAndFlipEligibility(loan, formData, programName);
+                            isEligible = eligibilityCheck.isEligible;
+                            eligibilityErrors = eligibilityCheck.errors;
+                        }
+                    }
+                    
                     // Create enhanced table row with conditional columns
                     const row = document.createElement('tr');
                     row.className = `hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`;
+                    
+                    // If not eligible, add visual indicators
+                    if (!isEligible) {
+                        row.classList.add('opacity-60', 'bg-red-50');
+                        colorClass = 'red'; // Change color scheme for ineligible programs
+                    }
                     
                     // Base columns that always appear
                     let rowHTML = `
@@ -2018,7 +2435,7 @@
                     rowHTML += `
                         <td class="px-4 py-4 text-center border-r border-gray-200">
                             <span class="text-lg font-bold text-blue-600">
-                                $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}
+                                $${loanData?.purchase_loan_up_to !== undefined ? numberWithCommas(loanData.purchase_loan_up_to) : '0'}
                             </span>
                         </td>
                         <td class="px-4 py-4 text-center border-r border-gray-200">
@@ -2038,7 +2455,7 @@
                 });
 
                 // Create loan program selection cards
-                createLoanProgramCards(loansByProgram);
+                createLoanProgramCards(loansByProgram, formData);
                 
                 // Show results section but keep closing statement hidden initially
                 document.getElementById('resultsAndClosingSection').classList.remove('hidden');
@@ -2052,7 +2469,7 @@
                 }, 300);
             }
 
-            function createLoanProgramCards(loansByProgram) {
+            function createLoanProgramCards(loansByProgram, formData = null) {
                 const cardsContainer = document.getElementById('loanProgramCardsContainer');
                 cardsContainer.innerHTML = '';
                 
@@ -2067,6 +2484,7 @@
                 // Check if this is New Construction loan type
                 const firstLoan = Object.values(loansByProgram)[0][0];
                 const isNewConstruction = firstLoan.loan_type === 'New Construction';
+                const isFixAndFlip = firstLoan.loan_type === 'Fix and Flip';
 
                 Object.keys(loansByProgram).forEach((programName, index) => {
                     const loan = loansByProgram[programName][0];
@@ -2074,6 +2492,16 @@
                     
                     // Check if this is a DSCR loan - if so, skip validation
                     const isDscrLoan = loan.loan_type === 'DSCR Rental Loans';
+                    
+                    // Check Fix and Flip eligibility if applicable
+                    let isEligible = true;
+                    let eligibilityErrors = [];
+                    
+                    if (formData && isFixAndFlip && (programName === 'FULL APPRAISAL' || programName === 'DESKTOP APPRAISAL')) {
+                        const eligibilityCheck = checkFixAndFlipEligibility(loan, formData, programName);
+                        isEligible = eligibilityCheck.isEligible;
+                        eligibilityErrors = eligibilityCheck.errors;
+                    }
                     
                     // Check if this loan program has zero loan amounts (skip for DSCR loans)
                     const purchaseLoan = parseFloat(loanData?.purchase_loan_up_to || 0);
@@ -2094,6 +2522,14 @@
                         headerColorClass = 'bg-gray-500';
                         buttonColorClass = 'bg-gray-400 cursor-not-allowed';
                         iconClass = 'fas fa-exclamation-triangle';
+                    }
+                    
+                    // If not eligible, use red styling
+                    if (!isEligible) {
+                        cardColorClass = 'border-red-400 bg-red-50';
+                        headerColorClass = 'bg-red-500';
+                        buttonColorClass = 'bg-red-400 cursor-not-allowed';
+                        iconClass = 'fas fa-times-circle';
                     }
                     
                     if (isNewConstruction) {
@@ -2145,7 +2581,7 @@
                                                onchange="handleCardLoanAmountChange(this, '${programName}')"
                                                onblur="handleCardLoanAmountChange(this, '${programName}')"
                                                title="Enter desired loan amount (up to $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : '0'})">
-                                        <span class="text-xs text-gray-500 mt-1">Max: $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : 'N/A'}</span>
+                                        <span class="text-xs text-gray-500 mt-1">Max: $${loanData?.purchase_loan_up_to !== undefined ? numberWithCommas(loanData.purchase_loan_up_to) : '0'}</span>
                                     </div>
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-2">
@@ -2156,13 +2592,25 @@
                                     <span class="font-medium text-gray-700">You qualify for Total Loan up to:</span>
                                     <span class="font-bold text-purple-600" id="card_total_loan_${programName.replace(/\s+/g, '_')}">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</span>
                                 </div>
+                                ${!isEligible ? `
+                                    <div class="mt-4 p-3 bg-red-100 border border-red-400 rounded-lg">
+                                        <h4 class="font-semibold text-red-800 mb-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            Program Not Available
+                                        </h4>
+                                        <ul class="text-sm text-red-700 space-y-1">
+                                            ${eligibilityErrors.map(error => `<li>• ${error}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
                             </div>
                             <div class="mt-6">
-                                <button onclick="${hasZeroLoanAmount ? '' : `selectLoanProgram('${programName}')`}" 
-                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 ${hasZeroLoanAmount ? '' : 'hover:shadow-lg'}"
-                                        ${hasZeroLoanAmount ? 'disabled title="This loan program shows zero loan amount based on your inputs"' : ''}>
-                                    <i class="fas ${hasZeroLoanAmount ? 'fa-ban' : 'fa-check-circle'} mr-2"></i>
-                                    ${hasZeroLoanAmount ? 'Not Available - Zero Loan Amount' : 'Check Summary for This Program'}
+                                <button onclick="${(hasZeroLoanAmount || !isEligible) ? '' : `selectLoanProgram('${programName}')`}" 
+                                        class="${buttonColorClass} text-white px-6 py-3 rounded-lg font-semibold w-full transition-colors duration-200 ${(hasZeroLoanAmount || !isEligible) ? '' : 'hover:shadow-lg'}"
+                                        ${(hasZeroLoanAmount || !isEligible) ? 'disabled' : ''} 
+                                        title="${hasZeroLoanAmount ? 'This loan program shows zero loan amount based on your inputs' : (!isEligible ? 'This program is not available based on your criteria' : '')}">
+                                    <i class="fas ${(hasZeroLoanAmount || !isEligible) ? 'fa-ban' : 'fa-check-circle'} mr-2"></i>
+                                    ${hasZeroLoanAmount ? 'Not Available - Zero Loan Amount' : (!isEligible ? 'Not Available - See Requirements Above' : 'Check Summary for This Program')}
                                 </button>
                             </div>
                         </div>
@@ -2715,6 +3163,8 @@
             // Populate closing statement with selected loan data
             if (selectedLoan.estimated_closing_statement) {
                 console.log('Populating closing statement with:', selectedLoan.estimated_closing_statement);
+                
+                // Use backend calculated closing statement data directly
                 populateClosingStatement(selectedLoan.estimated_closing_statement);
             } else {
                 console.log('No estimated_closing_statement found in loan data');
@@ -2935,11 +3385,12 @@
                     const selectedLoanType = $('#loan_type').value;
                     const isDscrLoan = selectedLoanType === 'DSCR Rental Loans';
                     
-                    // Handle payoff_amount_field visibility - show for DSCR + Refinance Cash Out OR Fix and Flip + Refinance Cash Out
+                    // Handle payoff_amount_field visibility - show for DSCR + Refinance Cash Out OR Fix and Flip + any Refinance
                     const payoffField = document.querySelector('#payoff_amount_field');
                     const isFixAndFlip = selectedLoanType === 'Fix and Flip';
+                    const isRefinanceTransaction = selectedTransactionType === 'Refinance' || selectedTransactionType === 'Refinance Cash Out';
                     if (payoffField) {
-                        if ((isDscrLoan || isFixAndFlip) && selectedTransactionType === 'Refinance Cash Out') {
+                        if ((isDscrLoan && selectedTransactionType === 'Refinance Cash Out') || (isFixAndFlip && isRefinanceTransaction)) {
                             payoffField.classList.remove('hidden');
                             const input = payoffField.querySelector('input');
                             if (input) input.setAttribute('required', 'required');
@@ -2952,6 +3403,9 @@
 
                     // Handle New Construction payoff amount visibility
                     handleNewConstructionPayoffVisibility();
+                    
+                    // Handle Fix and Flip fields visibility
+                    handleFixAndFlipFieldsVisibility();
                 });
                 
                 // Function to handle field visibility based on loan type
@@ -3053,12 +3507,13 @@
                         }
                     });
 
-                    // Handle payoff_amount_field separately - show for DSCR + Refinance Cash Out OR Fix and Flip + Refinance Cash Out
+                    // Handle payoff_amount_field separately - show for DSCR + Refinance Cash Out OR Fix and Flip + any Refinance
                     const payoffField = document.querySelector('#payoff_amount_field');
                     const isFixAndFlip = loanType === 'Fix and Flip';
                     if (payoffField) {
                         const currentTransactionType = document.getElementById('transaction_type').value;
-                        if ((isDscrLoan || isFixAndFlip) && currentTransactionType === 'Refinance Cash Out') {
+                        const isRefinanceTransaction = currentTransactionType === 'Refinance' || currentTransactionType === 'Refinance Cash Out';
+                        if ((isDscrLoan && currentTransactionType === 'Refinance Cash Out') || (isFixAndFlip && isRefinanceTransaction)) {
                             payoffField.classList.remove('hidden');
                             const input = payoffField.querySelector('input');
                             if (input) input.setAttribute('required', 'required');
@@ -3104,6 +3559,9 @@
                         }
                     }
 
+                    // Handle Fix and Flip specific fields - only show for Fix and Flip + Refinance
+                    handleFixAndFlipFieldsVisibility();
+
                     // Handle New Construction Payoff Amount field - only show for New Construction + Refinance
                     handleNewConstructionPayoffVisibility();
                 }
@@ -3124,6 +3582,48 @@
                         } else {
                             payoffField.style.display = 'none';
                             const input = payoffField.querySelector('input');
+                            if (input) {
+                                input.removeAttribute('required');
+                                input.value = ''; // Reset when hidden
+                            }
+                        }
+                    }
+                }
+
+                // Function to handle Fix and Flip specific fields visibility
+                function handleFixAndFlipFieldsVisibility() {
+                    const loanType = document.getElementById('loan_type').value;
+                    const transactionType = document.getElementById('transaction_type').value;
+                    const isFixAndFlip = loanType === 'Fix and Flip';
+                    const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out';
+                    
+                    // Handle Seasoning Period field
+                    const seasoningField = document.querySelector('#fix_flip_seasoning_field');
+                    if (seasoningField) {
+                        if (isFixAndFlip && isRefinance) {
+                            seasoningField.classList.remove('hidden');
+                            const select = seasoningField.querySelector('select');
+                            if (select) select.setAttribute('required', 'required');
+                        } else {
+                            seasoningField.classList.add('hidden');
+                            const select = seasoningField.querySelector('select');
+                            if (select) {
+                                select.removeAttribute('required');
+                                select.value = ''; // Reset when hidden
+                            }
+                        }
+                    }
+                    
+                    // Handle Fix and Flip Payoff Amount field
+                    const fixFlipPayoffField = document.querySelector('#fix_flip_payoff_amount_field');
+                    if (fixFlipPayoffField) {
+                        if (isFixAndFlip && isRefinance) {
+                            fixFlipPayoffField.classList.remove('hidden');
+                            const input = fixFlipPayoffField.querySelector('input');
+                            if (input) input.setAttribute('required', 'required');
+                        } else {
+                            fixFlipPayoffField.classList.add('hidden');
+                            const input = fixFlipPayoffField.querySelector('input');
                             if (input) {
                                 input.removeAttribute('required');
                                 input.value = ''; // Reset when hidden
@@ -3691,6 +4191,8 @@
                     'property_type': 'Property Type',
                     'permit_status': 'Permit Status',
                     'new_construction_payoff_amount': 'Payoff Amount (New Construction)',
+                    'fix_flip_seasoning_period': 'Seasoning Period',
+                    'fix_flip_payoff_amount': 'Payoff Amount (Fix and Flip)',
                     'occupancy_type': 'Occupancy Type',
                     'monthly_market_rent': 'Monthly Market Rent',
                     'annual_tax': 'Annual Tax',
@@ -4429,6 +4931,19 @@
                         payload.rehab_budget = parseFloat(formData.rehab_budget);
                         payload.lender_points = formData.lender_points ? parseFloat(formData.lender_points) : null;
                         payload.pre_pay_penalty = formData.pre_pay_penalty || null;
+                        
+                        // Fix and Flip specific refinance fields
+                        if (formData.loan_type === 'Fix and Flip' && (formData.transaction_type === 'Refinance' || formData.transaction_type === 'Refinance Cash Out')) {
+                            payload.seasoning_period = formData.fix_flip_seasoning_period || null;
+                            payload.fix_flip_payoff_amount = formData.fix_flip_payoff_amount ? parseFloat(formData.fix_flip_payoff_amount) : null;
+                        }
+                        
+                        // New Construction specific fields
+                        if (formData.loan_type === 'New Construction') {
+                            payload.guc_experience = formData.guc_experience ? parseInt(formData.guc_experience) : null;
+                            payload.permit_status = formData.permit_status || null;
+                            payload.new_construction_payoff_amount = formData.new_construction_payoff_amount ? parseFloat(formData.new_construction_payoff_amount) : null;
+                        }
                         
                         // These fields are not used for Fix & Flip / New Construction
                         payload.occupancy_type = null;
