@@ -1728,22 +1728,9 @@
                     const loanType = formData.get('loan_type');
                     const selectedState = formData.get('state');
                     
-                    // Check for ineligible states
-                    let ineligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT']; // Default for DSCR and New Construction
-                    
                     // For Fix and Flip loans, state eligibility depends on program type
-                    // Since we don't know the program type yet, we'll use the most restrictive list (Desktop Appraisal)
-                    // and let the backend handle program-specific validation
-                    if (loanType === 'Fix and Flip') {
-                        ineligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'NY', 'NJ', 'CA', 'UT']; // Desktop Appraisal states
-                    }
-                    
-                    if (ineligibleStates.includes(selectedState)) {
-                        loadingSpinner.classList.add('hidden');
-                        showError(`We do not lend in the state of ${selectedState}`);
-                        document.getElementById('resultsAndClosingSection').classList.add('hidden');
-                        return;
-                    }
+                    // Remove frontend state validation - let API handle all programs
+                    // and mark eligibility on frontend based on program-specific state rules
                     
                     let apiUrl;
                     const apiParams = new URLSearchParams();
@@ -2105,7 +2092,7 @@
                         }
                         
                         // Check state eligibility for Full Appraisal
-                        const fullIneligibleStates = ['AK', 'HI', 'ND', 'SD', 'VT'];
+                        const fullIneligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT'];
                         if (fullIneligibleStates.includes(state)) {
                             loanWithEligibility.isEligible = false;
                             loanWithEligibility.ineligibilityReasons.push(`Full Appraisal not available in ${state}`);
