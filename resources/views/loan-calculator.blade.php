@@ -710,6 +710,57 @@
                                                     <option value="18">18 Months</option>
                                                 </select>
                                             </div>
+
+                                            <!-- GUC Experience (only for New Construction) -->
+                                            <div id="guc_experience_field" style="display: none;">
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="guc_experience">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                            </path>
+                                                        </svg>
+                                                        GUC Experience (# of Deals) <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="guc_experience" id="guc_experience" min="0"
+                                                    max="100" value="0" placeholder="Enter GUC experience deals">
+                                                <div class="mt-2 text-sm text-gray-600">
+                                                    <p><strong>Program Qualification:</strong></p>
+                                                    <p>• 2+ deals: Qualified for <strong>Experienced Builder</strong> &
+                                                        <strong>New Builder</strong> programs
+                                                    </p>
+                                                    <p>• Less than 2 deals: Qualified for <strong>New Builder</strong>
+                                                        program only</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Payoff Amount (only for New Construction + Refinance) -->
+                                            <div id="new_construction_payoff_amount_field" style="display: none;">
+                                                <label class="block font-medium text-sm text-gray-700 mb-2"
+                                                    for="new_construction_payoff_amount">
+                                                    <span class="flex items-center">
+                                                        <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                            </path>
+                                                        </svg>
+                                                        Payoff Amount <span class="text-red-500">*</span>
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
+                                                    type="number" name="new_construction_payoff_amount"
+                                                    id="new_construction_payoff_amount" min="0" step="0.01" value=""
+                                                    placeholder="Enter payoff amount">
+                                            </div>
                                         </div>
                                     </div>
 
@@ -792,25 +843,27 @@
                                                     placeholder="Enter property address">
                                             </div>
 
-                                            <!-- Zip Code -->
-                                            <div>
+                                            <!-- Permit Status (only for New Construction) -->
+                                            <div id="permit_status_field" style="display: none;">
                                                 <label class="block font-medium text-sm text-gray-700 mb-2"
-                                                    for="zip_code">
+                                                    for="permit_status">
                                                     <span class="flex items-center">
-                                                        <svg class="w-4 h-4 text-gray-600 mr-1" fill="none"
+                                                        <svg class="w-4 h-4 text-green-600 mr-1" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
-                                                                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17v4a2 2 0 002 2h4M13 13h4a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4a2 2 0 012-2z">
+                                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
                                                             </path>
                                                         </svg>
-                                                        Zip Code
+                                                        Permit Status <span class="text-red-500">*</span>
                                                     </span>
                                                 </label>
-                                                <input
-                                                    class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
-                                                    type="text" name="zip_code" id="zip_code" value=""
-                                                    placeholder="Enter zip code">
+                                                <select name="permit_status" id="permit_status"
+                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200">
+                                                    <option value="">-- Select Permit Status --</option>
+                                                    <option value="Permit Approved">Permit Approved</option>
+                                                    <option value="Unpermitted">Unpermitted</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -903,7 +956,7 @@
                                         </button>
                                         <button type="button" onclick="nextSection(3)"
                                             class="inline-flex items-center px-6 py-3 bg-green-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            Continue to Advanced Options
+                                            Continue to Rental Information
                                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1352,7 +1405,7 @@
                                                 <i class="fas fa-money-bill-wave text-2xl"></i>
                                             </div>
                                             <div>
-                                                <h3 class="text-xl font-bold">Cash Due to Complete</h3>
+                                                <h3 class="text-xl font-bold">Due From Buyer at Closing</h3>
                                                 <p class="text-red-100 text-sm">Total amount you need to bring to
                                                     closing</p>
                                             </div>
@@ -1477,10 +1530,41 @@
                                 const rehabBudget = document.getElementById('rehab_budget').value;
                                 const arv = document.getElementById('arv').value;
                                 
+                                // Check for New Construction GUC experience requirement
+                                const isNewConstruction = loanType === 'New Construction';
+                                const gucExperience = document.getElementById('guc_experience').value;
+                                
                                 if (!loanType || !transactionType || !loanTerm || !propertyType || !state || !purchasePrice || !rehabBudget || !arv) {
                                     console.log('Regular loan validation failed - missing fields');
                                     alert('Please fill in all required fields in the Loan & Property Details section.');
                                     return false;
+                                }
+                                
+                                // Additional validation for New Construction loans
+                                if (isNewConstruction && (!gucExperience || gucExperience === '')) {
+                                    console.log('New Construction validation failed - missing GUC experience');
+                                    alert('Please enter GUC Experience (# of Deals) for New Construction loans.');
+                                    return false;
+                                }
+                                
+                                // Validate permit status for New Construction
+                                if (isNewConstruction) {
+                                    const permitStatus = document.getElementById('permit_status').value;
+                                    if (!permitStatus) {
+                                        console.log('New Construction validation failed - missing permit status');
+                                        alert('Please select Permit Status for New Construction loans.');
+                                        return false;
+                                    }
+                                }
+                                
+                                // Validate payoff amount for New Construction refinance transactions
+                                if (isNewConstruction && (transactionType === 'Refinance' || transactionType === 'Refinance Cash Out')) {
+                                    const payoffAmount = document.getElementById('new_construction_payoff_amount').value;
+                                    if (!payoffAmount || payoffAmount === '') {
+                                        console.log('New Construction refinance validation failed - missing payoff amount');
+                                        alert('Please enter Payoff Amount for New Construction refinance transactions.');
+                                        return false;
+                                    }
                                 }
                             }
                             console.log('Validation passed');
@@ -1577,6 +1661,16 @@
                     // Get form data
                     const formData = new FormData(form);
                     const loanType = formData.get('loan_type');
+                    const selectedState = formData.get('state');
+                    
+                    // Check for ineligible states
+                    const ineligibleStates = ['AK', 'AZ', 'ND', 'SD', 'VT', 'OR', 'UT'];
+                    if (ineligibleStates.includes(selectedState)) {
+                        loadingSpinner.classList.add('hidden');
+                        showError(`We do not lend in the state of ${selectedState}`);
+                        document.getElementById('resultsAndClosingSection').classList.add('hidden');
+                        return;
+                    }
                     
                     let apiUrl;
                     const apiParams = new URLSearchParams();
@@ -1588,7 +1682,7 @@
                     apiParams.append('transaction_type', formData.get('transaction_type'));
                     apiParams.append('purchase_price', formData.get('purchase_price'));
                     apiParams.append('broker_points', formData.get('broker_points'));
-                    apiParams.append('state', formData.get('state'));
+                    apiParams.append('state', selectedState);
                     
                     // Add loan_term only for non-DSCR loans
                     if (loanType !== 'DSCR Rental Loans') {
@@ -1621,6 +1715,21 @@
                         apiUrl = '/api/loan-matrix';
                         apiParams.append('arv', formData.get('arv'));
                         apiParams.append('rehab_budget', formData.get('rehab_budget'));
+                        
+                        // Add GUC experience for New Construction loans
+                        if (loanType === 'New Construction' && formData.get('guc_experience')) {
+                            apiParams.append('guc_experience', formData.get('guc_experience'));
+                        }
+                        
+                        // Add permit status for New Construction loans
+                        if (loanType === 'New Construction' && formData.get('permit_status')) {
+                            apiParams.append('permit_status', formData.get('permit_status'));
+                        }
+                        
+                        // Add payoff amount for New Construction refinance transactions
+                        if (loanType === 'New Construction' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out') && formData.get('new_construction_payoff_amount')) {
+                            apiParams.append('payoff_amount', formData.get('new_construction_payoff_amount'));
+                        }
                     }
                     
                     const finalApiUrl = `${apiUrl}?${apiParams.toString()}`;
@@ -2739,7 +2848,7 @@
                 document.getElementById('closingSubtotalCosts').textContent = '$' + numberWithCommas(closingData.title_other_charges.subtotal_closing_costs || 0);
             }
             
-            // Cash Due to Buyer
+            // Due From Buyer at Closing
             document.getElementById('closingCashDue').textContent = '$' + numberWithCommas(closingData.cash_due_to_buyer || 0);
             
             console.log('Closing statement populated successfully');
@@ -2826,10 +2935,11 @@
                     const selectedLoanType = $('#loan_type').value;
                     const isDscrLoan = selectedLoanType === 'DSCR Rental Loans';
                     
-                    // Handle payoff_amount_field visibility - only show for DSCR + Refinance Cash Out
+                    // Handle payoff_amount_field visibility - show for DSCR + Refinance Cash Out OR Fix and Flip + Refinance Cash Out
                     const payoffField = document.querySelector('#payoff_amount_field');
+                    const isFixAndFlip = selectedLoanType === 'Fix and Flip';
                     if (payoffField) {
-                        if (isDscrLoan && selectedTransactionType === 'Refinance Cash Out') {
+                        if ((isDscrLoan || isFixAndFlip) && selectedTransactionType === 'Refinance Cash Out') {
                             payoffField.classList.remove('hidden');
                             const input = payoffField.querySelector('input');
                             if (input) input.setAttribute('required', 'required');
@@ -2839,6 +2949,9 @@
                             if (input) input.removeAttribute('required');
                         }
                     }
+
+                    // Handle New Construction payoff amount visibility
+                    handleNewConstructionPayoffVisibility();
                 });
                 
                 // Function to handle field visibility based on loan type
@@ -2940,11 +3053,12 @@
                         }
                     });
 
-                    // Handle payoff_amount_field separately - only show for DSCR + Refinance Cash Out
+                    // Handle payoff_amount_field separately - show for DSCR + Refinance Cash Out OR Fix and Flip + Refinance Cash Out
                     const payoffField = document.querySelector('#payoff_amount_field');
+                    const isFixAndFlip = loanType === 'Fix and Flip';
                     if (payoffField) {
                         const currentTransactionType = document.getElementById('transaction_type').value;
-                        if (isDscrLoan && currentTransactionType === 'Refinance Cash Out') {
+                        if ((isDscrLoan || isFixAndFlip) && currentTransactionType === 'Refinance Cash Out') {
                             payoffField.classList.remove('hidden');
                             const input = payoffField.querySelector('input');
                             if (input) input.setAttribute('required', 'required');
@@ -2952,6 +3066,68 @@
                             payoffField.classList.add('hidden');
                             const input = payoffField.querySelector('input');
                             if (input) input.removeAttribute('required');
+                        }
+                    }
+
+                    // Handle GUC Experience field - only show for New Construction
+                    const isNewConstruction = loanType === 'New Construction';
+                    const gucExperienceField = document.querySelector('#guc_experience_field');
+                    if (gucExperienceField) {
+                        if (isNewConstruction) {
+                            gucExperienceField.style.display = 'block';
+                            const input = gucExperienceField.querySelector('input');
+                            if (input) input.setAttribute('required', 'required');
+                        } else {
+                            gucExperienceField.style.display = 'none';
+                            const input = gucExperienceField.querySelector('input');
+                            if (input) {
+                                input.removeAttribute('required');
+                                input.value = '0'; // Reset to default when hidden
+                            }
+                        }
+                    }
+
+                    // Handle Permit Status field - only show for New Construction
+                    const permitStatusField = document.querySelector('#permit_status_field');
+                    if (permitStatusField) {
+                        if (isNewConstruction) {
+                            permitStatusField.style.display = 'block';
+                            const select = permitStatusField.querySelector('select');
+                            if (select) select.setAttribute('required', 'required');
+                        } else {
+                            permitStatusField.style.display = 'none';
+                            const select = permitStatusField.querySelector('select');
+                            if (select) {
+                                select.removeAttribute('required');
+                                select.value = ''; // Reset when hidden
+                            }
+                        }
+                    }
+
+                    // Handle New Construction Payoff Amount field - only show for New Construction + Refinance
+                    handleNewConstructionPayoffVisibility();
+                }
+
+                // Function to handle New Construction payoff amount field visibility
+                function handleNewConstructionPayoffVisibility() {
+                    const loanType = document.getElementById('loan_type').value;
+                    const transactionType = document.getElementById('transaction_type').value;
+                    const isNewConstruction = loanType === 'New Construction';
+                    const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out';
+                    
+                    const payoffField = document.querySelector('#new_construction_payoff_amount_field');
+                    if (payoffField) {
+                        if (isNewConstruction && isRefinance) {
+                            payoffField.style.display = 'block';
+                            const input = payoffField.querySelector('input');
+                            if (input) input.setAttribute('required', 'required');
+                        } else {
+                            payoffField.style.display = 'none';
+                            const input = payoffField.querySelector('input');
+                            if (input) {
+                                input.removeAttribute('required');
+                                input.value = ''; // Reset when hidden
+                            }
                         }
                     }
                 }
@@ -3505,6 +3681,7 @@
                 const fieldLabels = {
                     'credit_score': 'Credit Score',
                     'experience': 'Experience',
+                    'guc_experience': 'GUC Experience (# of Deals)',
                     'loan_type': 'Loan Type',
                     'transaction_type': 'Transaction Type',
                     'loan_term': 'Loan Term',
@@ -3512,6 +3689,8 @@
                     'broker_points': 'Broker Points',
                     'state': 'State',
                     'property_type': 'Property Type',
+                    'permit_status': 'Permit Status',
+                    'new_construction_payoff_amount': 'Payoff Amount (New Construction)',
                     'occupancy_type': 'Occupancy Type',
                     'monthly_market_rent': 'Monthly Market Rent',
                     'annual_tax': 'Annual Tax',
@@ -3719,7 +3898,7 @@
                         }
                         
                         data.push(['', '']); // Empty row
-                        data.push(['CASH DUE TO BUYER', '$' + numberWithCommas(closingData.cash_due_to_buyer || 0)]);
+                        data.push(['DUE FROM BUYER AT CLOSING', '$' + numberWithCommas(closingData.cash_due_to_buyer || 0)]);
                     }
                 }
                 
@@ -3985,6 +4164,64 @@
                                         <p class="text-sm text-gray-600">${window.selectedLoanProgram}</p>
                                         <p class="text-sm text-gray-600">Loan Amount: $${numberWithCommas(calculatedValues.total_loan_amount)}</p>
                                     </div>
+
+                                    <!-- Guarantor Disclosures -->
+                                    <div class="mb-6">
+                                        <h4 class="font-semibold text-gray-800 mb-3">Guarantor Disclosures (Must Check All)</h4>
+                                        <div class="space-y-2 text-sm">
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="guarantor_disclosures[]" value="fico_score" required class="mt-1">
+                                                <span>I certify my FICO score is equal to or higher than stated; lower scores may affect terms.</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="guarantor_disclosures[]" value="experience_verifiable" required class="mt-1">
+                                                <span>I certify my experience is verifiable with HUDs and entity documentation.</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="guarantor_disclosures[]" value="full_recourse" required class="mt-1">
+                                                <span>I understand this is a full recourse loan; members with 20%+ ownership must guaranty.</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="guarantor_disclosures[]" value="no_bankruptcies" required class="mt-1">
+                                                <span>I have no unresolved bankruptcies or foreclosures in the past 4 years.</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="guarantor_disclosures[]" value="no_delinquencies" required class="mt-1">
+                                                <span>I have no delinquent mortgages, unpaid liens, or active lawsuits.</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="guarantor_disclosures[]" value="no_financial_crimes" required class="mt-1">
+                                                <span>I have no history of financial crimes or serious felonies.</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Property Disclosures -->
+                                    <div class="mb-6">
+                                        <h4 class="font-semibold text-gray-800 mb-3">Property Disclosures (Must Check All)</h4>
+                                        <div class="space-y-2 text-sm">
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="property_disclosures[]" value="property_type" required class="mt-1">
+                                                <span>The property is 1–4 units, non-owner occupied, and for investment use only.</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="property_disclosures[]" value="not_rural" required class="mt-1">
+                                                <span>The property is not in a rural area as defined by USDA Rural Designation Map.</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="property_disclosures[]" value="loan_good_standing" required class="mt-1">
+                                                <span>For Refinance Fix and Flip, current loan must be in Good Standing (No Default)</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="property_disclosures[]" value="assignment_fees" required class="mt-1">
+                                                <span>Assignment fees are under 20% of underlying purchase price (terms may be affected)</span>
+                                            </label>
+                                            <label class="flex items-start space-x-2">
+                                                <input type="checkbox" name="property_disclosures[]" value="profitability" required class="mt-1">
+                                                <span>I understand the project must meet minimum profitability requirements (15% minimum).</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                     
                                     <div class="flex justify-end space-x-3">
                                         <button type="button" onclick="closeUserInputModal()" 
@@ -4065,6 +4302,19 @@
                 // Handle form submission
                 document.getElementById('borrowerInfoForm').addEventListener('submit', async function(e) {
                     e.preventDefault();
+                    
+                    // Validate all disclosure checkboxes are checked
+                    const guarantorCheckboxes = document.querySelectorAll('input[name="guarantor_disclosures[]"]');
+                    const propertyCheckboxes = document.querySelectorAll('input[name="property_disclosures[]"]');
+                    
+                    const allGuarantorChecked = Array.from(guarantorCheckboxes).every(cb => cb.checked);
+                    const allPropertyChecked = Array.from(propertyCheckboxes).every(cb => cb.checked);
+                    
+                    if (!allGuarantorChecked || !allPropertyChecked) {
+                        alert('Please check all disclosure statements before submitting your application.');
+                        return;
+                    }
+                    
                     await submitApplicationData(formData, loanPrograms, calculatedValues, selectedLoanData);
                 });
             }
@@ -4098,7 +4348,6 @@
                     console.log('Submitting application for loan type:', formData.loan_type, 'isDscrLoan:', isDscrLoan);
                     console.log('Form data:', formData);
                     console.log('Property address:', formData.property_address);
-                    console.log('Zip code:', formData.zip_code);
                     
                     // Prepare the payload
                     const payload = {
@@ -4118,7 +4367,6 @@
                         state: formData.state,
                         property_type: formData.property_type || null,
                         property_address: formData.property_address || null,
-                        property_zip_code: formData.zip_code || null,
                         
                         // Optional fields - populate based on loan type
                         payoff_amount: formData.payoff_amount ? parseFloat(formData.payoff_amount) : null,
