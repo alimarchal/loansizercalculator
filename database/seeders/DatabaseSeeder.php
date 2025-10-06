@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             ExperiencedBuilderLoanRuleSeeder::class, // Experienced Builder specific rules
             NewBuilderLoanRuleSeeder::class, // New Builder specific rules
             DscrRentalLoanRuleSeeder::class, // DSCR Rental specific rules
+            FixAndFlipRefinanceSeeder::class, // Fix and Flip Refinance rules (duplicates Purchase rules)
 
                 // New DSCR matrix seeders
             LtvRatioSeeder::class,
