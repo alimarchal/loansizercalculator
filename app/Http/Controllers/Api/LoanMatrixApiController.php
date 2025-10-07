@@ -38,7 +38,7 @@ class LoanMatrixApiController extends Controller
             'arv' => 'nullable|numeric|min:10000|max:10000000',
             'rehab_budget' => 'nullable|numeric|min:0|max:5000000',
             'broker_points' => 'required|numeric|min:0|max:100',
-            'pay_off' => 'nullable|numeric|min:0|max:10000000',
+            'payoff_amount' => 'nullable|numeric|min:0|max:10000000',
             'rehab_completed' => 'nullable|numeric|min:0|max:10000000',
             'state' => 'required|string|max:2', // State code (e.g., 'CA', 'TX', 'NY')
             'title_charges' => 'nullable|numeric|min:0|max:10000000',
@@ -59,7 +59,7 @@ class LoanMatrixApiController extends Controller
         $loanType = $request->loan_type;
         $transactionType = $request->transaction_type;
         $brokerPoints = $request->broker_points;
-        $payOff = $request->pay_off;
+        $payOff = $request->payoff_amount;
         $rehabCompleted = $request->rehab_completed;
         $state = $request->state;
         $titleCharges = $request->title_charges;
@@ -342,11 +342,11 @@ class LoanMatrixApiController extends Controller
                         ],
                         'buyer_related_charges' => [
                             ($transactionType === 'Refinance' ? 'payoff' : 'purchase_price') => $transactionType === 'Refinance'
-                                ? ($request->pay_off ? (float) number_format((float) $request->pay_off, 2, '.', '') : 0.00)
+                                ? ($request->payoff_amount ? (float) number_format((float) $request->payoff_amount, 2, '.', '') : 0.00)
                                 : ($request->purchase_price ? (float) number_format((float) $request->purchase_price, 2, '.', '') : 0.00),
                             'rehab_budget' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
                             'sub_total_buyer_charges' => $transactionType === 'Refinance'
-                                ? (($request->pay_off ? (float) $request->pay_off : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))
+                                ? (($request->payoff_amount ? (float) $request->payoff_amount : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))
                                 : (($request->purchase_price ? (float) $request->purchase_price : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00)),
                         ],
                         'lender_related_charges' => [
@@ -378,23 +378,19 @@ class LoanMatrixApiController extends Controller
                             ),
                         ],
 
-                        'cash_due_to_buyer' => (float) number_format(
-                            (($request->purchase_price + $request->rehab_budget) +
-                                ((float) $titleCharges +
-                                    (float) $propertyInsurance +
-                                    ($rule->experience->loanType->legal_doc_prep_fee ? (float) $rule->experience->loanType->legal_doc_prep_fee : 0.00) +
-                                    (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['lender_points'] / 100)) +
-                                    (($request->purchase_price + $request->rehab_budget) * ($request->broker_points / 100)) +
-                                    ($rule->experience->loanType->underwritting_fee ? (float) $rule->experience->loanType->underwritting_fee : 0.00) +
-                                    ($rule->experience->loanType->loan_program === 'FULL APPRAISAL'
-                                        ? (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12)
-                                        : 0.00))) -
-                            (in_array($transactionType, ['Refinance No Cash Out', 'Refinance Cash Out'])
-                                ? (($request->pay_off ? (float) $request->pay_off : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))
-                                : (($request->purchase_price ? (float) $request->purchase_price : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))),
-                            2,
-                            '.',
-                            ''
+                        'cash_due_to_buyer' => $this->calculateCashDueToBuyer(
+                            $request->purchase_price ?: 0,
+                            $request->rehab_budget ?: 0,
+                            $titleCharges ?: 0,
+                            $propertyInsurance ?: 0,
+                            $rule->experience->loanType->legal_doc_prep_fee ?: 0,
+                            $pricingInfo['lender_points'],
+                            $request->broker_points,
+                            $rule->experience->loanType->underwritting_fee ?: 0,
+                            $rule->experience->loanType->loan_program ?: '',
+                            $pricingInfo['interest_rate'],
+                            $transactionType,
+                            $request->payoff_amount ?: 0
                         ),
                     ],
 
@@ -2335,5 +2331,67 @@ class LoanMatrixApiController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Calculate cash due to buyer for loan application
+     * 
+     * @param float $purchasePrice The purchase price of the property
+     * @param float $rehabBudget The rehabilitation budget
+     * @param float $titleCharges Title charges
+     * @param float $propertyInsurance Property insurance costs
+     * @param float $legalDocPrepFee Legal document preparation fee
+     * @param float $lenderPoints Lender points percentage
+     * @param float $brokerPoints Broker points percentage
+     * @param float $underwritingFee Underwriting fee
+     * @param string $loanProgram Loan program type
+     * @param float $interestRate Interest rate percentage
+     * @param string $transactionType Transaction type
+     * @param float $payOff Pay off amount for refinance
+     * @return float
+     */
+    private function calculateCashDueToBuyer(
+        float $purchasePrice,
+        float $rehabBudget,
+        ?float $titleCharges,
+        ?float $propertyInsurance,
+        ?float $legalDocPrepFee,
+        float $lenderPoints,
+        float $brokerPoints,
+        ?float $underwritingFee,
+        ?string $loanProgram,
+        float $interestRate,
+        string $transactionType,
+        ?float $payOff
+    ): float {
+        // Calculate total project cost
+        $totalProjectCost = $purchasePrice + $rehabBudget;
+
+        // Calculate closing costs
+        $closingCosts = (float) ($titleCharges ?: 0) +
+            (float) ($propertyInsurance ?: 0) +
+            (float) ($legalDocPrepFee ?: 0) +
+            ($totalProjectCost * ($lenderPoints / 100)) +
+            ($totalProjectCost * ($brokerPoints / 100)) +
+            (float) ($underwritingFee ?: 0);
+
+        // Add interest reserves if loan program is FULL APPRAISAL
+        if ($loanProgram === 'FULL APPRAISAL') {
+            $closingCosts += ($totalProjectCost * ($interestRate / 100) / 12);
+        }        // Calculate total cash needed (project cost + closing costs)
+        $totalCashNeeded = $totalProjectCost + $closingCosts;
+
+        // Calculate loan proceeds based on transaction type
+        $loanProceeds = 0;
+        if (in_array($transactionType, ['Refinance No Cash Out', 'Refinance Cash Out'])) {
+            $loanProceeds = ($payOff ?: 0) + $rehabBudget;
+        } else {
+            $loanProceeds = $purchasePrice + $rehabBudget;
+        }
+
+        // Calculate final cash due to buyer
+        $cashDueToBuyer = $totalCashNeeded - $loanProceeds;
+
+        return (float) number_format($cashDueToBuyer, 2, '.', '');
     }
 }
