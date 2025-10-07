@@ -3246,7 +3246,7 @@
                     }
                 } else {
                     // For Fix & Flip / New Construction loans: Keep original title and show subtotal
-                    document.getElementById('closingPropertyCostsTitle').textContent = 'Property Costs';
+                    document.getElementById('closingPropertyCostsTitle').textContent = 'Buyer Related Fees';
                     
                     // Show subtotal row for non-DSCR loans
                     const subtotalRow = document.getElementById('closingSubtotalRow');

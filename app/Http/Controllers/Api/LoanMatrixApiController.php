@@ -389,7 +389,7 @@ class LoanMatrixApiController extends Controller
                                     ($rule->experience->loanType->loan_program === 'FULL APPRAISAL'
                                         ? (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12)
                                         : 0.00))) -
-                            ($transactionType === 'Refinance'
+                            (in_array($transactionType, ['Refinance No Cash Out', 'Refinance Cash Out'])
                                 ? (($request->pay_off ? (float) $request->pay_off : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))
                                 : (($request->purchase_price ? (float) $request->purchase_price : 0.00) + ($request->rehab_budget ? (float) $request->rehab_budget : 0.00))),
                             2,
@@ -429,6 +429,8 @@ class LoanMatrixApiController extends Controller
             ], 500);
         }
     }
+
+
 
     /**
      * Validate business rules and return disqualifier notifications
