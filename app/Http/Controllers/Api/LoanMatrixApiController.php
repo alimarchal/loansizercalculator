@@ -393,7 +393,8 @@ class LoanMatrixApiController extends Controller
                             $rule->experience->loanType->loan_program ?: '',
                             $pricingInfo['interest_rate'],
                             $transactionType,
-                            $request->payoff_amount ?: 0
+                            $request->payoff_amount ?: 0,
+                            $loanCalculations['purchase_loan_up_to']
                         ),
                     ],
 
@@ -2359,6 +2360,7 @@ class LoanMatrixApiController extends Controller
      * @param float $interestRate Interest rate percentage
      * @param string $transactionType Transaction type
      * @param float $payOff Pay off amount for refinance
+     * @param float $purchaseLoanAmount Purchase loan amount from calculations
      * @return float
      */
     private function calculateCashDueToBuyer(
@@ -2373,13 +2375,14 @@ class LoanMatrixApiController extends Controller
         ?string $loanProgram,
         float $interestRate,
         string $transactionType,
-        ?float $payOff
+        ?float $payOff,
+        float $purchaseLoanAmount
     ): float {
         // Calculate total project cost
         $totalProjectCost = $purchasePrice + $rehabBudget;
 
-        // Calculate closing costs
-        $closingCosts = (float) ($titleCharges ?: 0) +
+        // Calculate subtotal closing costs
+        $subtotalClosingCosts = (float) ($titleCharges ?: 0) +
             (float) ($propertyInsurance ?: 0) +
             (float) ($legalDocPrepFee ?: 0) +
             ($totalProjectCost * ($lenderPoints / 100)) +
@@ -2388,20 +2391,20 @@ class LoanMatrixApiController extends Controller
 
         // Add interest reserves if loan program is FULL APPRAISAL
         if ($loanProgram === 'FULL APPRAISAL') {
-            $closingCosts += ($totalProjectCost * ($interestRate / 100) / 12);
-        }        // Calculate total cash needed (project cost + closing costs)
-        $totalCashNeeded = $totalProjectCost + $closingCosts;
-
-        // Calculate loan proceeds based on transaction type
-        $loanProceeds = 0;
-        if (in_array($transactionType, ['Refinance No Cash Out', 'Refinance Cash Out'])) {
-            $loanProceeds = ($payOff ?: 0) + $rehabBudget;
-        } else {
-            $loanProceeds = $purchasePrice + $rehabBudget;
+            $subtotalClosingCosts += ($totalProjectCost * ($interestRate / 100) / 12);
         }
 
-        // Calculate final cash due to buyer
-        $cashDueToBuyer = $totalCashNeeded - $loanProceeds;
+        // Calculate cash due to buyer based on transaction type
+        $cashDueToBuyer = 0;
+
+        // Check if this is a Refinance transaction (Refinance Cash Out or Refinance No Cash Out)
+        if (in_array($transactionType, ['Refinance No Cash Out', 'Refinance Cash Out', 'Refinance'])) {
+            // For Refinance: purchase_loan_amount - payoff_amount + subtotal_closing_costs
+            $cashDueToBuyer = $purchaseLoanAmount - ($payOff ?: 0) + $subtotalClosingCosts;
+        } else {
+            // For Purchase: purchase_price - purchase_loan_amount + subtotal_closing_costs
+            $cashDueToBuyer = $purchasePrice - $purchaseLoanAmount + $subtotalClosingCosts;
+        }
 
         return (float) number_format($cashDueToBuyer, 2, '.', '');
     }
