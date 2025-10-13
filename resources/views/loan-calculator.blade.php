@@ -741,9 +741,9 @@
                                             </div>
 
                                             <!-- Payoff Amount (only for New Construction + Refinance) -->
-                                            <div id="new_construction_payoff_amount_field" style="display: none;">
+                                            <div id="payoff_amount_field" style="display: none;">
                                                 <label class="block font-medium text-sm text-gray-700 mb-2"
-                                                    for="new_construction_payoff_amount">
+                                                    for="payoff_amount">
                                                     <span class="flex items-center">
                                                         <svg class="w-4 h-4 text-red-600 mr-1" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
@@ -757,9 +757,8 @@
                                                 </label>
                                                 <input
                                                     class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
-                                                    type="number" name="new_construction_payoff_amount"
-                                                    id="new_construction_payoff_amount" min="0" step="0.01" value=""
-                                                    placeholder="Enter payoff amount">
+                                                    type="number" name="payoff_amount" id="payoff_amount" min="0"
+                                                    step="0.01" value="" placeholder="Enter payoff amount">
                                             </div>
                                         </div>
                                     </div>
@@ -1605,7 +1604,7 @@
                                 
                                 // Validate payoff amount for New Construction refinance transactions
                                 if (isNewConstruction && (transactionType === 'Refinance' || transactionType === 'Refinance Cash Out')) {
-                                    const payoffAmount = document.getElementById('new_construction_payoff_amount').value;
+                                    const payoffAmount = document.getElementById('payoff_amount').value;
                                     if (!payoffAmount || payoffAmount === '') {
                                         console.log('New Construction refinance validation failed - missing payoff amount');
                                         alert('Please enter Payoff Amount for New Construction refinance transactions.');
@@ -1787,8 +1786,8 @@
                         }
                         
                         // Add payoff amount for New Construction refinance transactions
-                        if (loanType === 'New Construction' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out') && formData.get('new_construction_payoff_amount')) {
-                            apiParams.append('payoff_amount', formData.get('new_construction_payoff_amount'));
+                        if (loanType === 'New Construction' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out') && formData.get('payoff_amount')) {
+                            apiParams.append('payoff_amount', formData.get('payoff_amount'));
                         }
                         
                         // Add Fix and Flip specific parameters for refinance transactions
@@ -3641,7 +3640,7 @@
                     const isNewConstruction = loanType === 'New Construction';
                     const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out' || transactionType === 'Refinance No Cash Out';
                     
-                    const payoffField = document.querySelector('#new_construction_payoff_amount_field');
+                    const payoffField = document.querySelector('#payoff_amount_field');
                     if (payoffField) {
                         if (isNewConstruction && isRefinance) {
                             payoffField.style.display = 'block';
@@ -4258,7 +4257,7 @@
                     'state': 'State',
                     'property_type': 'Property Type',
                     'permit_status': 'Permit Status',
-                    'new_construction_payoff_amount': 'Payoff Amount (New Construction)',
+                    'payoff_amount': 'Payoff Amount',
                     'fix_flip_seasoning_period': 'Seasoning Period',
                     'fix_flip_payoff_amount': 'Payoff Amount (Fix and Flip)',
                     'occupancy_type': 'Occupancy Type',
@@ -5010,7 +5009,7 @@
                         if (formData.loan_type === 'New Construction') {
                             payload.guc_experience = formData.guc_experience ? parseInt(formData.guc_experience) : null;
                             payload.permit_status = formData.permit_status || null;
-                            payload.new_construction_payoff_amount = formData.new_construction_payoff_amount ? parseFloat(formData.new_construction_payoff_amount) : null;
+                            payload.payoff_amount = formData.payoff_amount ? parseFloat(formData.payoff_amount) : null;
                         }
                         
                         // These fields are not used for Fix & Flip / New Construction

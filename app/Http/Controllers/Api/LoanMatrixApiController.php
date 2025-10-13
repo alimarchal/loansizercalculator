@@ -318,6 +318,7 @@ class LoanMatrixApiController extends Controller
                         'state' => $state,
                         'guc_experience' => $request->guc_experience ? (int) $request->guc_experience : 0,
                         'permit_status' => $request->permit_status ?: null,
+                        'payoff_amount' => $request->payoff_amount ? (float) number_format((float) $request->payoff_amount, 2, '.', '') : 0.00,
                     ],
 
                     // Additional loan type and loan program table data
