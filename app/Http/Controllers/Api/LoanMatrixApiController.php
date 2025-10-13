@@ -256,7 +256,8 @@ class LoanMatrixApiController extends Controller
                     $request->purchase_price ?: 0,
                     $request->rehab_budget ?: 0,
                     $request->arv ?: 0,
-                    loanType: $rule->experience->loanType->name ?? null
+                    loanType: $rule->experience->loanType->name ?? null,
+                    permitStatus: $request->permit_status ?? null
                 );
 
                 // Determine pricing tier based on total loan amount and get rates
@@ -357,7 +358,7 @@ class LoanMatrixApiController extends Controller
                             'broker_fee' => (float) ($request->purchase_price + $request->rehab_budget) * ($request->broker_points / 100),
                             'underwriting_processing_fee' => $rule->experience->loanType->underwritting_fee ? (float) number_format((float) $rule->experience->loanType->underwritting_fee, 2, '.', '') : 0.00,
                             'interest_reserves' =>
-                                $rule->experience->loanType->loan_program === 'FULL APPRAISAL'
+                                ($rule->experience->loanType->loan_program === 'EXPERIENCED BUILDER' || $rule->experience->loanType->loan_program === 'FULL APPRAISAL')
                                 ? (float) number_format((float) (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12), 2, '.', '')
                                 : 0.00,
                         ],
@@ -372,7 +373,7 @@ class LoanMatrixApiController extends Controller
                                 (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['lender_points'] / 100)) +
                                 (($request->purchase_price + $request->rehab_budget) * ($request->broker_points / 100)) +
                                 ($rule->experience->loanType->underwritting_fee ? (float) $rule->experience->loanType->underwritting_fee : 0.00) +
-                                ($rule->experience->loanType->loan_program === 'FULL APPRAISAL'
+                                (($rule->experience->loanType->loan_program === 'EXPERIENCED BUILDER' || $rule->experience->loanType->loan_program === 'FULL APPRAISAL')
                                     ? (($request->purchase_price + $request->rehab_budget) * ($pricingInfo['interest_rate'] / 100) / 12)
                                     : 0.00),
                                 2,
@@ -1823,7 +1824,7 @@ class LoanMatrixApiController extends Controller
      * @param string $loanType Loan type (Fix and Flip, New Construction, etc.)
      * @return array
      */
-    private function calculateLoanAmountsFromInputs($maxLtv, $maxLtc, $maxLtfc, $purchasePrice, $rehabBudget, $arv, $loanType = null)
+    private function calculateLoanAmountsFromInputs($maxLtv, $maxLtc, $maxLtfc, $purchasePrice, $rehabBudget, $arv, $loanType = null, $permitStatus = null)
     {
         // Initialize default values
         $totalLoanUpTo = 0;
@@ -1874,6 +1875,27 @@ class LoanMatrixApiController extends Controller
 
             // Rehab Loan = Minimum of (Rehab Budget, Total Loan Capacity)
             $rehabLoanUpTo = min($rehabBudget, $totalLoanUpTo);
+
+            // Apply permit status restrictions for New Construction
+            if ($loanType === 'New Construction' && $permitStatus) {
+                $maxPurchaseLoanByPermit = 0;
+
+                if ($permitStatus === 'Permit Approved') {
+                    // Max Purchase Loan is 75% of purchase price
+                    $maxPurchaseLoanByPermit = ($purchasePrice * 0.75);
+                } elseif ($permitStatus === 'Unpermitted') {
+                    // Max Purchase Loan is 60% of purchase price
+                    $maxPurchaseLoanByPermit = ($purchasePrice * 0.60);
+                }
+
+                // Apply the permit status limit if it's lower than calculated purchase loan
+                if ($maxPurchaseLoanByPermit > 0 && $maxPurchaseLoanByPermit < $purchaseLoanUpTo) {
+                    $purchaseLoanUpTo = $maxPurchaseLoanByPermit;
+
+                    // Recalculate total loan based on adjusted purchase loan + rehab loan
+                    $totalLoanUpTo = $purchaseLoanUpTo + $rehabLoanUpTo;
+                }
+            }
         }
 
         return [
@@ -2389,8 +2411,8 @@ class LoanMatrixApiController extends Controller
             ($totalProjectCost * ($brokerPoints / 100)) +
             (float) ($underwritingFee ?: 0);
 
-        // Add interest reserves if loan program is FULL APPRAISAL
-        if ($loanProgram === 'FULL APPRAISAL') {
+        // Add interest reserves if loan program is EXPERIENCED BUILDER or FULL APPRAISAL
+        if ($loanProgram === 'EXPERIENCED BUILDER' || $loanProgram === 'FULL APPRAISAL') {
             $subtotalClosingCosts += ($totalProjectCost * ($interestRate / 100) / 12);
         }
 
