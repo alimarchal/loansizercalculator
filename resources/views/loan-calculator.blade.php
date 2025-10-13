@@ -2354,10 +2354,10 @@
                         });
                         
                         if (programName === 'EXPERIENCED BUILDER') {
-                            // Check GUC experience requirement - must have at least 1 GUC experience
-                            if (gucExperience === 0) {
+                            // Check GUC experience requirement - must have at least 2 GUC deals
+                            if (gucExperience < 2) {
                                 isEligible = false;
-                                eligibilityErrors.push(`Experienced Builder Program requires at least 1 GUC (Ground Up Construction) experience. You currently have 0 GUC experience.`);
+                                eligibilityErrors.push(`Experienced Builder Program requires at least 2 GUC (Ground Up Construction) deals. You currently have ${gucExperience} GUC deal(s). For less than 2 deals, please select New Builder program.`);
                                 console.log('Experienced Builder - GUC experience not met:', gucExperience);
                             }
                             
@@ -2546,10 +2546,10 @@
                         });
                         
                         if (programName === 'EXPERIENCED BUILDER') {
-                            // Check GUC experience requirement - must have at least 1 GUC experience
-                            if (gucExperience === 0) {
+                            // Check GUC experience requirement - must have at least 2 GUC deals
+                            if (gucExperience < 2) {
                                 isEligible = false;
-                                eligibilityErrors.push(`Experienced Builder Program requires at least 1 GUC (Ground Up Construction) experience. You currently have 0 GUC experience.`);
+                                eligibilityErrors.push(`Experienced Builder Program requires at least 2 GUC (Ground Up Construction) deals. You currently have ${gucExperience} GUC deal(s). For less than 2 deals, please select New Builder program.`);
                                 console.log('Experienced Builder - GUC experience not met:', gucExperience);
                             }
                             

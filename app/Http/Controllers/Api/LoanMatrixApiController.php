@@ -316,6 +316,8 @@ class LoanMatrixApiController extends Controller
                         'rehab_budget' => $request->rehab_budget ? (float) number_format((float) $request->rehab_budget, 2, '.', '') : 0.00,
                         'broker_points' => $brokerPoints ? (float) number_format((float) $brokerPoints, 2, '.', '') : 0.00,
                         'state' => $state,
+                        'guc_experience' => $request->guc_experience ? (int) $request->guc_experience : 0,
+                        'permit_status' => $request->permit_status ?: null,
                     ],
 
                     // Additional loan type and loan program table data
