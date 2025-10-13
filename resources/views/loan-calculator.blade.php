@@ -1603,7 +1603,7 @@
                                 }
                                 
                                 // Validate payoff amount for New Construction refinance transactions
-                                if (isNewConstruction && (transactionType === 'Refinance' || transactionType === 'Refinance Cash Out')) {
+                                if (isNewConstruction && (transactionType === 'Refinance' || transactionType === 'Refinance Cash Out' || transactionType === 'Refinance No Cash Out')) {
                                     const payoffAmount = document.getElementById('payoff_amount').value;
                                     if (!payoffAmount || payoffAmount === '') {
                                         console.log('New Construction refinance validation failed - missing payoff amount');
@@ -1614,7 +1614,7 @@
                                 
                                 // Additional validation for Fix and Flip refinance transactions
                                 const isFixAndFlip = loanType === 'Fix and Flip';
-                                if (isFixAndFlip && (transactionType === 'Refinance' || transactionType === 'Refinance Cash Out')) {
+                                if (isFixAndFlip && (transactionType === 'Refinance' || transactionType === 'Refinance Cash Out' || transactionType === 'Refinance No Cash Out')) {
                                     const seasoningPeriod = document.getElementById('fix_flip_seasoning_period').value;
                                     const payoffAmount = document.getElementById('fix_flip_payoff_amount').value;
                                     
@@ -1786,12 +1786,12 @@
                         }
                         
                         // Add payoff amount for New Construction refinance transactions
-                        if (loanType === 'New Construction' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out') && formData.get('payoff_amount')) {
+                        if (loanType === 'New Construction' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out' || formData.get('transaction_type') === 'Refinance No Cash Out') && formData.get('payoff_amount')) {
                             apiParams.append('payoff_amount', formData.get('payoff_amount'));
                         }
                         
                         // Add Fix and Flip specific parameters for refinance transactions
-                        if (loanType === 'Fix and Flip' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out')) {
+                        if (loanType === 'Fix and Flip' && (formData.get('transaction_type') === 'Refinance' || formData.get('transaction_type') === 'Refinance Cash Out' || formData.get('transaction_type') === 'Refinance No Cash Out')) {
                             if (formData.get('fix_flip_seasoning_period')) {
                                 apiParams.append('seasoning_period', formData.get('fix_flip_seasoning_period'));
                             }
