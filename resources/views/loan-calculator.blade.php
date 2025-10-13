@@ -3558,7 +3558,7 @@
                     const loanType = document.getElementById('loan_type').value;
                     const transactionType = document.getElementById('transaction_type').value;
                     const isNewConstruction = loanType === 'New Construction';
-                    const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out';
+                    const isRefinance = transactionType === 'Refinance' || transactionType === 'Refinance Cash Out' || transactionType === 'Refinance No Cash Out';
                     
                     const payoffField = document.querySelector('#new_construction_payoff_amount_field');
                     if (payoffField) {
