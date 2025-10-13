@@ -2633,9 +2633,28 @@
                                 <div class="flex justify-between items-center border-b pb-2">
                                     <div class="flex flex-col">
                                         <span class="font-medium text-gray-700">You qualify for a Purchase Loan up to:</span>
-                                        <span class="text-xs text-blue-600 italic">✏️ Click amount below to edit</span>
+                                        ${isNewConstruction ? '<span class="text-xs text-blue-600 italic">✏️ Click amount below to edit</span>' : ''}
                                     </div>
                                     <div class="flex flex-col items-end">
+                                        ${isNewConstruction ? `
+                                        <input type="number" 
+                                               id="card_purchase_loan_${programName.replace(/\s+/g, '_')}" 
+                                               class="loan-amount-input w-24 px-2 py-1 text-right font-bold text-blue-600 rounded focus:outline-none"
+                                               value="${loanData?.purchase_loan_up_to || 0}"
+                                               max="${loanData?.purchase_loan_up_to || 0}"
+                                               min="0"
+                                               step="1000"
+                                               data-program="${programName}"
+                                               data-loan-type="New Construction"
+                                               data-max-amount="${loanData?.purchase_loan_up_to || 0}"
+                                               data-original-purchase="${loanData?.purchase_loan_up_to || 0}"
+                                               data-original-rehab="${loanData?.rehab_loan_up_to || 0}"
+                                               data-max-total="${loanData?.total_loan_up_to || 0}"
+                                               onchange="handlePurchaseLoanAmountChange(this, '${programName}')"
+                                               onblur="handlePurchaseLoanAmountChange(this, '${programName}')"
+                                               title="Adjust purchase loan amount. The rehab loan will automatically adjust to stay within total loan limit.">
+                                        <span class="text-xs text-gray-500 mt-1">Max: $${loanData?.purchase_loan_up_to !== undefined ? numberWithCommas(loanData.purchase_loan_up_to) : '0'}</span>
+                                        ` : `
                                         <input type="number" 
                                                id="card_purchase_loan_${programName.replace(/\s+/g, '_')}" 
                                                class="loan-amount-input w-24 px-2 py-1 text-right font-bold text-blue-600 rounded focus:outline-none"
@@ -2649,15 +2668,44 @@
                                                onblur="handleCardLoanAmountChange(this, '${programName}')"
                                                title="Enter desired loan amount (up to $${loanData?.purchase_loan_up_to ? numberWithCommas(loanData.purchase_loan_up_to) : '0'})">
                                         <span class="text-xs text-gray-500 mt-1">Max: $${loanData?.purchase_loan_up_to !== undefined ? numberWithCommas(loanData.purchase_loan_up_to) : '0'}</span>
+                                        `}
                                     </div>
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-2">
-                                    <span class="font-medium text-gray-700">You qualify for a Rehab Loan up to:</span>
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-gray-700">You qualify for a Rehab Loan up to:</span>
+                                        ${isNewConstruction ? '<span class="text-xs text-blue-600 italic">✏️ Click amount below to edit</span>' : ''}
+                                    </div>
+                                    ${isNewConstruction ? `
+                                    <div class="flex flex-col items-end">
+                                        <input type="number" 
+                                               id="card_rehab_loan_${programName.replace(/\s+/g, '_')}" 
+                                               class="loan-amount-input w-24 px-2 py-1 text-right font-bold text-green-600 rounded focus:outline-none"
+                                               value="${loanData?.rehab_loan_up_to || 0}"
+                                               max="${loanData?.rehab_loan_up_to || 0}"
+                                               min="0"
+                                               step="1000"
+                                               data-program="${programName}"
+                                               data-loan-type="New Construction"
+                                               data-max-amount="${loanData?.rehab_loan_up_to || 0}"
+                                               data-original-purchase="${loanData?.purchase_loan_up_to || 0}"
+                                               data-original-rehab="${loanData?.rehab_loan_up_to || 0}"
+                                               data-max-total="${loanData?.total_loan_up_to || 0}"
+                                               onchange="handleRehabLoanAmountChange(this, '${programName}')"
+                                               onblur="handleRehabLoanAmountChange(this, '${programName}')"
+                                               title="Adjust rehab loan amount. The purchase loan will automatically adjust to stay within total loan limit.">
+                                        <span class="text-xs text-gray-500 mt-1">Max: $${loanData?.rehab_loan_up_to !== undefined ? numberWithCommas(loanData.rehab_loan_up_to) : '0'}</span>
+                                    </div>
+                                    ` : `
                                     <span class="font-bold text-green-600">$${loanData?.rehab_loan_up_to ? numberWithCommas(loanData.rehab_loan_up_to) : 'N/A'}</span>
+                                    `}
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-2">
                                     <span class="font-medium text-gray-700">You qualify for Total Loan up to:</span>
-                                    <span class="font-bold text-purple-600" id="card_total_loan_${programName.replace(/\s+/g, '_')}">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</span>
+                                    <div class="flex flex-col items-end">
+                                        <span class="font-bold text-purple-600" id="card_total_loan_${programName.replace(/\s+/g, '_')}">$${loanData?.total_loan_up_to ? numberWithCommas(loanData.total_loan_up_to) : 'N/A'}</span>
+                                        ${isNewConstruction ? `<span class="text-xs text-gray-500 mt-1">Max: $${loanData?.total_loan_up_to !== undefined ? numberWithCommas(loanData.total_loan_up_to) : '0'}</span>` : ''}
+                                    </div>
                                 </div>
                                 ${!isEligible ? `
                                     <div class="mt-4 p-3 bg-red-100 border border-red-400 rounded-lg">
@@ -3854,8 +3902,90 @@
                 updateLoanCalculations(programName, newAmount);
             };
 
-            // Function to update loan calculations with new purchase loan amount
-            window.updateLoanCalculations = async function(programName, newPurchaseLoanAmount, rowIndex = null) {
+            // Function to handle purchase loan amount changes for GUC/New Construction loans with dynamic rehab adjustment
+            window.handlePurchaseLoanAmountChange = function(input, programName) {
+                const newPurchaseAmount = parseFloat(input.value) || 0;
+                const maxPurchaseAmount = parseFloat(input.dataset.maxAmount) || 0;
+                const maxTotalLoan = parseFloat(input.dataset.maxTotal) || 0;
+                const originalPurchaseAmount = parseFloat(input.dataset.originalPurchase) || 0;
+                const originalRehabAmount = parseFloat(input.dataset.originalRehab) || 0;
+                
+                // Validate purchase amount doesn't exceed its maximum
+                if (newPurchaseAmount > maxPurchaseAmount) {
+                    input.value = maxPurchaseAmount;
+                    alert(`Purchase loan amount cannot exceed the maximum of $${numberWithCommas(maxPurchaseAmount)}`);
+                    return;
+                }
+                
+                // Calculate remaining capacity for rehab loan
+                const remainingCapacity = maxTotalLoan - newPurchaseAmount;
+                const newRehabAmount = Math.min(originalRehabAmount, remainingCapacity);
+                
+                // Check if rehab loan needs to be adjusted
+                if (newRehabAmount < originalRehabAmount) {
+                    const rehabInput = document.getElementById(`card_rehab_loan_${programName.replace(/\s+/g, '_')}`);
+                    if (rehabInput) {
+                        rehabInput.value = newRehabAmount.toFixed(2);
+                        // Show info message about automatic adjustment
+                        console.log(`Rehab loan automatically adjusted from $${numberWithCommas(originalRehabAmount)} to $${numberWithCommas(newRehabAmount)} to maintain total loan limit of $${numberWithCommas(maxTotalLoan)}`);
+                    }
+                }
+                
+                // Validate total doesn't exceed limit
+                const calculatedTotal = newPurchaseAmount + newRehabAmount;
+                if (calculatedTotal > maxTotalLoan) {
+                    alert(`Total loan amount cannot exceed $${numberWithCommas(maxTotalLoan)}. Please adjust your loan amounts.`);
+                    input.value = originalPurchaseAmount;
+                    return;
+                }
+                
+                // Update the loan calculations
+                updateLoanCalculations(programName, newPurchaseAmount, newRehabAmount);
+            };
+
+            // Function to handle rehab loan amount changes for GUC/New Construction loans with dynamic purchase adjustment
+            window.handleRehabLoanAmountChange = function(input, programName) {
+                const newRehabAmount = parseFloat(input.value) || 0;
+                const maxRehabAmount = parseFloat(input.dataset.maxAmount) || 0;
+                const maxTotalLoan = parseFloat(input.dataset.maxTotal) || 0;
+                const originalPurchaseAmount = parseFloat(input.dataset.originalPurchase) || 0;
+                const originalRehabAmount = parseFloat(input.dataset.originalRehab) || 0;
+                
+                // Validate rehab amount doesn't exceed its maximum
+                if (newRehabAmount > maxRehabAmount) {
+                    input.value = maxRehabAmount;
+                    alert(`Rehab loan amount cannot exceed the maximum of $${numberWithCommas(maxRehabAmount)}`);
+                    return;
+                }
+                
+                // Calculate remaining capacity for purchase loan
+                const remainingCapacity = maxTotalLoan - newRehabAmount;
+                const newPurchaseAmount = Math.min(originalPurchaseAmount, remainingCapacity);
+                
+                // Check if purchase loan needs to be adjusted
+                if (newPurchaseAmount < originalPurchaseAmount) {
+                    const purchaseInput = document.getElementById(`card_purchase_loan_${programName.replace(/\s+/g, '_')}`);
+                    if (purchaseInput) {
+                        purchaseInput.value = newPurchaseAmount.toFixed(2);
+                        // Show info message about automatic adjustment
+                        console.log(`Purchase loan automatically adjusted from $${numberWithCommas(originalPurchaseAmount)} to $${numberWithCommas(newPurchaseAmount)} to maintain total loan limit of $${numberWithCommas(maxTotalLoan)}`);
+                    }
+                }
+                
+                // Validate total doesn't exceed limit
+                const calculatedTotal = newPurchaseAmount + newRehabAmount;
+                if (calculatedTotal > maxTotalLoan) {
+                    alert(`Total loan amount cannot exceed $${numberWithCommas(maxTotalLoan)}. Please adjust your loan amounts.`);
+                    input.value = originalRehabAmount;
+                    return;
+                }
+                
+                // Update the loan calculations
+                updateLoanCalculations(programName, newPurchaseAmount, newRehabAmount);
+            };
+
+            // Function to update loan calculations with new purchase loan amount (and optionally rehab loan amount)
+            window.updateLoanCalculations = async function(programName, newPurchaseLoanAmount, newRehabLoanAmount = null, rowIndex = null) {
                 try {
                     // Get the original loan data for this program
                     const originalLoanData = window.allLoansData[programName][0];
@@ -3864,8 +3994,12 @@
                         return;
                     }
                     
+                    // Use provided rehab amount or get from original data
+                    const rehabLoanAmount = newRehabLoanAmount !== null 
+                        ? newRehabLoanAmount 
+                        : (originalLoanData.loan_type_and_loan_program_table.rehab_loan_up_to || 0);
+                    
                     // Calculate new total loan amount
-                    const rehabLoanAmount = originalLoanData.loan_type_and_loan_program_table.rehab_loan_up_to || 0;
                     const newTotalLoanAmount = newPurchaseLoanAmount + rehabLoanAmount;
                     
                     // Update the total loan display in table
@@ -3888,11 +4022,13 @@
                     // Update the loan data with new values
                     const updatedLoanData = JSON.parse(JSON.stringify(originalLoanData)); // Deep copy
                     updatedLoanData.loan_type_and_loan_program_table.purchase_loan_up_to = newPurchaseLoanAmount;
+                    updatedLoanData.loan_type_and_loan_program_table.rehab_loan_up_to = rehabLoanAmount;
                     updatedLoanData.loan_type_and_loan_program_table.total_loan_up_to = newTotalLoanAmount;
                     
                     // Update closing statement with new fees
                     if (updatedLoanData.estimated_closing_statement) {
                         updatedLoanData.estimated_closing_statement.loan_amount_section.purchase_loan_amount = newPurchaseLoanAmount;
+                        updatedLoanData.estimated_closing_statement.loan_amount_section.rehab_loan_amount = rehabLoanAmount;
                         updatedLoanData.estimated_closing_statement.loan_amount_section.total_loan_amount = newTotalLoanAmount;
                         updatedLoanData.estimated_closing_statement.lender_related_charges = newLenderFees;
                         
@@ -3908,7 +4044,21 @@
                                           (titleCharges.legal_doc_prep_fee || 0);
                         
                         updatedLoanData.estimated_closing_statement.title_other_charges.subtotal_closing_costs = newSubtotal;
-                        updatedLoanData.estimated_closing_statement.cash_due_to_buyer = newSubtotal;
+                        
+                        // Recalculate cash due to buyer based on transaction type
+                        const transactionType = updatedLoanData.user_inputs?.transaction_type || '';
+                        const purchasePrice = updatedLoanData.user_inputs?.purchase_price || 0;
+                        const payoffAmount = updatedLoanData.user_inputs?.payoff_amount || 0;
+                        
+                        if (['Refinance', 'Refinance Cash Out', 'Refinance No Cash Out'].includes(transactionType)) {
+                            // For Refinance: purchase_loan_amount - payoff_amount + subtotal_closing_costs
+                            updatedLoanData.estimated_closing_statement.cash_due_to_buyer = 
+                                newPurchaseLoanAmount - payoffAmount + newSubtotal;
+                        } else {
+                            // For Purchase: purchase_price - purchase_loan_amount + subtotal_closing_costs
+                            updatedLoanData.estimated_closing_statement.cash_due_to_buyer = 
+                                purchasePrice - newPurchaseLoanAmount + newSubtotal;
+                        }
                     }
                     
                     // Update the global loan data
