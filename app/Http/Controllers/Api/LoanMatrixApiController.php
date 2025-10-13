@@ -494,11 +494,19 @@ class LoanMatrixApiController extends Controller
                     $valid = false;
                 }
 
-                if ($maxLoanAmountFromDb > 0 && $totalLoanAmount > $maxLoanAmountFromDb) {
-                    $notifications[] = 'Loan Size: Maximum Loan size allowed $' . number_format($maxLoanAmountFromDb, 0) . '. Contact Loan officer for Pricing';
+
+                // Calculate total loan amount for New Construction: 85% × (Purchase price + Rehab budget)
+                $calculatedTotalLoanAmount = 0.85 * ($purchasePrice + $rehabBudget);
+
+                // Check maximum loan size ($1,500,000) based on calculated loan amount
+                if ($calculatedTotalLoanAmount > 1500000) {
+                    $notifications[] = 'Loan Size: Maximum Loan size allowed $1,500,000 for New Construction. Your calculated total loan amount is $' . number_format($calculatedTotalLoanAmount, 0) . ' [85% × ($' . number_format($purchasePrice, 0) . ' + $' . number_format($rehabBudget, 0) . ')]. Contact Loan officer for Pricing';
                     $valid = false;
-                } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 200000) {
-                    $notifications[] = 'Loan Size: Minimum Loan size allowed $200,000 for New Construction. Contact Loan officer for Pricing';
+                }
+
+                // Check minimum loan size ($200,000) based on calculated loan amount
+                if ($calculatedTotalLoanAmount > 0 && $calculatedTotalLoanAmount < 200000) {
+                    $notifications[] = 'Loan Size: Minimum Loan size allowed $200,000 for New Construction. Your calculated total loan amount is $' . number_format($calculatedTotalLoanAmount, 0) . ' [85% × ($' . number_format($purchasePrice, 0) . ' + $' . number_format($rehabBudget, 0) . ')]. Contact Loan officer for Pricing';
                     $valid = false;
                 }
 
