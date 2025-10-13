@@ -1837,7 +1837,8 @@
                             const loansWithEligibility = markFixAndFlipEligibility(data.data, formData);
                             populateResults(loansWithEligibility, formData);
                         } else {
-                            populateResults(data.data);
+                            // For New Construction and other loan types, pass formData for validation
+                            populateResults(data.data, formData);
                         }
                     } else {
                         // Check if there are detailed disqualifier notifications
@@ -2261,6 +2262,7 @@
             
             function populateResults(loans, formData = null) {
                 console.log('All loans data:', loans); // Debug log
+                console.log('FormData passed to populateResults:', formData); // Debug log
                 
                 const tableBody = document.getElementById('loanResultsTable');
                 
@@ -2277,6 +2279,7 @@
                 
                 // Check if this is New Construction loan type
                 const isNewConstruction = loans[0].loan_type === 'New Construction';
+                console.log('Is New Construction:', isNewConstruction); // Debug log
                 
                 // Group loans by loan program for display
                 const loansByProgram = {};
@@ -2334,6 +2337,36 @@
                             const eligibilityCheck = checkFixAndFlipEligibility(loan, formData, programName);
                             isEligible = eligibilityCheck.isEligible;
                             eligibilityErrors = eligibilityCheck.errors;
+                        }
+                    }
+                    
+                    // Check New Construction state eligibility if formData is provided
+                    if (formData && isNewConstruction && loan.user_inputs && (programName === 'EXPERIENCED BUILDER' || programName === 'NEW BUILDER')) {
+                        const state = loan.user_inputs.state;
+                        
+                        console.log('New Construction validation:', {
+                            programName,
+                            state,
+                            hasUserInputs: !!loan.user_inputs,
+                            isNewConstruction
+                        });
+                        
+                        if (programName === 'EXPERIENCED BUILDER') {
+                            // For Experienced Builder Program, We dont Lend in following states: ND, SD, OR, UT, VT, AZ, AK, NV
+                            const experiencedBuilderIneligibleStates = ['ND', 'SD', 'OR', 'UT', 'VT', 'AZ', 'AK', 'NV'];
+                            if (experiencedBuilderIneligibleStates.includes(state)) {
+                                isEligible = false;
+                                eligibilityErrors.push(`For Experienced Builder Program, We don't lend in the following states: ND, SD, OR, UT, VT, AZ, AK, NV`);
+                                console.log('Experienced Builder - State not eligible:', state);
+                            }
+                        } else if (programName === 'NEW BUILDER') {
+                            // For New Builder Program, We dont Lend in following states: ND, SD, UT, VT, AK, ID, NV, MN
+                            const newBuilderIneligibleStates = ['ND', 'SD', 'UT', 'VT', 'AK', 'ID', 'NV', 'MN'];
+                            if (newBuilderIneligibleStates.includes(state)) {
+                                isEligible = false;
+                                eligibilityErrors.push(`For New Builder Program, We don't lend in the following states: ND, SD, UT, VT, AK, ID, NV, MN`);
+                                console.log('New Builder - State not eligible:', state);
+                            }
                         }
                     }
                     
@@ -2488,6 +2521,36 @@
                         const eligibilityCheck = checkFixAndFlipEligibility(loan, formData, programName);
                         isEligible = eligibilityCheck.isEligible;
                         eligibilityErrors = eligibilityCheck.errors;
+                    }
+                    
+                    // Check New Construction state eligibility if applicable
+                    if (formData && isNewConstruction && loan.user_inputs) {
+                        const state = loan.user_inputs.state;
+                        
+                        console.log('New Construction Card validation:', {
+                            programName,
+                            state,
+                            hasUserInputs: !!loan.user_inputs,
+                            isNewConstruction
+                        });
+                        
+                        if (programName === 'EXPERIENCED BUILDER') {
+                            // For Experienced Builder Program, We dont Lend in following states: ND, SD, OR, UT, VT, AZ, AK, NV
+                            const experiencedBuilderIneligibleStates = ['ND', 'SD', 'OR', 'UT', 'VT', 'AZ', 'AK', 'NV'];
+                            if (experiencedBuilderIneligibleStates.includes(state)) {
+                                isEligible = false;
+                                eligibilityErrors.push(`For Experienced Builder Program, We don't lend in the following states: ND, SD, OR, UT, VT, AZ, AK, NV`);
+                                console.log('Experienced Builder - State not eligible:', state);
+                            }
+                        } else if (programName === 'NEW BUILDER') {
+                            // For New Builder Program, We dont Lend in following states: ND, SD, UT, VT, AK, ID, NV, MN
+                            const newBuilderIneligibleStates = ['ND', 'SD', 'UT', 'VT', 'AK', 'ID', 'NV', 'MN'];
+                            if (newBuilderIneligibleStates.includes(state)) {
+                                isEligible = false;
+                                eligibilityErrors.push(`For New Builder Program, We don't lend in the following states: ND, SD, UT, VT, AK, ID, NV, MN`);
+                                console.log('New Builder - State not eligible:', state);
+                            }
+                        }
                     }
                     
                     // Check if this loan program has zero loan amounts (skip for DSCR loans)
