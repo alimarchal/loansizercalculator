@@ -2340,18 +2340,27 @@
                         }
                     }
                     
-                    // Check New Construction state eligibility if formData is provided
+                    // Check New Construction eligibility if formData is provided
                     if (formData && isNewConstruction && loan.user_inputs && (programName === 'EXPERIENCED BUILDER' || programName === 'NEW BUILDER')) {
                         const state = loan.user_inputs.state;
+                        const gucExperience = parseInt(loan.user_inputs.guc_experience || 0);
                         
                         console.log('New Construction validation:', {
                             programName,
                             state,
+                            gucExperience,
                             hasUserInputs: !!loan.user_inputs,
                             isNewConstruction
                         });
                         
                         if (programName === 'EXPERIENCED BUILDER') {
+                            // Check GUC experience requirement - must have at least 1 GUC experience
+                            if (gucExperience === 0) {
+                                isEligible = false;
+                                eligibilityErrors.push(`Experienced Builder Program requires at least 1 GUC (Ground Up Construction) experience. You currently have 0 GUC experience.`);
+                                console.log('Experienced Builder - GUC experience not met:', gucExperience);
+                            }
+                            
                             // For Experienced Builder Program, We dont Lend in following states: ND, SD, OR, UT, VT, AZ, AK, NV
                             const experiencedBuilderIneligibleStates = ['ND', 'SD', 'OR', 'UT', 'VT', 'AZ', 'AK', 'NV'];
                             if (experiencedBuilderIneligibleStates.includes(state)) {
@@ -2523,18 +2532,27 @@
                         eligibilityErrors = eligibilityCheck.errors;
                     }
                     
-                    // Check New Construction state eligibility if applicable
+                    // Check New Construction eligibility if applicable
                     if (formData && isNewConstruction && loan.user_inputs) {
                         const state = loan.user_inputs.state;
+                        const gucExperience = parseInt(loan.user_inputs.guc_experience || 0);
                         
                         console.log('New Construction Card validation:', {
                             programName,
                             state,
+                            gucExperience,
                             hasUserInputs: !!loan.user_inputs,
                             isNewConstruction
                         });
                         
                         if (programName === 'EXPERIENCED BUILDER') {
+                            // Check GUC experience requirement - must have at least 1 GUC experience
+                            if (gucExperience === 0) {
+                                isEligible = false;
+                                eligibilityErrors.push(`Experienced Builder Program requires at least 1 GUC (Ground Up Construction) experience. You currently have 0 GUC experience.`);
+                                console.log('Experienced Builder - GUC experience not met:', gucExperience);
+                            }
+                            
                             // For Experienced Builder Program, We dont Lend in following states: ND, SD, OR, UT, VT, AZ, AK, NV
                             const experiencedBuilderIneligibleStates = ['ND', 'SD', 'OR', 'UT', 'VT', 'AZ', 'AK', 'NV'];
                             if (experiencedBuilderIneligibleStates.includes(state)) {
