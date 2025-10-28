@@ -20,6 +20,11 @@
     <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+    <!-- Google Maps API -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initAutocomplete">
+    </script>
+
     @stack('header')
 
     <style>
@@ -797,7 +802,7 @@
                                                 </select>
                                             </div>
 
-                                            <!-- State -->
+                                            <!-- State (Auto-populated from Google Maps) -->
                                             <div>
                                                 <label class="block font-medium text-sm text-gray-700 mb-2" for="state">
                                                     <span class="flex items-center">
@@ -814,14 +819,17 @@
                                                         State <span class="text-red-500">*</span>
                                                     </span>
                                                 </label>
-                                                <select name="state" id="state"
-                                                    class="block w-full select2 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 transition duration-200"
-                                                    required>
-                                                    <option value="">-- Select Loan Type First --</option>
-                                                </select>
+                                                <input type="text" name="state" id="state" readonly
+                                                    class="border-gray-300 bg-gray-50 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200"
+                                                    placeholder="Will be filled from address selection"
+                                                    title="This field is automatically populated when you select an address">
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                    Auto-populated from address selection
+                                                </div>
                                             </div>
 
-                                            <!-- Property Address -->
+                                            <!-- Property Address with Google Maps Autocomplete -->
                                             <div>
                                                 <label class="block font-medium text-sm text-gray-700 mb-2"
                                                     for="property_address">
@@ -833,13 +841,23 @@
                                                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                                                             </path>
                                                         </svg>
-                                                        Property Address
+                                                        Property Address <span class="text-red-500">*</span>
                                                     </span>
                                                 </label>
                                                 <input
                                                     class="border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg shadow-sm block w-full transition duration-200 hover:border-gray-400"
                                                     type="text" name="property_address" id="property_address" value=""
-                                                    placeholder="Enter property address">
+                                                    placeholder="Start typing address..." required>
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    <i class="fas fa-search mr-1"></i>
+                                                    Start typing to search US addresses
+                                                </div>
+
+                                                <!-- Hidden fields for address components -->
+                                                <input type="hidden" name="street_number" id="street_number">
+                                                <input type="hidden" name="street_name" id="street_name">
+                                                <input type="hidden" name="city" id="city">
+                                                <input type="hidden" name="property_zip_code" id="property_zip_code">
                                             </div>
 
                                             <!-- Permit Status (only for New Construction) -->
@@ -1536,6 +1554,7 @@
                             const loanTerm = document.getElementById('loan_term').value;
                             const propertyType = document.getElementById('property_type').value;
                             const state = document.getElementById('state').value;
+                            const propertyAddress = document.getElementById('property_address').value;
                             const purchasePrice = document.getElementById('purchase_price').value;
                             
                             // Check if it's a DSCR loan (loan term not required for DSCR)
@@ -1547,9 +1566,16 @@
                                 loanTerm,
                                 propertyType,
                                 state,
+                                propertyAddress,
                                 purchasePrice,
                                 isDscrLoan
                             });
+                            
+                            // Validate property address selection
+                            if (!propertyAddress || !state) {
+                                alert('Please select a property address using the Google Maps autocomplete feature. This will automatically populate the state field.');
+                                return false;
+                            }
                             
                             // For DSCR loans, validate basic fields + DSCR-specific required fields
                             if (isDscrLoan) {
@@ -1743,6 +1769,13 @@
                     apiParams.append('broker_points', formData.get('broker_points'));
                     apiParams.append('state', selectedState);
                     
+                    // Add address fields
+                    apiParams.append('property_address', formData.get('property_address'));
+                    apiParams.append('street_number', formData.get('street_number'));
+                    apiParams.append('street_name', formData.get('street_name'));
+                    apiParams.append('city', formData.get('city'));
+                    apiParams.append('property_zip_code', formData.get('property_zip_code'));
+                    
                     // Add loan_term only for non-DSCR loans
                     if (loanType !== 'DSCR Rental Loans') {
                         apiParams.append('loan_term', formData.get('loan_term'));
@@ -1879,8 +1912,20 @@
                     $('#transaction_type').val('').trigger('change');
                     $('#loan_term').val('').trigger('change');
                     $('#property_type').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
-                    $('#state').empty().append('<option value="">-- Select Loan Type First --</option>').trigger('change');
                     $('#occupancy_type').empty().append('<option value="">-- Select Occupancy Type --</option>').trigger('change');
+                    
+                    // Reset address fields
+                    document.getElementById('property_address').value = '';
+                    document.getElementById('state').value = '';
+                    document.getElementById('street_number').value = '';
+                    document.getElementById('street_name').value = '';
+                    document.getElementById('city').value = '';
+                    document.getElementById('property_zip_code').value = '';
+                    
+                    // Reset state field styling
+                    const stateField = document.getElementById('state');
+                    stateField.classList.remove('border-green-500', 'bg-green-50');
+                    stateField.classList.add('border-gray-300');
                     
                     // Reset field visibility to default state (show regular fields, hide DSCR fields)
                     handleLoanTypeFieldVisibility('');
@@ -5265,6 +5310,117 @@
                 // If x-button does not render as a traditional submit button, target it directly by ID or class
                 $('#submit-btn').attr('disabled', 'disabled');
             });
+
+            // Google Maps Autocomplete functionality
+            let autocomplete;
+            let addressComponentsMapping = {
+                street_number: 'short_name',
+                route: 'long_name',
+                locality: 'long_name',
+                administrative_area_level_1: 'short_name',
+                postal_code: 'short_name',
+                country: 'short_name'
+            };
+
+            function initAutocomplete() {
+                const addressInput = document.getElementById('property_address');
+                
+                if (!addressInput) {
+                    console.warn('Property address input not found');
+                    return;
+                }
+
+                // Initialize autocomplete
+                autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'US' }, // Restrict to US only
+                    fields: ['address_components', 'formatted_address', 'geometry']
+                });
+
+                // Add listener for place selection
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    
+                    if (!place.address_components) {
+                        console.warn('No address components found');
+                        return;
+                    }
+
+                    // Reset all fields
+                    document.getElementById('street_number').value = '';
+                    document.getElementById('street_name').value = '';
+                    document.getElementById('city').value = '';
+                    document.getElementById('state').value = '';
+                    document.getElementById('property_zip_code').value = '';
+
+                    let streetNumber = '';
+                    let route = '';
+
+                    // Parse address components
+                    place.address_components.forEach(function(component) {
+                        const addressType = component.types[0];
+                        
+                        switch(addressType) {
+                            case 'street_number':
+                                streetNumber = component[addressComponentsMapping[addressType]];
+                                document.getElementById('street_number').value = streetNumber;
+                                break;
+                            case 'route':
+                                route = component[addressComponentsMapping[addressType]];
+                                document.getElementById('street_name').value = route;
+                                break;
+                            case 'locality':
+                                document.getElementById('city').value = component[addressComponentsMapping[addressType]];
+                                break;
+                            case 'administrative_area_level_1':
+                                document.getElementById('state').value = component[addressComponentsMapping[addressType]];
+                                break;
+                            case 'postal_code':
+                                document.getElementById('property_zip_code').value = component[addressComponentsMapping[addressType]];
+                                break;
+                        }
+                    });
+
+                    // Update the formatted address
+                    document.getElementById('property_address').value = place.formatted_address;
+
+                    // Add visual feedback
+                    const stateField = document.getElementById('state');
+                    if (stateField.value) {
+                        stateField.classList.remove('border-gray-300');
+                        stateField.classList.add('border-green-500', 'bg-green-50');
+                        
+                        // Reset to normal after 2 seconds
+                        setTimeout(() => {
+                            stateField.classList.remove('border-green-500', 'bg-green-50');
+                            stateField.classList.add('border-gray-300');
+                        }, 2000);
+                    }
+
+                    console.log('Address components populated:', {
+                        street_number: streetNumber,
+                        street_name: route,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        zip_code: document.getElementById('property_zip_code').value,
+                        formatted_address: place.formatted_address
+                    });
+                });
+
+                // Style the autocomplete dropdown
+                const pacContainer = document.querySelector('.pac-container');
+                if (pacContainer) {
+                    pacContainer.style.zIndex = '9999';
+                }
+            }
+
+            // Initialize Google Maps when the page loads
+            window.initAutocomplete = initAutocomplete;
+
+            // If Google Maps API is already loaded, initialize immediately
+            if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                initAutocomplete();
+            }
                         </script>
                         @stack('modals')
 
