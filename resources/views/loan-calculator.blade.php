@@ -307,7 +307,7 @@
                                     </div>
                                     <div class="ml-3">
                                         <div class="text-sm font-medium text-blue-600">Step 1</div>
-                                        <div class="text-xs text-gray-500">Basic Information</div>
+                                        <div class="text-xs text-gray-500">Borrower Information</div>
                                     </div>
                                 </div>
                                 <div class="w-16 h-1 bg-gray-200 rounded">
@@ -346,7 +346,7 @@
                     <form id="loanCalculatorForm" method="POST" action="/calculate-loan">
                         @csrf
 
-                        <!-- Section 1: Basic Information -->
+                        <!-- Section 1: Borrower Information -->
                         <div id="section1" class="form-section">
                             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8">
                                 <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
@@ -360,7 +360,7 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <h2 class="text-xl font-bold text-white">Basic Information</h2>
+                                            <h2 class="text-xl font-bold text-white">Borrower Information</h2>
                                             <p class="text-blue-100 text-sm">Tell us about yourself and your broker</p>
                                         </div>
                                     </div>
@@ -1524,7 +1524,7 @@
                             const experience = document.getElementById('experience').value;
                             
                             if (!creditScore || !experience) {
-                                alert('Please fill in all required fields in the Basic Information section.');
+                                alert('Please fill in all required fields in the Borrower Information section.');
                                 return false;
                             }
                             return true;
