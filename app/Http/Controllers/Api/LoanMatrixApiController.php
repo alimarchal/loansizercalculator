@@ -27,11 +27,19 @@ class LoanMatrixApiController extends Controller
      */
     public function getLoanMatrix(Request $request)
     {
+        // Get available loan programs from database dynamically
+        $availableLoanPrograms = \App\Models\LoanType::select('loan_program')
+            ->distinct()
+            ->whereNotNull('loan_program')
+            ->pluck('loan_program')
+            ->toArray();
+
         // Validate incoming request parameters (accept both IDs and names)
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'credit_score' => 'required|integer|min:300|max:850',
             'experience' => 'nullable|string', // Can be ID or range like "1-2"
             'loan_type' => 'nullable|string', // Can be ID or name like "Fix and Flip"
+            'loan_program' => 'nullable|string|in:' . implode(',', $availableLoanPrograms), // Dynamic loan program filter
             'transaction_type' => 'nullable|string', // Can be ID or name like "Purchase"
             'loan_term' => 'nullable|integer|min:6|max:36',
             'purchase_price' => 'nullable|numeric|min:10000|max:10000000',
@@ -57,6 +65,7 @@ class LoanMatrixApiController extends Controller
         $creditScore = $request->credit_score;
         $experience = $request->experience;
         $loanType = $request->loan_type;
+        $loanProgram = $request->loan_program;
         $transactionType = $request->transaction_type;
         $brokerPoints = $request->broker_points;
         $payOff = $request->payoff_amount;
@@ -166,6 +175,10 @@ class LoanMatrixApiController extends Controller
                 ->when($transactionTypeId, function ($query) use ($transactionTypeId) {
                     $query->where('loan_rules.transaction_type_id', $transactionTypeId);
                 })
+                // Filter by loan program if provided
+                ->when($loanProgram, function ($query) use ($loanProgram) {
+                    $query->where('loan_types.loan_program', $loanProgram);
+                })
                 ->orderByRaw("
                 CASE experiences.experiences_range
                     WHEN '0' THEN 0 
@@ -185,33 +198,138 @@ class LoanMatrixApiController extends Controller
             // Get maximum loan amount from the database for validation
             $maxLoanAmountFromDb = $loanRules->max('max_total_loan') ?: 0;
 
-            // Validate business rules before processing loan rules
-            $businessValidation = $this->validateBusinessRules(
-                $creditScore,
-                is_numeric($originalExperience) ? (int) $originalExperience : 0,
-                $request->rehab_budget ?: 0,
-                $request->purchase_price ?: 0,
-                ($request->purchase_price ?: 0) + ($request->rehab_budget ?: 0), // Total loan amount estimation
-                $loanType,
-                null, // loan program - we'll check this per rule
-                null, // dscr - not provided in this endpoint
-                null, // property type - not provided in this endpoint
-                $maxLoanAmountFromDb // Pass the dynamic max loan amount from database
-            );
+            // Transform the data to match the matrix format and validate each rule individually
+            $validLoanRules = collect();
+            $allNotifications = collect();
 
-            // If business rules fail, return notifications
-            if (!$businessValidation['valid']) {
+            // If no specific loan program is requested, use more lenient validation to show available options
+            $useGeneralValidation = !$loanProgram;
+
+            foreach ($loanRules as $rule) {
+                // For general validation (when no program specified), use the general loan type instead of specific program
+                $programForValidation = $useGeneralValidation ? null : ($rule->experience->loanType->loan_program ?? null);
+
+                // Validate business rules for each specific loan program
+                $businessValidation = $this->validateBusinessRules(
+                    $creditScore,
+                    is_numeric($originalExperience) ? (int) $originalExperience : 0,
+                    $request->rehab_budget ?: 0,
+                    $request->purchase_price ?: 0,
+                    ($request->purchase_price ?: 0) + ($request->rehab_budget ?: 0), // Total loan amount estimation
+                    $loanType,
+                    $programForValidation, // Use null for general validation, specific program otherwise
+                    null, // dscr - not provided in this endpoint
+                    null, // property type - not provided in this endpoint
+                    $maxLoanAmountFromDb // Pass the dynamic max loan amount from database
+                );
+
+                if ($businessValidation['valid']) {
+                    $validLoanRules->push($rule);
+                } else {
+                    // Only collect specific program notifications if a program was specified
+                    if (!$useGeneralValidation) {
+                        $allNotifications = $allNotifications->merge($businessValidation['notifications']);
+                    }
+                }
+            }
+
+            // If no valid loan rules found, return error with filtered notifications
+            if ($validLoanRules->isEmpty()) {
+                // For general validation, perform a simplified check to see if any program could potentially work
+                if ($useGeneralValidation) {
+                    $generalValidation = $this->validateBusinessRules(
+                        $creditScore,
+                        is_numeric($originalExperience) ? (int) $originalExperience : 0,
+                        $request->rehab_budget ?: 0,
+                        $request->purchase_price ?: 0,
+                        ($request->purchase_price ?: 0) + ($request->rehab_budget ?: 0),
+                        $loanType,
+                        null, // No specific program
+                        null,
+                        null,
+                        $maxLoanAmountFromDb
+                    );
+
+                    if (!$generalValidation['valid']) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Loan application does not meet qualification criteria. ' . implode(' ', $generalValidation['notifications']),
+                            'disqualifier_notifications' => $generalValidation['notifications'],
+                            'data' => [],
+                            'total_records' => 0
+                        ], 400);
+                    }
+                }
+
+                // Filter notifications to prioritize specific loan program errors over general ones
+                $filteredNotifications = $allNotifications->unique();
+
+                // If user specified a loan program, prioritize those notifications
+                if ($loanProgram) {
+                    $programSpecificNotifications = $filteredNotifications->filter(function ($notification) use ($loanProgram) {
+                        if ($loanProgram === 'DESKTOP APPRAISAL') {
+                            return strpos($notification, 'Desktop Appraisal') !== false ||
+                                strpos($notification, '$100,000') !== false ||
+                                strpos($notification, '$250k') !== false ||
+                                strpos($notification, 'cannot exceed Purchase Price') !== false;
+                        } elseif ($loanProgram === 'FULL APPRAISAL') {
+                            return strpos($notification, 'Full Appraisal') !== false ||
+                                strpos($notification, '$50,000') !== false ||
+                                strpos($notification, 'Extensive Rehab') !== false ||
+                                strpos($notification, 'Heavy Rehab') !== false ||
+                                strpos($notification, '$100k with 0 experience') !== false ||
+                                strpos($notification, '$500k') !== false;
+                        }
+                        return true;
+                    });
+
+                    if ($programSpecificNotifications->isNotEmpty()) {
+                        $filteredNotifications = $programSpecificNotifications;
+                    }
+                }
+
+                // Remove contradictory messages (e.g., if we have Desktop Appraisal specific errors, 
+                // don't show Full Appraisal errors and vice versa)
+                $finalNotifications = $filteredNotifications;
+                if ($filteredNotifications->count() > 1) {
+                    // Prioritize more specific errors
+                    $hasExtensiveRehabError = $filteredNotifications->contains(function ($notification) {
+                        return strpos($notification, 'Extensive Rehab') !== false;
+                    });
+                    $hasDesktopError = $filteredNotifications->contains(function ($notification) {
+                        return strpos($notification, 'cannot exceed Purchase Price') !== false;
+                    });
+
+                    if ($hasExtensiveRehabError) {
+                        // If it's an extensive rehab error, prioritize that over desktop appraisal errors
+                        $finalNotifications = $filteredNotifications->filter(function ($notification) {
+                            return strpos($notification, 'Extensive Rehab') !== false ||
+                                strpos($notification, 'Heavy Rehab') !== false ||
+                                strpos($notification, '$100k with 0 experience') !== false ||
+                                strpos($notification, '$500k') !== false ||
+                                strpos($notification, '$50,000') !== false;
+                        });
+                    } elseif ($hasDesktopError) {
+                        // If it's a desktop appraisal error, prioritize that
+                        $finalNotifications = $filteredNotifications->filter(function ($notification) {
+                            return strpos($notification, 'cannot exceed Purchase Price') !== false ||
+                                strpos($notification, '$250k') !== false ||
+                                strpos($notification, '$100,000') !== false;
+                        });
+                    }
+                }
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Loan application does not meet qualification criteria. ' . implode(' ', $businessValidation['notifications']),
-                    'disqualifier_notifications' => $businessValidation['notifications'],
+                    'message' => 'Loan application does not meet qualification criteria. ' . implode(' ', $finalNotifications->values()->toArray()),
+                    'disqualifier_notifications' => $finalNotifications->values()->toArray(),
                     'data' => [],
                     'total_records' => 0
                 ], 400);
             }
 
-            // Transform the data to match the matrix format (same as LoanProgramController)
-            $matrixData = $loanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType, $brokerPoints, $state, $titleCharges, $propertyInsurance) {
+            // Transform the valid loan rules to matrix format
+            $matrixData = $validLoanRules->map(function ($rule) use ($request, $creditScore, $originalExperience, $loanType, $transactionType, $brokerPoints, $state, $titleCharges, $propertyInsurance) {
                 // Get rehab limits grouped by rehab level
                 $rehabLimits = $rule->rehabLimits->keyBy('rehabLevel.name');
 
@@ -462,27 +580,93 @@ class LoanMatrixApiController extends Controller
                     $valid = false;
                 }
 
-                if ($maxLoanAmountFromDb > 0 && $totalLoanAmount > $maxLoanAmountFromDb) {
-                    $notifications[] = 'Loan Size: Maximum Loan size allowed $' . number_format($maxLoanAmountFromDb, 0);
-                    $valid = false;
-                } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 50000) {
-                    $notifications[] = 'Loan Size: Minimum Loan Size allowed is $50,000';
+                // Minimum rehab budget validation for both programs
+                if ($rehabBudget > 0 && $rehabBudget < 10000) {
+                    $notifications[] = 'Rehab Budget amount must be at least $10,000. Contact loan officer for pricing.';
                     $valid = false;
                 }
 
-                // Calculate rehab percentage for experience validation
-                $rehabPercentage = $purchasePrice > 0 ? ($rehabBudget / $purchasePrice) * 100 : 0;
+                // Program-specific validations
+                if ($loanProgram === 'DESKTOP APPRAISAL') {
+                    // Desktop Appraisal program validations
 
-                // 3+ Borrower Experience required for Heavy Rehab projects (50-100%)
-                if ($rehabPercentage > 50 && $rehabPercentage <= 100 && $experience < 3) {
-                    $notifications[] = 'Experience: 3+ Borrower Experience required for Heavy Rehab projects';
-                    $valid = false;
-                }
+                    // Minimum loan amount validation: (Purchase price x 90%) + rehab budget
+                    $desktopCalculatedLoan = ($purchasePrice * 0.90) + $rehabBudget;
+                    if ($desktopCalculatedLoan > 0 && $desktopCalculatedLoan < 100000) {
+                        $notifications[] = 'Total Loan amount must exceed $100,000. Contact your loan officer for pricing.';
+                        $valid = false;
+                    }
 
-                // 3+ Borrower Experience required for Extensive Rehab projects (>100%)
-                if ($rehabPercentage > 100 && $experience < 3) {
-                    $notifications[] = '3+ Borrower Experience required for Extensive Rehab Project. Contact Loan officer for pricing.';
-                    $valid = false;
+                    // Heavy Rehab validations for Desktop Appraisal
+                    if ($rehabBudget > $purchasePrice) {
+                        $notifications[] = 'Rehab Budget cannot exceed Purchase Price. Contact loan officer for pricing';
+                        $valid = false;
+                    }
+                    if ($rehabBudget > 250000) {
+                        $notifications[] = 'Maximum Rehab Budget allowed for Desktop Appraisal is $250k. Contact loan officer for pricing';
+                        $valid = false;
+                    }
+
+                } elseif ($loanProgram === 'FULL APPRAISAL') {
+                    // Full Appraisal program validations
+
+                    // Note: For full appraisal, we'll need the actual LTC % qualified to calculate properly
+                    // For now, using a conservative estimate. This should be calculated based on actual LTC qualified
+                    $estimatedLtc = 0.85; // Updated to use more realistic LTC value (85%)
+                    $fullAppraisalCalculatedLoan = ($purchasePrice * $estimatedLtc) + $rehabBudget;
+                    if ($fullAppraisalCalculatedLoan > 0 && $fullAppraisalCalculatedLoan < 50000) {
+                        $notifications[] = 'Total Loan amount must exceed $50,000. Contact your loan officer for pricing.';
+                        $valid = false;
+                    }
+
+                    // 3+ experience requirement when rehab budget > purchase price
+                    if ($rehabBudget > $purchasePrice && $experience < 3) {
+                        $notifications[] = '3+ Borrower Experience required for Extensive Rehab Project. Contact Loan officer for pricing.';
+                        $valid = false;
+                    }
+
+                    // Heavy Rehab validation for Full Appraisal (50%+ of purchase price)
+                    $rehabPercentage = $purchasePrice > 0 ? ($rehabBudget / $purchasePrice) * 100 : 0;
+                    if ($rehabPercentage >= 50 && ($experience < 1 || $creditScore < 680)) {
+                        $notifications[] = '1+ Experience and FICO 680+ required for Heavy Rehab projects. Contact Loan officer for pricing.';
+                        $valid = false;
+                    }
+
+                    // Rehab budget limitations based on experience
+                    if ($experience == 0 && $rehabBudget > 100000) {
+                        $notifications[] = 'Maximum Rehab Budget allowed $100k with 0 experience. Contact loan officer for pricing';
+                        $valid = false;
+                    }
+                    if ($experience >= 1 && $rehabBudget > 500000) {
+                        $notifications[] = 'Rehab Budget over $500k requires 1+ similar experience. Contact loan officer for pricing.';
+                        $valid = false;
+                    }
+
+                } else {
+                    // Fallback for when loan program is not specified - use more lenient rules to not pre-reject
+                    // users before they have a chance to select an appropriate program
+                    if ($maxLoanAmountFromDb > 0 && $totalLoanAmount > $maxLoanAmountFromDb) {
+                        $notifications[] = 'Loan Size: Maximum Loan size allowed $' . number_format($maxLoanAmountFromDb, 0);
+                        $valid = false;
+                    } elseif ($totalLoanAmount > 0 && $totalLoanAmount < 50000) {
+                        $notifications[] = 'Loan Size: Minimum Loan Size allowed is $50,000';
+                        $valid = false;
+                    }
+
+                    // Calculate rehab percentage for general validation
+                    $rehabPercentage = $purchasePrice > 0 ? ($rehabBudget / $purchasePrice) * 100 : 0;
+
+                    // Only apply the most critical validations when no program is specified
+                    // This allows users to see available programs before getting program-specific restrictions
+
+                    // Only fail for extremely high rehab budgets that wouldn't qualify for any program
+                    if ($experience == 0 && $rehabBudget > 500000) {
+                        $notifications[] = 'High rehab budgets may require additional experience. Please select a loan program to see specific requirements.';
+                        $valid = false;
+                    }
+
+                    // For moderate heavy rehab, just note that program selection may affect eligibility
+                    // Don't fail validation at this stage to allow program comparison
                 }
 
                 // Property Type validation for Fix and Flip
@@ -1870,8 +2054,21 @@ class LoanMatrixApiController extends Controller
             }
 
             // Calculate individual loan components based on total loan capacity
-            // Purchase Loan = Total Loan - Rehab Budget (but not less than 0)
-            $purchaseLoanUpTo = max(0, $totalLoanUpTo - $rehabBudget);
+            // For Fix and Flip Full Appraisal: Ensure minimum $10,000 down payment when rehab budget > purchase price
+            if ($loanType === 'Fix and Flip' && $rehabBudget > $purchasePrice) {
+                // Purchase Loan = Total Loan - Rehab Budget (but not less than 0)
+                $purchaseLoanUpTo = max(0, $totalLoanUpTo - $rehabBudget);
+
+                // Ensure minimum $10,000 down payment
+                $maxAllowedPurchaseLoan = $purchasePrice - 10000; // Must leave at least $10k for down payment
+                if ($maxAllowedPurchaseLoan > 0 && $purchaseLoanUpTo > $maxAllowedPurchaseLoan) {
+                    $purchaseLoanUpTo = $maxAllowedPurchaseLoan;
+                }
+            } else {
+                // Standard calculation for other scenarios
+                // Purchase Loan = Total Loan - Rehab Budget (but not less than 0)
+                $purchaseLoanUpTo = max(0, $totalLoanUpTo - $rehabBudget);
+            }
 
             // Rehab Loan = Minimum of (Rehab Budget, Total Loan Capacity)
             $rehabLoanUpTo = min($rehabBudget, $totalLoanUpTo);

@@ -4951,27 +4951,27 @@
 
                                     <!-- Property Disclosures -->
                                     <div class="mb-6">
-                                        <h4 class="font-semibold text-gray-800 mb-3">Property Disclosures (Must Check All)</h4>
+                                        <h4 class="font-semibold text-gray-800 mb-3">Property Disclosures (Must Check All before Submit)</h4>
                                         <div class="space-y-2 text-sm">
                                             <label class="flex items-start space-x-2">
                                                 <input type="checkbox" name="property_disclosures[]" value="property_type" required class="mt-1">
-                                                <span>The property is 1–4 units, non-owner occupied, and for investment use only.</span>
+                                                <span>The property is 1–4 units & non-owner occupied</span>
                                             </label>
                                             <label class="flex items-start space-x-2">
                                                 <input type="checkbox" name="property_disclosures[]" value="not_rural" required class="mt-1">
-                                                <span>The property is not in a rural area as defined by USDA Rural Designation Map.</span>
+                                                <span>The property is not rural as defined by USDA Map.</span>
                                             </label>
                                             <label class="flex items-start space-x-2">
                                                 <input type="checkbox" name="property_disclosures[]" value="loan_good_standing" required class="mt-1">
-                                                <span>For Refinance Fix and Flip, current loan must be in Good Standing (No Default)</span>
+                                                <span>For Refinance transactions, current loan must be in Good Standing (No Default)</span>
                                             </label>
                                             <label class="flex items-start space-x-2">
                                                 <input type="checkbox" name="property_disclosures[]" value="assignment_fees" required class="mt-1">
-                                                <span>Assignment fees are under 20% of underlying purchase price (terms may be affected)</span>
+                                                <span>Assignment fees are less than 20% of underlying purchase price (or terms may be affected)</span>
                                             </label>
                                             <label class="flex items-start space-x-2">
-                                                <input type="checkbox" name="property_disclosures[]" value="profitability" required class="mt-1">
-                                                <span>I understand the project must meet minimum profitability requirements (15% minimum).</span>
+                                                <input type="checkbox" name="property_disclosures[]" value="restricted_markets" required class="mt-1">
+                                                <span>I understand restricted markets may require 680+ FICO & 3+ Experience (Chicago, Baltimore, Cleveland, Detroit)</span>
                                             </label>
                                         </div>
                                     </div>
