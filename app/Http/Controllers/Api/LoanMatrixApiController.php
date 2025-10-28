@@ -481,7 +481,7 @@ class LoanMatrixApiController extends Controller
 
                 // 3+ Borrower Experience required for Extensive Rehab projects (>100%)
                 if ($rehabPercentage > 100 && $experience < 3) {
-                    $notifications[] = 'Experience: 3+ Borrower Experience required for Extensive Rehab Project';
+                    $notifications[] = '3+ Borrower Experience required for Extensive Rehab Project. Contact Loan officer for pricing.';
                     $valid = false;
                 }
 
