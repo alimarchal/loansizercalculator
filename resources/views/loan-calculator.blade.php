@@ -340,7 +340,7 @@
                                     </div>
                                     <div class="ml-3">
                                         <div class="text-sm font-medium text-gray-400">Step 3</div>
-                                        <div class="text-xs text-gray-400">Advanced Options</div>
+                                        <div class="text-xs text-gray-400">Rental Informations</div>
                                     </div>
                                 </div>
                             </div>
@@ -1031,7 +1031,7 @@
                             </div>
                         </div>
 
-                        <!-- Section 3: Advanced Options -->
+                        <!-- Section 3: Rental Informations -->
                         <div id="section3" class="form-section hidden">
                             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-8">
                                 <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
@@ -1047,7 +1047,7 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <h2 class="text-xl font-bold text-white">Advanced Options</h2>
+                                            <h2 class="text-xl font-bold text-white">Rental Informations</h2>
                                             <p class="text-purple-100 text-sm">Additional loan parameters and property
                                                 details</p>
                                         </div>
@@ -1217,7 +1217,7 @@
                                             <h4 class="text-sm font-semibold text-gray-800">Information</h4>
                                         </div>
                                         <p class="text-sm text-gray-600 leading-relaxed">
-                                            These advanced options are specifically for DSCR (Debt Service Coverage
+                                            These Rental Informations are specifically for DSCR (Debt Service Coverage
                                             Ratio) rental loans.
                                             The fields will automatically appear when you select "DSCR Rental Loans" as
                                             your loan type in the previous section.
@@ -1586,7 +1586,7 @@
                                     return false;
                                 }
                                 
-                                // DSCR specific required fields (from Advanced Options section)
+                                // DSCR specific required fields (from Rental Informations section)
                                 const occupancyType = document.getElementById('occupancy_type').value;
                                 const monthlyMarketRent = document.getElementById('monthly_market_rent').value;
                                 const annualTax = document.getElementById('annual_tax').value;
