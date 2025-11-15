@@ -193,4 +193,22 @@ class Borrower extends Model
     {
         return $query->whereBetween('loan_amount_requested', [$min, $max]);
     }
+
+    /**
+     * Get all checklists assigned to this borrower.
+     */
+    public function borrowerChecklists()
+    {
+        return $this->hasMany(BorrowerChecklist::class);
+    }
+
+    /**
+     * Get all checklists through borrower checklists.
+     */
+    public function checklists()
+    {
+        return $this->belongsToMany(Checklist::class, 'borrower_checklists')
+            ->withPivot('checklist_item_name', 'status', 'file_path', 'uploaded_at', 'assigned_by', 'status_updated_by')
+            ->withTimestamps();
+    }
 }

@@ -52,5 +52,22 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
             'update' => 'loan-programs.update',
             'destroy' => 'loan-programs.destroy',
         ]);
+
+        // Checklist CRUD Routes
+        Route::resource('checklists', \App\Http\Controllers\ChecklistController::class);
+
+        // Borrower Checklist Management Routes (Admin Only)
+        Route::post('borrowers/{borrower}/checklists/assign', [\App\Http\Controllers\BorrowerChecklistController::class, 'assign'])
+            ->name('borrowers.checklists.assign');
+        Route::patch('borrower-checklists/{borrowerChecklist}/status', [\App\Http\Controllers\BorrowerChecklistController::class, 'updateStatus'])
+            ->name('borrower-checklists.update-status');
+        Route::delete('borrower-checklists/{borrowerChecklist}', [\App\Http\Controllers\BorrowerChecklistController::class, 'destroy'])
+            ->name('borrower-checklists.destroy');
     });
+
+    // Borrower Checklist Routes (Accessible to both Admin and Borrower)
+    Route::post('borrower-checklists/{borrowerChecklist}/upload', [\App\Http\Controllers\BorrowerChecklistController::class, 'uploadFile'])
+        ->name('borrower-checklists.upload');
+    Route::get('borrower-checklists/{borrowerChecklist}/download', [\App\Http\Controllers\BorrowerChecklistController::class, 'downloadFile'])
+        ->name('borrower-checklists.download');
 });

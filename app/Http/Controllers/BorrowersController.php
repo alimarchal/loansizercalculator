@@ -163,8 +163,14 @@ class BorrowersController extends Controller
      */
     public function show(Borrower $borrower)
     {
+        // Load relationships and checklists
+        $borrower->load(['loanProgramResults', 'selectedLoanProgram', 'borrowerChecklists.checklist']);
+
+        // Get available checklists for assignment (only active checklists for superadmin)
+        $availableChecklists = \App\Models\Checklist::where('is_active', true)->get();
+
         // Implementation for showing single borrower
-        return view('borrowers.show', compact('borrower'));
+        return view('borrowers.show', compact('borrower', 'availableChecklists'));
     }
 
     /**
